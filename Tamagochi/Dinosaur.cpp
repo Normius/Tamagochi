@@ -9,6 +9,7 @@ CDinosaur::CDinosaur()
     pos_X(0.0f), pos_Y(static_cast<float>(OnGroundPos_Y)), horizontalSpeed(0.0f), verticalSpeed(0.0f), dinoRect{}, prevDinoRect{}
 {
 }
+// -----------------------------------------------------------------------------------
 
 // ------------ Отрисовка персонажа Dino (основной метод)
 void CDinosaur::Draw(HDC hdc, RECT& paintArea)

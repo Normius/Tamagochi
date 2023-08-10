@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Tamagochi/Bird.cpp
+/Tamagochi/Bird.cpp
+/Tamagochi/Bird.h
+/Tamagochi/Cactus.cpp
+/Tamagochi/Cactus.h
+/Tamagochi/Cloud.cpp
+/Tamagochi/Cloud.h
+/Tamagochi/RoadLevel.cpp
+/Tamagochi/RoadLevel.h
