@@ -1,19 +1,15 @@
 ﻿#include "Cloud.h"
 
 // ----------------------------- Класс Облако на заднем плане ----------------------------------------------
+
+// ------------ Конструктор
 CCloud::CCloud()
-    :pos_X(90 * CConfig::SizeScale), pos_Y(30 * CConfig::SizeScale), cloudPen(0), cloudBrush(0)
+    :pos_X(90 * CConfig::SizeScale), pos_Y(130 * CConfig::SizeScale)
 {
 }
+// -----------------------------------------------------------------------------------
 
-void CCloud::Init()
-{
-    cloudPen = CreatePen(PS_SOLID, 0, RGB(60, 75, 67));
-
-    cloudBrush = CreateSolidBrush(RGB(60, 75, 67));
-}
-
-
+// ------------ Отрисовка основная
 void CCloud::Draw(HDC hdc, RECT& paintArea)
 {
     //RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
@@ -23,15 +19,13 @@ void CCloud::Draw(HDC hdc, RECT& paintArea)
     //    return;
     //}
 
-    SelectObject(hdc, cloudPen);
-    SelectObject(hdc, cloudBrush);
+    CConfig::secondPaleColor.SelectColor(hdc);
 
     //Тело
     Rectangle(hdc, pos_X, pos_Y, pos_X + 58 * CConfig::SizeScale, pos_Y + 16 * CConfig::SizeScale);
 
     //Фоновые пропуски
-    SelectObject(hdc, CConfig::backgroundPen);
-    SelectObject(hdc, CConfig::backgroundBrush);
+    CConfig::backgroundColor.SelectColor(hdc);
 
     //Верхние края
     Rectangle(hdc, pos_X, pos_Y, pos_X + 6 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale);

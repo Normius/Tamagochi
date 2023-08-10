@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BackgroundObjects.h" />
     <ClInclude Include="Bird.h" />
     <ClInclude Include="Cactus.h" />
     <ClInclude Include="Config.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BackgroundObjects.cpp" />
     <ClCompile Include="Bird.cpp" />
     <ClCompile Include="Cactus.cpp" />
     <ClCompile Include="Config.cpp" />

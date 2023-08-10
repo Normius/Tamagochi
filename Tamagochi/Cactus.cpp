@@ -1,23 +1,19 @@
 ﻿#include "Cactus.h"
 
-// ----------------------------- Класс птицы (препятствие) ----------------------------------------------
+// ----------------------------- Класс Кактуса (препятствие) ----------------------------------------------
+
+// ------------ Конструктор
 CCactus::CCactus()
-    :pos_X(60 * CConfig::SizeScale), pos_Y(50 * CConfig::SizeScale), CactusPen(0), CactusBrush(0)
+    :pos_X(60 * CConfig::SizeScale), pos_Y(150 * CConfig::SizeScale)
 {
 
 }
+// -----------------------------------------------------------------------------------
 
-void CCactus::Init()
-{
-    CactusPen = CreatePen(PS_SOLID, 0, RGB(19, 30, 24));
-
-    CactusBrush = CreateSolidBrush(RGB(19, 30, 24));
-}
-
+// ------------ Отрисовка
 void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
-    SelectObject(hdc, CactusPen);
-    SelectObject(hdc, CactusBrush);
+    CConfig::mainBrightColor.SelectColor(hdc);
 
     //Ствол кактуса
     Rectangle(hdc, pos_X + 8 * CConfig::SizeScale, pos_Y + 2 * CConfig::SizeScale, pos_X + 14 * CConfig::SizeScale, pos_Y + 48 * CConfig::SizeScale);

@@ -1,46 +1,76 @@
 ﻿#pragma once
 
 #include "Config.h"
+#include <cmath>
 
-enum EDinosaurBodyState
+//TO DO: Возможно объединить эти состояния в одно перечисление
+//Перечисление состояний тела Дино (стоя или в присяде)
+enum class EDinosaurLevelState
+{
+    StartRunLevel, //Состояние перед началом забега
+    RunLevel, //Забег начался
+    LoseRunLevel, //Проигрыш при столкновении с припятствием
+    FreeMovingLevel //Свободное передвижение влево и вправо
+};
+
+enum class EDinosaurBodyState
 {
     Standing,
     Crawling
 };
 
-enum EDinosaurDirectionState
+//Перечисление состояний направления Дино (влево или вправо)
+enum class EDinosaurDirectionState
 {
-    RightDirection,
-    LeftDirection,
+    Right,
+    Left,
 };
 
-// ----------------------------- Класс персонажа Dino (главный персонаж) ----------------------------------------------
+//Перечисление состояний движения Дино (влево или вправо)
+enum class EDinosaurMovingState
+{
+    Stop,
+    MovingRight,
+    MovingLeft,
+};
+
+// ----------------------------- Класс персонажа Dino (главный персонаж)
 class CDinosaur
 {
 public:
     CDinosaur();
 
-    void Init();
     void Draw(HDC hdc, RECT& paintArea);
-    void RedrawDino();
+    void Redraw();
     void MoveLegsRight(HDC hdc);
     void MoveLegsLeft(HDC hdc);
+    void SetBodyState(EDinosaurBodyState state);
+    void MoveVertical(float maxSpeed);
+    void MoveHorizontal(float maxSpeed);
+    void CheckHorizontalDirection(bool leftDirection, bool keyPress);
+    void Jump();
+    
+    static const int StandingHeight = 44;
+    static const int CrawlingHeight = 26;
+    static const int StandingWidth = 44;
+    static const int CrawlingWidth = 60;
+    static const int OnGroundPos_Y = 150 * CConfig::SizeScale;
 
-    static const int standingDinoHeight = 44;
-    static const int crawlingDinoHeight = 44; //по факту 26
+    const int MaxJumpHeight = 70;
 
-    static const int standingDinoWidth = 44;
-    static const int crawlingDinoWidth = 60;
+    int height;
+    int width;
+    const float MaxSpeed_X = 5.0f;
+    const float MaxSpeed_Y = 18.0f;
 
-    EDinosaurBodyState DinosaurBodyState;
+    float pos_X;
+    float pos_Y;
+    float horizontalSpeed;
+    float verticalSpeed;
+    
     EDinosaurDirectionState DinosaurDirectionState;
-
-    int DinoHeight;
-    int DinoWidth;
-    int DinoPos_X;
-    int DinoPos_Y;
-    int DinoStep_X;
-    int DinoSpeed;
+    EDinosaurMovingState DinosaurMovingState;
+    bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
 
 private:
     void ClearRightLegsBackground(HDC hdc);
@@ -53,18 +83,17 @@ private:
     void DrawLeftSecondStep(HDC hdc);
     void DrawRightEye(HDC hdc);
     void DrawLeftEye(HDC hdc);
-    void DrawRightStandingDino(HDC hdc);
-    void DrawLeftStandingDino(HDC hdc);
-    void DrawRightHead(HDC hdc, int pos_x, int pos_y);
-    void DrawLeftHead(HDC hdc, int pos_x, int pos_y, int reverseOffset);
-    void DrawRightCrawlingDino(HDC hdc, int pos_x, int pos_y);
-    void DrawLeftCrawlingDino(HDC hdc, int pos_x, int pos_y, int reverseOffset);
+    void DrawRightStanding(HDC hdc);
+    void DrawLeftStanding(HDC hdc);
+    void DrawRightHead(HDC hdc);
+    void DrawLeftHead(HDC hdc);
+    void DrawRightCrawling(HDC hdc);
+    void DrawLeftCrawling(HDC hdc);
 
-    RECT dinoRect{};
-    RECT prevDinoRect{};
+    EDinosaurBodyState DinosaurBodyState;
+    EDinosaurLevelState DinosaurLevelState;
 
-
-    HPEN characterPen;
-    HBRUSH characterBrush;
+    RECT dinoRect;
+    RECT prevDinoRect;
 };
-///////////////////////////////////////////////////////////////////////////////////////////////
+// -----------------------------------------------------------------------------------

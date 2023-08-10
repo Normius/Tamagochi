@@ -8,26 +8,33 @@ class CBird
 public:
     CBird();
 
-    void Init();
     void Draw(HDC hdc, RECT& paintArea);
+    void Redraw();
+    void Move(float maxSpeed);
 
-
-    int pos_X;
-    int pos_Y;
-
-
-    //RECT cloudRect{};
-    //RECT prevCloudRect{};
-
-
-    HPEN BirdPen;
-    HBRUSH BirdBrush;
+    float pos_X;
+    float pos_Y;
 
 private:
-    void DrawBird(HDC hdc, RECT& paintArea);
+    void DrawBird(HDC hdc);
 
-    void DrawUpWing(HDC hdc, RECT& paintArea);
+    void DrawUpWing(HDC hdc);
 
-    void DrawDownWing(HDC hdc, RECT& paintArea);
+    void DrawDownWing(HDC hdc);
+
+    void MoveWings(HDC hdc);
+
+    const int upWingHeight = 23;
+    const int downWingHeight = 27;
+    const int width = 46;
+
+    int height;
+
+    float flyingSpeed;
+
+    bool upWing;
+
+    RECT birdRect;
+    RECT prevBirdRect;
 };
-////////////////////////////////////////////////////////////////////////////////////
+// -----------------------------------------------------------------------------------

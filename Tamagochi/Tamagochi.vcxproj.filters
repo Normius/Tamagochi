@@ -37,6 +37,9 @@
     <Filter Include="Dinosaur">
       <UniqueIdentifier>{9fec12cc-c92e-45dd-837b-4f5b8cdfb010}</UniqueIdentifier>
     </Filter>
+    <Filter Include="BackgroundObjects">
+      <UniqueIdentifier>{1972996f-1b56-4aac-b4f8-41b27fb798da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -71,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="Dinosaur.h">
       <Filter>Dinosaur</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundObjects.h">
+      <Filter>BackgroundObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="Dinosaur.cpp">
       <Filter>Dinosaur</Filter>
+    </ClCompile>
+    <ClCompile Include="BackgroundObjects.cpp">
+      <Filter>BackgroundObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
