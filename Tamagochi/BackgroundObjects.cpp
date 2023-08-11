@@ -1,14 +1,13 @@
 #include "BackgroundObjects.h"
 
 // ----------------------------- Класс птицы (противник) ----------------------------------------------
-// ------------ Конструктор
+//Конструктор
 CBird::CBird()
     :pos_X(160.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), flyingSpeed(5.0f), upWing(true), birdRect{}, prevBirdRect{}
 {
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка тела
+//Отрисовка тела
 void CBird::DrawBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -46,9 +45,8 @@ void CBird::DrawBird(HDC hdc)
     //Глаз
     Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка верхнего крыла
+//Отрисовка верхнего крыла
 void CBird::DrawUpWing(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -65,9 +63,8 @@ void CBird::DrawUpWing(HDC hdc)
     Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + 27 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 29 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка нижнего крыла
+//Отрисовка нижнего крыла
 void CBird::DrawDownWing(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -81,9 +78,8 @@ void CBird::DrawDownWing(HDC hdc)
     Rectangle(hdc, pos_x + 21 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка птицы полностью
+//Отрисовка птицы полностью
 void CBird::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
@@ -98,9 +94,8 @@ void CBird::Draw(HDC hdc, RECT& paintArea)
     DrawBird(hdc);
     MoveWings(hdc);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Перерисовка персонажа в новых координатах
+//Перерисовка персонажа в новых координатах
 void CBird::Redraw()
 {
     prevBirdRect = birdRect;
@@ -113,8 +108,8 @@ void CBird::Redraw()
     InvalidateRect(CConfig::Hwnd, &prevBirdRect, TRUE);
     InvalidateRect(CConfig::Hwnd, &birdRect, TRUE);
 }
-// -----------------------------------------------------------------------------------
 
+//Смещение объекта со временем
 void CBird::Move(float maxSpeed)
 {
     if (flyingSpeed == 0.0f)
@@ -137,7 +132,7 @@ void CBird::Move(float maxSpeed)
         pos_X = 160.0f * CConfig::FSizeScale;
 }
 
-// ------------ Анимация ног при движении вправо
+//Анимация ног при движении вправо
 void CBird::MoveWings(HDC hdc)
 {
     if (static_cast<int>(CConfig::MovingLegsSpeed) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
@@ -154,17 +149,15 @@ void CBird::MoveWings(HDC hdc)
 // -----------------------------------------------------------------------------------
 
 
-
 // ----------------------------- Класс Кактуса (препятствие) ----------------------------------------------
-// ------------ Конструктор
+//Конструктор
 CCactus::CCactus()
     :pos_X(60 * CConfig::SizeScale), pos_Y(150 * CConfig::SizeScale)
 {
 
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка
+//Отрисовка
 void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -214,14 +207,13 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
 
 // ----------------------------- Класс дорога (фоновый задний план) --------------------------------------
 
-// ------------ Конструктор
+//Конструктор
 CRoadLevel::CRoadLevel()
     :pos_X(0), pos_Y(180 * CConfig::SizeScale)
 {
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка всего
+//Отрисовка всего
 void CRoadLevel::Draw(HDC hdc, RECT& paintArea)
 {
     DrawRoad(hdc, paintArea);
@@ -229,9 +221,8 @@ void CRoadLevel::Draw(HDC hdc, RECT& paintArea)
     DrawBump(hdc, paintArea, 40);
     DrawRocks(hdc, paintArea, 10, 15);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка линии дороги
+//Отрисовка линии дороги
 void CRoadLevel::DrawRoad(HDC hdc, RECT& paintArea)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -239,9 +230,8 @@ void CRoadLevel::DrawRoad(HDC hdc, RECT& paintArea)
     //Контур дороги
     Rectangle(hdc, pos_X, pos_Y + 6 * CConfig::SizeScale, pos_X + 200 * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка камней (штрихи ниже дороги)
+//Отрисовка камней (штрихи ниже дороги)
 void CRoadLevel::DrawRocks(HDC hdc, RECT& paintArea, int offset_x, int offset_y)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
@@ -253,9 +243,8 @@ void CRoadLevel::DrawRocks(HDC hdc, RECT& paintArea, int offset_x, int offset_y)
     Rectangle(hdc, pos_X + (10 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_Y + (13 + offset_y) * CConfig::SizeScale, pos_X + (13 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_Y + (15 + offset_y) * CConfig::SizeScale);
     Rectangle(hdc, pos_X + (10 + offset_x) * CConfig::SizeScale, pos_Y + (13 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + (15 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка ямы
+//Отрисовка ямы
 void CRoadLevel::DrawPit(HDC hdc, RECT& paintArea, int offset_x)
 {
     //Яма
@@ -273,9 +262,8 @@ void CRoadLevel::DrawPit(HDC hdc, RECT& paintArea, int offset_x)
     Rectangle(hdc, pos_X + (12 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
     Rectangle(hdc, pos_X + (13 + offset_x) * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale, pos_X + (15 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale);
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка кочки
+//Отрисовка кочки
 void CRoadLevel::DrawBump(HDC hdc, RECT& paintArea, int offset_x)
 {
     //Рисуем пропуски фоновые
@@ -295,18 +283,14 @@ void CRoadLevel::DrawBump(HDC hdc, RECT& paintArea, int offset_x)
 // -----------------------------------------------------------------------------------
 
 
-
-
 // ----------------------------- Класс Облако на заднем плане ----------------------------------------------
-
-// ------------ Конструктор
+//Конструктор
 CCloud::CCloud()
     :pos_X(90 * CConfig::SizeScale), pos_Y(130 * CConfig::SizeScale)
 {
 }
-// -----------------------------------------------------------------------------------
 
-// ------------ Отрисовка основная
+//Отрисовка основная
 void CCloud::Draw(HDC hdc, RECT& paintArea)
 {
     //RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
