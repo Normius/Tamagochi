@@ -25,7 +25,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// TODO: Place code here.
-	CConfig::InitColors(); //Создаём кисть и карандаш для фона
 
 
 	// Initialize global strings
@@ -76,7 +75,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_TAMAGOCHI));
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	//------------------------------------------ Цвет фона окна  ----------------------------------------
-	wcex.hbrBackground = CConfig::backgroundBrush;
+	wcex.hbrBackground = CConfig::backgroundColor.brush;
 	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_TAMAGOCHI);
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -173,28 +172,50 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
-	case WM_KEYDOWN:
+	case WM_KEYDOWN: //Обработка нажатия клавиш
 	{
 		switch (wParam)
 		{
 		case VK_LEFT:
-			return Engine.OnKeyDown(EKeyType::LeftKey);
+			return Engine.OnKey(EKeyType::LeftKey, true);
 
 		case VK_RIGHT:
-			return Engine.OnKeyDown(EKeyType::RightKey);
+			return Engine.OnKey(EKeyType::RightKey, true);
 
 		case VK_DOWN:
-			return Engine.OnKeyDown(EKeyType::DownKey);
+			return Engine.OnKey(EKeyType::DownKey, true);
 
 		case VK_UP:
-			return Engine.OnKeyDown(EKeyType::UpKey);
+			return Engine.OnKey(EKeyType::UpKey, true);
 
 		case VK_SPACE:
-			return Engine.OnKeyDown(EKeyType::SpaceKey);
-
+			return Engine.OnKey(EKeyType::SpaceKey, true);
 		}
+		break;
 	}
-	break;
+
+	case WM_KEYUP: //Обработка отжатия клавиш
+	{
+		switch (wParam)
+		{
+		case VK_LEFT:
+			return Engine.OnKey(EKeyType::LeftKey, false);
+
+		case VK_RIGHT:
+			return Engine.OnKey(EKeyType::RightKey, false);
+
+		case VK_DOWN:
+			return Engine.OnKey(EKeyType::DownKey, false);
+
+		case VK_UP:
+			return Engine.OnKey(EKeyType::UpKey, false);
+
+		case VK_SPACE:
+			return Engine.OnKey(EKeyType::SpaceKey, false);
+		}
+		break;
+	}
+
 
 	case WM_TIMER:
 	{

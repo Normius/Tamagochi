@@ -6,8 +6,8 @@
 #include "Dinosaur.h"
 #include "Config.h"
 
-
-enum EKeyType
+//Перечисление типа клавиш, используемых в игре
+enum class EKeyType
 {
     LeftKey,
     RightKey,
@@ -16,16 +16,16 @@ enum EKeyType
     SpaceKey
 };
 
-enum EGameState
+//Перечисление игровых состояний
+enum class EGameState
 {
-    Starting,
-    Playing,
-    Pause,
-    Gameover,
-    Free
+    StartRunLevel, //Состояние перед началом забега
+    RunLevel, //Забег начался
+    LoseRunLevel, //Проигрыш при столкновении с припятствием
+    FreeMovingLevel //Свободное передвижение влево и вправо
 };
 
-const int TimerId = WM_USER + 1;
+const int TimerId = WM_USER + 1; //ID таймера для работы ф-ции таймера в Main
 
 // ----------------------------- Класс Engine ----------------------------------------------
 class CEngine
@@ -35,21 +35,18 @@ public:
 
     void InitEngine(HWND hwnd);
     void DrawFrame(HDC hdc, RECT& paintArea);
-    int OnKeyDown(EKeyType keyType);
+    int OnKey(EKeyType keyType, bool keyPress);
     int OnTimer();
-
-private:
-    static const int leftBorder = 0; //Границы с учётом отрисовки
-    static const int rightBorder = 800;
-    static const int topBorder = 0;
-    static const int downBorder = 600;
 
     EGameState GameState;
 
+private:
     CDinosaur Dinosaur;
     CCloud Cloud;
     CBird Bird;
     CCactus Cactus;
     CRoadLevel RoadLevel;
+
+
 };
-///////////////////////////////////////////////////////////////////////////////////////////////
+// -----------------------------------------------------------------------------------
