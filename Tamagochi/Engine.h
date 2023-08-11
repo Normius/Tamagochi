@@ -2,10 +2,7 @@
 
 #include <Windows.h>
 
-#include "RoadLevel.h"
-#include "Bird.h"
-#include "Cactus.h"
-#include "Cloud.h"
+#include "BackgroundObjects.h"
 #include "Dinosaur.h"
 #include "Config.h"
 
