@@ -1,9 +1,17 @@
 #include "BackgroundObjects.h"
 
+// ----------------------------- Класс задний фон --------------------------------------
+CBackgroundObjects::CBackgroundObjects()
+    :speed(5.0f)
+{
+}
+// -----------------------------------------------------------------------------------
+
+
 // ----------------------------- Класс птицы (противник) ----------------------------------------------
 //Конструктор
 CBird::CBird()
-    :pos_X(160.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), flyingSpeed(5.0f), upWing(true), birdRect{}, prevBirdRect{}
+    :pos_X(160.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), upWing(true), birdRect{}, prevBirdRect{}
 {
 }
 
@@ -109,29 +117,6 @@ void CBird::Redraw()
     InvalidateRect(CConfig::Hwnd, &birdRect, TRUE);
 }
 
-//Смещение объекта со временем
-void CBird::Move(float maxSpeed)
-{
-    if (flyingSpeed == 0.0f)
-        return;
-
-    //Смещение на небольшие шажки 
-    float restDistance = maxSpeed;
-
-    while (restDistance > 0.0f)
-    {
-        //Сдвиг на небольшой шаг
-        float nextStep = flyingSpeed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
-                                                                     //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-        pos_X -= nextStep;
-
-        restDistance -= CConfig::minShift;
-    }
-
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
-        pos_X = 160.0f * CConfig::FSizeScale;
-}
-
 //Анимация ног при движении вправо
 void CBird::MoveWings(HDC hdc)
 {
@@ -146,13 +131,37 @@ void CBird::MoveWings(HDC hdc)
         DrawDownWing(hdc);
     }
 }
+
+//Смещение объекта со временем
+void CBird::Move(float maxSpeed)
+{
+    if (speed == 0.0f)
+        return;
+
+    //Смещение на небольшие шажки 
+    float restDistance = maxSpeed;
+
+    while (restDistance > 0.0f)
+    {
+        //Сдвиг на небольшой шаг
+        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
+        pos_X -= nextStep;
+
+        restDistance -= CConfig::minShift;
+    }
+
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
+        pos_X = 160.0f * CConfig::FSizeScale;
+}
+
 // -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс Кактуса (препятствие) ----------------------------------------------
 //Конструктор
 CCactus::CCactus()
-    :pos_X(60 * CConfig::SizeScale), pos_Y(150 * CConfig::SizeScale)
+    :pos_X(60.0f * CConfig::FSizeScale), pos_Y(150.0f * CConfig::FSizeScale), cactusRect{ 0 }, prevCactusRect{ 0 }
 {
 
 }
@@ -162,46 +171,87 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
     //Ствол кактуса
-    Rectangle(hdc, pos_X + 8 * CConfig::SizeScale, pos_Y + 2 * CConfig::SizeScale, pos_X + 14 * CConfig::SizeScale, pos_Y + 48 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 10 * CConfig::SizeScale, pos_Y, pos_X + 12 * CConfig::SizeScale, pos_Y + 2 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 48 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 10 * CConfig::SizeScale, pos_y, pos_x + 12 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
 
     //Левая ветка кактуса
-    Rectangle(hdc, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale, pos_X + 8 * CConfig::SizeScale, pos_Y + 31 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X, pos_Y + 15 * CConfig::SizeScale, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale, pos_X + 2 * CConfig::SizeScale, pos_Y + 15 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale, pos_X + 4 * CConfig::SizeScale, pos_Y + 30 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y + 15 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 * CConfig::SizeScale);
 
     //Правая ветка кактуса
-    Rectangle(hdc, pos_X + 14 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 19 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale, pos_X + 22 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 20 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 28 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
 
     //Левая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale, pos_X + 8 * CConfig::SizeScale, pos_Y + 31 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X, pos_Y + 15 - 6 * CConfig::SizeScale, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 13 - 6 * CConfig::SizeScale, pos_X + 2 * CConfig::SizeScale, pos_Y + 15 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale, pos_X + 4 * CConfig::SizeScale, pos_Y + 30 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
 
     //Правая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_X + 14 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 19 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale, pos_X + 22 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 20 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 28 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
 
     //Левая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale, pos_X + 8 * CConfig::SizeScale, pos_Y + 31 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X, pos_Y + 15 - 6 * CConfig::SizeScale, pos_X + 3 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 13 - 6 * CConfig::SizeScale, pos_X + 2 * CConfig::SizeScale, pos_Y + 15 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 1 * CConfig::SizeScale, pos_Y + 29 - 6 * CConfig::SizeScale, pos_X + 4 * CConfig::SizeScale, pos_Y + 30 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
 
     //Правая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_X + 14 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 19 * CConfig::SizeScale, pos_Y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale, pos_X + 22 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 20 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_X + 19 * CConfig::SizeScale, pos_Y + 27 * CConfig::SizeScale, pos_X + 21 * CConfig::SizeScale, pos_Y + 28 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
 }
+
+//Перерисовка персонажа в новых координатах
+void CCactus::Redraw()
+{
+    prevCactusRect = cactusRect;
+
+    cactusRect.left = static_cast<int>(pos_X);
+    cactusRect.top = static_cast<int>(pos_Y);
+    cactusRect.right = cactusRect.left + width * CConfig::SizeScale;
+    cactusRect.bottom = cactusRect.top + (height) * CConfig::SizeScale;
+
+    InvalidateRect(CConfig::Hwnd, &prevCactusRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &cactusRect, TRUE);
+}
+
+//Смещение объекта со временем
+void CCactus::Move(float maxSpeed)
+{
+    if (speed == 0.0f)
+        return;
+
+    //Смещение на небольшие шажки 
+    float restDistance = maxSpeed;
+
+    while (restDistance > 0.0f)
+    {
+        //Сдвиг на небольшой шаг
+        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
+        pos_X -= nextStep;
+
+        restDistance -= CConfig::minShift;
+    }
+
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
+        pos_X = 60.0f * CConfig::FSizeScale;
+}
+
 // -----------------------------------------------------------------------------------
 
 
@@ -209,7 +259,7 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
 
 //Конструктор
 CRoadLevel::CRoadLevel()
-    :pos_X(0), pos_Y(180 * CConfig::SizeScale)
+    :pos_X(0.0f), pos_Y(180.0f * CConfig::FSizeScale), roadRect{ 0 }, prevRoadRect{ 0 }
 {
 }
 
@@ -227,8 +277,11 @@ void CRoadLevel::DrawRoad(HDC hdc, RECT& paintArea)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
     //Контур дороги
-    Rectangle(hdc, pos_X, pos_Y + 6 * CConfig::SizeScale, pos_X + 200 * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y + 6 * CConfig::SizeScale, pos_x + 200 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
 }
 
 //Отрисовка камней (штрихи ниже дороги)
@@ -236,57 +289,103 @@ void CRoadLevel::DrawRocks(HDC hdc, RECT& paintArea, int offset_x, int offset_y)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
     int randomoffsetbetweenrocks_x = 5;
     int randomoffsetbetweenrocks_y = 5;
     //Камни на дороге
-    Rectangle(hdc, pos_X + (10 + offset_x) * CConfig::SizeScale, pos_Y + (13 + offset_y) * CConfig::SizeScale, pos_X + (12 + offset_x) * CConfig::SizeScale, pos_Y + (15 + offset_y) * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (10 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_Y + (13 + offset_y) * CConfig::SizeScale, pos_X + (13 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_Y + (15 + offset_y) * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (10 + offset_x) * CConfig::SizeScale, pos_Y + (13 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + (15 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (10 + offset_x) * CConfig::SizeScale, pos_y + (13 + offset_y) * CConfig::SizeScale, pos_x + (12 + offset_x) * CConfig::SizeScale, pos_y + (15 + offset_y) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (10 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_y + (13 + offset_y) * CConfig::SizeScale, pos_x + (13 + offset_x + randomoffsetbetweenrocks_x) * CConfig::SizeScale, pos_y + (15 + offset_y) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (10 + offset_x) * CConfig::SizeScale, pos_y + (13 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale, pos_x + (14 + offset_x) * CConfig::SizeScale, pos_y + (15 + offset_y + randomoffsetbetweenrocks_y) * CConfig::SizeScale);
 }
 
 //Отрисовка ямы
 void CRoadLevel::DrawPit(HDC hdc, RECT& paintArea, int offset_x)
 {
-    //Яма
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
 
+    //Яма
     //Рисуем пропуски фоновые
     CConfig::backgroundColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_X + (1 + offset_x) * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (1 + offset_x) * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale, pos_x + (13 + offset_x) * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
 
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_X + offset_x * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale, pos_X + (2 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (1 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale, pos_X + (3 + offset_x) * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (2 + offset_x) * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale, pos_X + (13 + offset_x) * CConfig::SizeScale, pos_Y + 10 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (12 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (13 + offset_x) * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale, pos_X + (15 + offset_x) * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + offset_x * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + (2 + offset_x) * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (1 + offset_x) * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + (3 + offset_x) * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (2 + offset_x) * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + (12 + offset_x) * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (11 + offset_x) * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + (13 + offset_x) * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (12 + offset_x) * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + (14 + offset_x) * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
 }
 
 //Отрисовка кочки
 void CRoadLevel::DrawBump(HDC hdc, RECT& paintArea, int offset_x)
 {
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
     //Рисуем пропуски фоновые
     CConfig::backgroundColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_X + (2 + offset_x) * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (2 + offset_x) * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale, pos_x + (14 + offset_x) * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
 
     //Кочка
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_X + (1 + offset_x) * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale, pos_X + (3 + offset_x) * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (2 + offset_x) * CConfig::SizeScale, pos_Y + 4 * CConfig::SizeScale, pos_X + (4 + offset_x) * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (3 + offset_x) * CConfig::SizeScale, pos_Y + 3 * CConfig::SizeScale, pos_X + (13 + offset_x) * CConfig::SizeScale, pos_Y + 4 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (12 + offset_x) * CConfig::SizeScale, pos_Y + 4 * CConfig::SizeScale, pos_X + (14 + offset_x) * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + (13 + offset_x) * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale, pos_X + (15 + offset_x) * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (1 + offset_x) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + (3 + offset_x) * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (2 + offset_x) * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + (4 + offset_x) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (3 + offset_x) * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + (13 + offset_x) * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (12 + offset_x) * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + (14 + offset_x) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (13 + offset_x) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + (15 + offset_x) * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
 }
+
+//Перерисовка персонажа в новых координатах
+void CRoadLevel::Redraw()
+{
+    prevRoadRect = roadRect;
+
+    roadRect.left = static_cast<int>(pos_X);
+    roadRect.top = static_cast<int>(pos_Y);
+    roadRect.right = roadRect.left + width * CConfig::SizeScale;
+    roadRect.bottom = roadRect.top + (height)*CConfig::SizeScale;
+
+    InvalidateRect(CConfig::Hwnd, &prevRoadRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &roadRect, TRUE);
+}
+
+//Смещение объекта со временем
+void CRoadLevel::Move(float maxSpeed)
+{
+    if (speed == 0.0f)
+        return;
+
+    //Смещение на небольшие шажки 
+    float restDistance = maxSpeed;
+
+    while (restDistance > 0.0f)
+    {
+        //Сдвиг на небольшой шаг
+        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
+        pos_X -= nextStep;
+
+        restDistance -= CConfig::minShift;
+    }
+
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
+        pos_X = 0.0f * CConfig::FSizeScale;
+}
+
 // -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс Облако на заднем плане ----------------------------------------------
 //Конструктор
 CCloud::CCloud()
-    :pos_X(90 * CConfig::SizeScale), pos_Y(130 * CConfig::SizeScale)
+    :pos_X(90.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), cloudRect{ 0 }, prevCloudRect{ 0 }
 {
 }
 
@@ -300,39 +399,80 @@ void CCloud::Draw(HDC hdc, RECT& paintArea)
     //    return;
     //}
 
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
     CConfig::secondPaleColor.SelectColor(hdc);
 
     //Тело
-    Rectangle(hdc, pos_X, pos_Y, pos_X + 58 * CConfig::SizeScale, pos_Y + 16 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y, pos_x + 58 * CConfig::SizeScale, pos_y + 16 * CConfig::SizeScale);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Верхние края
-    Rectangle(hdc, pos_X, pos_Y, pos_X + 6 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 6 * CConfig::SizeScale, pos_Y, pos_X + 16 * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 16 * CConfig::SizeScale, pos_Y, pos_X + 20 * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 20 * CConfig::SizeScale, pos_Y, pos_X + 23 * CConfig::SizeScale, pos_Y + 4 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 23 * CConfig::SizeScale, pos_Y, pos_X + 25 * CConfig::SizeScale, pos_Y + 3 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y, pos_x + 6 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 6 * CConfig::SizeScale, pos_y, pos_x + 16 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 16 * CConfig::SizeScale, pos_y, pos_x + 20 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y, pos_x + 23 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y, pos_x + 25 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
 
-    Rectangle(hdc, pos_X + 38 * CConfig::SizeScale, pos_Y, pos_X + 40 * CConfig::SizeScale, pos_Y + 2 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 40 * CConfig::SizeScale, pos_Y, pos_X + 43 * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 43 * CConfig::SizeScale, pos_Y, pos_X + 47 * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 47 * CConfig::SizeScale, pos_Y, pos_X + 49 * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 49 * CConfig::SizeScale, pos_Y, pos_X + 52 * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 51 * CConfig::SizeScale, pos_Y, pos_X + 55 * CConfig::SizeScale, pos_Y + 11 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 55 * CConfig::SizeScale, pos_Y, pos_X + 58 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 38 * CConfig::SizeScale, pos_y, pos_x + 40 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 40 * CConfig::SizeScale, pos_y, pos_x + 43 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 43 * CConfig::SizeScale, pos_y, pos_x + 47 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 47 * CConfig::SizeScale, pos_y, pos_x + 49 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 49 * CConfig::SizeScale, pos_y, pos_x + 52 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 51 * CConfig::SizeScale, pos_y, pos_x + 55 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 55 * CConfig::SizeScale, pos_y, pos_x + 58 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
 
     //Внутри облака
-    Rectangle(hdc, pos_X + 2 * CConfig::SizeScale, pos_Y + 13 * CConfig::SizeScale, pos_X + 54 * CConfig::SizeScale, pos_Y + 14 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 8 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale, pos_X + 49 * CConfig::SizeScale, pos_Y + 14 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 42 * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale, pos_X + 46 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 39 * CConfig::SizeScale, pos_Y + 7 * CConfig::SizeScale, pos_X + 42 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 35 * CConfig::SizeScale, pos_Y + 8 * CConfig::SizeScale, pos_X + 39 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 28 * CConfig::SizeScale, pos_Y + 2 * CConfig::SizeScale, pos_X + 35 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 35 * CConfig::SizeScale, pos_Y + 3 * CConfig::SizeScale, pos_X + 37 * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 22 * CConfig::SizeScale, pos_Y + 6 * CConfig::SizeScale, pos_X + 23 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 23 * CConfig::SizeScale, pos_Y + 5 * CConfig::SizeScale, pos_X + 25 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_X + 25 * CConfig::SizeScale, pos_Y + 4 * CConfig::SizeScale, pos_X + 28 * CConfig::SizeScale, pos_Y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 54 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + 49 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 42 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 39 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 42 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 35 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + 39 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 28 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 35 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 35 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 37 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
 }
+
+//Перерисовка персонажа в новых координатах
+void CCloud::Redraw()
+{
+    prevCloudRect = cloudRect;
+
+    cloudRect.left = static_cast<int>(pos_X);
+    cloudRect.top = static_cast<int>(pos_Y);
+    cloudRect.right = cloudRect.left + width * CConfig::SizeScale;
+    cloudRect.bottom = cloudRect.top + (height)*CConfig::SizeScale;
+
+    InvalidateRect(CConfig::Hwnd, &prevCloudRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &cloudRect, TRUE);
+}
+
+//Смещение объекта со временем
+void CCloud::Move(float maxSpeed)
+{
+    if (speed == 0.0f)
+        return;
+
+    //Смещение на небольшие шажки 
+    float restDistance = maxSpeed;
+
+    while (restDistance > 0.0f)
+    {
+        //Сдвиг на небольшой шаг
+        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
+        pos_X -= nextStep;
+
+        restDistance -= CConfig::minShift;
+    }
+
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
+        pos_X = 90.0f * CConfig::FSizeScale;
+}
+
 // -----------------------------------------------------------------------------------

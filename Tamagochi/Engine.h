@@ -47,6 +47,7 @@ private:
     CCactus Cactus;
     CRoadLevel RoadLevel;
 
+    CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects];
 
 };
 // -----------------------------------------------------------------------------------

@@ -17,6 +17,13 @@ void CEngine::InitEngine(HWND hwnd)
     Dinosaur.Redraw();
 
     SetTimer(CConfig::Hwnd, TimerId, 1000 / CConfig::FPS, 0);
+
+    memset(BackgroundObjects, 0, sizeof(BackgroundObjects));
+
+    BackgroundObjects[0] = &Cloud;
+    BackgroundObjects[1] = &Bird;
+    BackgroundObjects[2] = &Cactus;
+    BackgroundObjects[3] = &RoadLevel;
 }
 // -----------------------------------------------------------------------------------
 
@@ -79,10 +86,17 @@ int CEngine::OnTimer()
 
     Dinosaur.MoveHorizontal(Dinosaur.MaxSpeed_Y);
 
-    Bird.Move(Dinosaur.MaxSpeed_Y);
+    for (int i = 0; i < 4; i++)
+    {
+        if (BackgroundObjects[i] != 0)
+            BackgroundObjects[i]->Move(BackgroundObjects[i]->speed);
+    }
 
     Bird.Redraw();
     Dinosaur.Redraw();
+    Cloud.Redraw();
+    RoadLevel.Redraw();
+    Cactus.Redraw();
 
     return 0;
 }

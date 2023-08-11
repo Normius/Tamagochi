@@ -7,8 +7,13 @@
 class CBackgroundObjects
 {
 public:
-    //virtual void Move();
+    CBackgroundObjects();
+
+    virtual void Move(float maxSpeed) = 0; //TO DO: !!!Сделать один метод с параметрами X, Y и startXpos для обнуления положения объектов!!!
+
+    float speed;
 };
+// -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс Птица (препятствие, противник) ----------------------------------------------
@@ -39,8 +44,6 @@ private:
 
     int height;
 
-    float flyingSpeed;
-
     bool upWing;
 
     RECT birdRect;
@@ -54,14 +57,18 @@ class CCactus : public CBackgroundObjects
 {
 public:
     CCactus();
-
+    void Move(float maxSpeed) override;
     void Draw(HDC hdc, RECT& paintArea);
+    void Redraw();
 
-    int pos_X;
-    int pos_Y;
+    float pos_X;
+    float pos_Y;
+private:
+    const int height = 48;
+    const int width = 22;
 
-    //RECT cloudRect{};
-    //RECT prevCloudRect{};
+    RECT cactusRect;
+    RECT prevCactusRect;
 };
 // -----------------------------------------------------------------------------------
 
@@ -71,17 +78,24 @@ class CRoadLevel : public CBackgroundObjects
 {
 public:
     CRoadLevel();
-
+    void Move(float maxSpeed) override;
     void Draw(HDC hdc, RECT& paintArea);
+    void Redraw();
 
-    int pos_X;
-    int pos_Y;
+    float pos_X;
+    float pos_Y;
 
 private:
     void DrawRoad(HDC hdc, RECT& paintArea);
     void DrawPit(HDC hdc, RECT& paintArea, int offset_x);
     void DrawBump(HDC hdc, RECT& paintArea, int offset_x);
     void DrawRocks(HDC hdc, RECT& paintArea, int offset_x, int offset_y);
+
+    const int height = 4; //высота ямы и глубина кочки
+    const int width = 14; //ширина ямы и кочки
+
+    RECT roadRect;
+    RECT prevRoadRect;
 };
 // -----------------------------------------------------------------------------------
 
@@ -91,13 +105,18 @@ class CCloud : public CBackgroundObjects
 {
 public:
     CCloud();
-
+    void Move(float maxSpeed) override;
     void Draw(HDC hdc, RECT& paintArea);
+    void Redraw();
 
-    int pos_X;
-    int pos_Y;
+    float pos_X;
+    float pos_Y;
 
-    //RECT cloudRect{};
-    //RECT prevCloudRect{};
+private:
+    const int height = 16;
+    const int width = 58;
+
+    RECT cloudRect;
+    RECT prevCloudRect;
 };
 // -----------------------------------------------------------------------------------

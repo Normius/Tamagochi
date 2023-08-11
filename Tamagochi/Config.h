@@ -40,5 +40,7 @@ public:
 	static const CColor backgroundColor, mainBrightColor, secondPaleColor;
 
 	static HWND Hwnd;
+
+	static const int MaxBackgroundObjects = 10;
 };
 // -----------------------------------------------------------------------------------
