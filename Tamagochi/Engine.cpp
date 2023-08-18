@@ -4,7 +4,7 @@
 
 // ------------ Конструктор
 CEngine::CEngine()
-    :GameState(EGameState::FreeMovingLevel)
+    :GameState(EGameState::FreeMovingLevel), BackgroundObjects{ 0 }
 {
 }
 // -----------------------------------------------------------------------------------
@@ -14,13 +14,34 @@ void CEngine::InitEngine(HWND hwnd)
 {
     CConfig::Hwnd = hwnd;
 
+    SYSTEMTIME systemTime; //струткура для хранения системеного времени
+    GetSystemTime(&systemTime); //получаем текущее системное время и сохраняем
+
+    srand(systemTime.wMilliseconds); //устанавливаем случайный рандом в зависимости от текущего значения миллесекунд
+
+    int CloudsCount = CConfig::GetRandom(1, 4);
+
+    for (int i = 0; i < CloudsCount; ++i)
+    {
+        Clouds[i].visible = true;
+        Clouds[i].Init();
+    }
+
+    for (int i = 0; i < CloudsCount; ++i)
+    {
+        Clouds[i].Redraw();
+    }
+
     Dinosaur.Redraw();
+    Bird.Redraw();
+    RoadLevel.Redraw();
+    Cactus.Redraw();
 
     SetTimer(CConfig::Hwnd, TimerId, 1000 / CConfig::FPS, 0);
 
     memset(BackgroundObjects, 0, sizeof(BackgroundObjects));
 
-    BackgroundObjects[0] = &Cloud;
+    //BackgroundObjects[0] = &Cloud;
     BackgroundObjects[1] = &Bird;
     BackgroundObjects[2] = &Cactus;
     BackgroundObjects[3] = &RoadLevel;
@@ -30,7 +51,16 @@ void CEngine::InitEngine(HWND hwnd)
 // ------------ Отрисовка кадра
 void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
 {
-    Cloud.Draw(hdc, paintArea);
+    //Cloud.Draw(hdc, paintArea, 0, 0);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        if (Clouds[i].visible == true)
+        {
+            Clouds[i].Draw(hdc, paintArea);
+        }
+    }
+
     RoadLevel.Draw(hdc, paintArea);
     Dinosaur.Draw(hdc, paintArea);
     Cactus.Draw(hdc, paintArea);
@@ -86,17 +116,35 @@ int CEngine::OnTimer()
 
     Dinosaur.MoveHorizontal(Dinosaur.MaxSpeed_Y);
 
-    for (int i = 0; i < 4; i++)
+    //Передвигаем все объекты заднего плана
+    for (int i = 1; i < 4; i++)
     {
         if (BackgroundObjects[i] != 0)
-            BackgroundObjects[i]->Move(BackgroundObjects[i]->speed);
+            BackgroundObjects[i]->Move();
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (Clouds[i].visible == true)
+        {
+            Clouds[i].Move();
+        }
     }
 
     Bird.Redraw();
     Dinosaur.Redraw();
-    Cloud.Redraw();
+
+    //Cloud.Redraw();
+
     RoadLevel.Redraw();
     Cactus.Redraw();
+
+    //Ускорение объектов заднего плана
+    //for (int i = 1; i < 4; i++) //Пропускаем индекс = 0, чтобы не ускорять облака
+    //{
+    //    if (BackgroundObjects[i] != 0)
+    //        BackgroundObjects[i]->speed += CConfig::backgroundAcceleration;
+    //}
 
     return 0;
 }

@@ -20,6 +20,7 @@ public:
 class CConfig
 {
 public:
+	static int GetRandom(int minValue, int maxValue);
 
 	static const int leftBorder = 0; //Границы с учётом отрисовки
 	static const int rightBorder = 800;
@@ -31,8 +32,10 @@ public:
 
 	static const float FSizeScale; //Дробный масштаб
 	static const float minShift;
+	static const float backgroundAcceleration;
 
 	static float MovingLegsSpeed;
+
 
 	static int CurrentTimerValue;
 

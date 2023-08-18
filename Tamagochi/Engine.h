@@ -7,7 +7,7 @@
 #include "Config.h"
 
 //Перечисление типа клавиш, используемых в игре
-enum class EKeyType
+enum class EKeyType: unsigned char
 {
     LeftKey,
     RightKey,
@@ -17,7 +17,7 @@ enum class EKeyType
 };
 
 //Перечисление игровых состояний
-enum class EGameState
+enum class EGameState: unsigned char
 {
     StartRunLevel, //Состояние перед началом забега
     RunLevel, //Забег начался
@@ -42,12 +42,12 @@ public:
 
 private:
     CDinosaur Dinosaur;
-    CCloud Cloud;
     CBird Bird;
     CCactus Cactus;
     CRoadLevel RoadLevel;
 
     CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects];
 
+    CCloud Clouds[4];
 };
 // -----------------------------------------------------------------------------------

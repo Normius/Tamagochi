@@ -5,7 +5,7 @@
 
 //TO DO: Возможно объединить эти состояния в одно перечисление
 //Перечисление состояний тела Дино (стоя или в присяде)
-enum class EDinosaurLevelState
+enum class EDinosaurLevelState: unsigned char
 {
     StartRunLevel, //Состояние перед началом забега
     RunLevel, //Забег начался
@@ -13,21 +13,21 @@ enum class EDinosaurLevelState
     FreeMovingLevel //Свободное передвижение влево и вправо
 };
 
-enum class EDinosaurBodyState
+enum class EDinosaurBodyState: unsigned char
 {
     Standing,
     Crawling
 };
 
 //Перечисление состояний направления Дино (влево или вправо)
-enum class EDinosaurDirectionState
+enum class EDinosaurDirectionState: unsigned char
 {
     Right,
     Left,
 };
 
 //Перечисление состояний движения Дино (влево или вправо)
-enum class EDinosaurMovingState
+enum class EDinosaurMovingState: unsigned char
 {
     Stop,
     MovingRight,
@@ -62,6 +62,7 @@ public:
     int width;
     const float MaxSpeed_X = 5.0f;
     const float MaxSpeed_Y = 18.0f;
+    const float startPos_X = 100.0f;
 
     float pos_X;
     float pos_Y;

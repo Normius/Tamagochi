@@ -6,7 +6,7 @@
 CDinosaur::CDinosaur()
     : DinosaurBodyState(EDinosaurBodyState::Standing), DinosaurDirectionState(EDinosaurDirectionState::Right), DinosaurMovingState(EDinosaurMovingState::Stop),
     DinosaurLevelState(EDinosaurLevelState::FreeMovingLevel), leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth),
-    pos_X(0.0f), pos_Y(static_cast<float>(OnGroundPos_Y)), horizontalSpeed(0.0f), verticalSpeed(0.0f), dinoRect{}, prevDinoRect{}
+    pos_X(startPos_X), pos_Y(static_cast<float>(OnGroundPos_Y)), horizontalSpeed(0.0f), verticalSpeed(0.0f), dinoRect{}, prevDinoRect{}
 {
 }
 // -----------------------------------------------------------------------------------

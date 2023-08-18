@@ -9,7 +9,7 @@ class CBackgroundObjects
 public:
     CBackgroundObjects();
 
-    virtual void Move(float maxSpeed) = 0; //TO DO: !!!Сделать один метод с параметрами X, Y и startXpos для обнуления положения объектов!!!
+    virtual void Move() = 0; //TO DO: !!!Сделать один метод с параметрами X, Y и startXpos для обнуления положения объектов!!!
 
     float speed;
 };
@@ -24,11 +24,13 @@ public:
 
     void Draw(HDC hdc, RECT& paintArea);
     void Redraw();
-    void Move(float maxSpeed);
+    void Move() override;
+
+    const float startPos_X = 500.0f;
 
     float pos_X;
     float pos_Y;
-
+    
 private:
     void DrawBird(HDC hdc);
 
@@ -57,12 +59,15 @@ class CCactus : public CBackgroundObjects
 {
 public:
     CCactus();
-    void Move(float maxSpeed) override;
+    void Move() override;
     void Draw(HDC hdc, RECT& paintArea);
     void Redraw();
 
+    const float startPos_X = 300.0f;
+
     float pos_X;
     float pos_Y;
+
 private:
     const int height = 48;
     const int width = 22;
@@ -78,9 +83,11 @@ class CRoadLevel : public CBackgroundObjects
 {
 public:
     CRoadLevel();
-    void Move(float maxSpeed) override;
+    void Move() override;
     void Draw(HDC hdc, RECT& paintArea);
     void Redraw();
+
+    const float startPos_X = 0.0f;
 
     float pos_X;
     float pos_Y;
@@ -105,12 +112,19 @@ class CCloud : public CBackgroundObjects
 {
 public:
     CCloud();
-    void Move(float maxSpeed) override;
+
+    void Move() override;
+
     void Draw(HDC hdc, RECT& paintArea);
     void Redraw();
+    void Init();
+
+    const float startPos_X = 800.0f;
 
     float pos_X;
     float pos_Y;
+
+    bool visible;
 
 private:
     const int height = 16;

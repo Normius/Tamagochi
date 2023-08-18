@@ -1,6 +1,6 @@
 #include "BackgroundObjects.h"
 
-// ----------------------------- Класс задний фон --------------------------------------
+// ----------------------------- Класс задний фон ------------------------------------
 CBackgroundObjects::CBackgroundObjects()
     :speed(5.0f)
 {
@@ -8,10 +8,10 @@ CBackgroundObjects::CBackgroundObjects()
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс птицы (противник) ----------------------------------------------
+// ----------------------------- Класс птицы (противник) -----------------------------
 //Конструктор
 CBird::CBird()
-    :pos_X(160.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), upWing(true), birdRect{}, prevBirdRect{}
+    :pos_X(startPos_X), pos_Y(130.0f), upWing(true), birdRect{}, prevBirdRect{}
 {
 }
 
@@ -133,35 +133,35 @@ void CBird::MoveWings(HDC hdc)
 }
 
 //Смещение объекта со временем
-void CBird::Move(float maxSpeed)
+void CBird::Move()
 {
     if (speed == 0.0f)
         return;
 
     //Смещение на небольшие шажки 
-    float restDistance = maxSpeed;
+    float restDistance = speed;
 
     while (restDistance > 0.0f)
     {
         //Сдвиг на небольшой шаг
-        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
         //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-        pos_X -= nextStep;
+        pos_X -= CConfig::minShift;
 
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
-        pos_X = 160.0f * CConfig::FSizeScale;
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+        pos_X = startPos_X;
 }
 
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Кактуса (препятствие) ----------------------------------------------
+// ----------------------------- Класс Кактуса (препятствие) -------------------------
 //Конструктор
 CCactus::CCactus()
-    :pos_X(60.0f * CConfig::FSizeScale), pos_Y(150.0f * CConfig::FSizeScale), cactusRect{ 0 }, prevCactusRect{ 0 }
+    :pos_X(startPos_X), pos_Y(150.0f), cactusRect{ 0 }, prevCactusRect{ 0 }
 {
 
 }
@@ -230,36 +230,36 @@ void CCactus::Redraw()
 }
 
 //Смещение объекта со временем
-void CCactus::Move(float maxSpeed)
+void CCactus::Move()
 {
     if (speed == 0.0f)
         return;
 
     //Смещение на небольшие шажки 
-    float restDistance = maxSpeed;
+    float restDistance = speed;
 
     while (restDistance > 0.0f)
     {
         //Сдвиг на небольшой шаг
-        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
         //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-        pos_X -= nextStep;
+        pos_X -= CConfig::minShift;
 
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
-        pos_X = 60.0f * CConfig::FSizeScale;
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+        pos_X = startPos_X;
 }
 
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс дорога (фоновый задний план) --------------------------------------
+// ----------------------------- Класс дорога (фоновый задний план) ------------------
 
 //Конструктор
 CRoadLevel::CRoadLevel()
-    :pos_X(0.0f), pos_Y(180.0f * CConfig::FSizeScale), roadRect{ 0 }, prevRoadRect{ 0 }
+    :pos_X(startPos_X), pos_Y(180.0f), roadRect{ 0 }, prevRoadRect{ 0 }
 {
 }
 
@@ -281,7 +281,7 @@ void CRoadLevel::DrawRoad(HDC hdc, RECT& paintArea)
     int pos_y = static_cast<int>(pos_Y);
 
     //Контур дороги
-    Rectangle(hdc, pos_x, pos_y + 6 * CConfig::SizeScale, pos_x + 200 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y + 6 * CConfig::SizeScale, pos_x + CConfig::rightBorder, pos_y + 7 * CConfig::SizeScale);
 }
 
 //Отрисовка камней (штрихи ниже дороги)
@@ -357,35 +357,35 @@ void CRoadLevel::Redraw()
 }
 
 //Смещение объекта со временем
-void CRoadLevel::Move(float maxSpeed)
+void CRoadLevel::Move()
 {
     if (speed == 0.0f)
         return;
 
     //Смещение на небольшие шажки 
-    float restDistance = maxSpeed;
+    float restDistance = speed;
 
     while (restDistance > 0.0f)
     {
         //Сдвиг на небольшой шаг
-        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
+        //float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
         //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-        pos_X -= nextStep;
+        pos_X -= CConfig::minShift;
 
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
-        pos_X = 0.0f * CConfig::FSizeScale;
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+        pos_X = startPos_X;
 }
 
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Облако на заднем плане ----------------------------------------------
+// ----------------------------- Класс Облако на заднем плане ------------------------
 //Конструктор
 CCloud::CCloud()
-    :pos_X(90.0f * CConfig::FSizeScale), pos_Y(130.0f * CConfig::FSizeScale), cloudRect{ 0 }, prevCloudRect{ 0 }
+    :pos_X(0), pos_Y(0), cloudRect{ 0 }, prevCloudRect{ 0 }, visible(false)
 {
 }
 
@@ -446,33 +446,34 @@ void CCloud::Redraw()
     cloudRect.left = static_cast<int>(pos_X);
     cloudRect.top = static_cast<int>(pos_Y);
     cloudRect.right = cloudRect.left + width * CConfig::SizeScale;
-    cloudRect.bottom = cloudRect.top + (height)*CConfig::SizeScale;
+    cloudRect.bottom = cloudRect.top + height * CConfig::SizeScale;
 
     InvalidateRect(CConfig::Hwnd, &prevCloudRect, TRUE);
     InvalidateRect(CConfig::Hwnd, &cloudRect, TRUE);
 }
 
+//Инициализация стартового положения облаков
+void CCloud::Init()
+{
+    float startPos_X = static_cast<float>(CConfig::GetRandom(100, 600));
+    float startPos_Y = static_cast<float>(CConfig::GetRandom(50, 130));
+    pos_X = startPos_X;
+    pos_Y = startPos_Y;
+}
+
 //Смещение объекта со временем
-void CCloud::Move(float maxSpeed)
+void CCloud::Move()
 {
     if (speed == 0.0f)
         return;
 
-    //Смещение на небольшие шажки 
-    float restDistance = maxSpeed;
+    pos_X -= speed;
 
-    while (restDistance > 0.0f)
-    {
-        //Сдвиг на небольшой шаг
-        float nextStep = speed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг.
-        //Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-        pos_X -= nextStep;
+    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+        visible = false;
+        //pos_X = startPos_X;
 
-        restDistance -= CConfig::minShift;
-    }
-
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width))
-        pos_X = 90.0f * CConfig::FSizeScale;
+    Redraw();
 }
 
 // -----------------------------------------------------------------------------------
