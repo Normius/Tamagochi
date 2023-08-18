@@ -11,7 +11,7 @@ CBackgroundObjects::CBackgroundObjects()
 // ----------------------------- Класс птицы (противник) -----------------------------
 //Конструктор
 CBird::CBird()
-    :pos_X(startPos_X), pos_Y(130.0f), upWing(true), birdRect{}, prevBirdRect{}
+    :pos_X(800.0f), pos_Y(130.0f), upWing(true), birdRect{}, prevBirdRect{}, visible(true)
 {
 }
 
@@ -120,7 +120,7 @@ void CBird::Redraw()
 //Анимация ног при движении вправо
 void CBird::MoveWings(HDC hdc)
 {
-    if (static_cast<int>(CConfig::MovingLegsSpeed) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
+    if (static_cast<int>(CConfig::slowCurrentTimerValue) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
     {
         upWing = true;
         DrawUpWing(hdc);
@@ -151,8 +151,9 @@ void CBird::Move()
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
-        pos_X = startPos_X;
+    if (static_cast<int>(pos_X) + speed + width * CConfig::SizeScale <= CConfig::leftBorder)
+        visible = false;
+        //pos_X = startPos_X;
 }
 
 // -----------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ void CBird::Move()
 // ----------------------------- Класс Кактуса (препятствие) -------------------------
 //Конструктор
 CCactus::CCactus()
-    :pos_X(startPos_X), pos_Y(150.0f), cactusRect{ 0 }, prevCactusRect{ 0 }
+    :pos_X(800.0f), pos_Y(150.0f), cactusRect{ 0 }, prevCactusRect{ 0 }, visible(true)
 {
 
 }
@@ -248,8 +249,10 @@ void CCactus::Move()
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
-        pos_X = startPos_X;
+    if (static_cast<int>(pos_X) + speed + width * CConfig::SizeScale <= CConfig::leftBorder)
+        visible = false;
+        //pos_X = startPos_X;
+
 }
 
 // -----------------------------------------------------------------------------------
@@ -259,7 +262,7 @@ void CCactus::Move()
 
 //Конструктор
 CRoadLevel::CRoadLevel()
-    :pos_X(startPos_X), pos_Y(180.0f), roadRect{ 0 }, prevRoadRect{ 0 }
+    :pos_X(0.0f), pos_Y(180.0f), roadRect{ 0 }, prevRoadRect{ 0 }
 {
 }
 
@@ -342,7 +345,7 @@ void CRoadLevel::DrawBump(HDC hdc, RECT& paintArea, int offset_x)
     Rectangle(hdc, pos_x + (13 + offset_x) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + (15 + offset_x) * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
 }
 
-//Перерисовка персонажа в новых координатах
+//Перерисовка в новых координатах
 void CRoadLevel::Redraw()
 {
     prevRoadRect = roadRect;
@@ -375,7 +378,7 @@ void CRoadLevel::Move()
         restDistance -= CConfig::minShift;
     }
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+    if (static_cast<int>(pos_X) + speed + width * CConfig::SizeScale <= CConfig::leftBorder)
         pos_X = startPos_X;
 }
 
@@ -385,7 +388,7 @@ void CRoadLevel::Move()
 // ----------------------------- Класс Облако на заднем плане ------------------------
 //Конструктор
 CCloud::CCloud()
-    :pos_X(0), pos_Y(0), cloudRect{ 0 }, prevCloudRect{ 0 }, visible(false)
+    :pos_X(0.0f), pos_Y(0.0f), cloudRect{ 0 }, prevCloudRect{ 0 }, visible(false)
 {
 }
 
@@ -453,12 +456,17 @@ void CCloud::Redraw()
 }
 
 //Инициализация стартового положения облаков
-void CCloud::Init()
+void CCloud::Init(int x, int y)
 {
-    float startPos_X = static_cast<float>(CConfig::GetRandom(100, 600));
-    float startPos_Y = static_cast<float>(CConfig::GetRandom(50, 130));
-    pos_X = startPos_X;
-    pos_Y = startPos_Y;
+    visible = true;
+
+    //float startPos_X = static_cast<float>(CConfig::GetRandom(100, 700));
+    //float startPos_Y = static_cast<float>(CConfig::GetRandom(20, 120));
+    //pos_X = startPos_X;
+    //pos_Y = startPos_Y;
+
+    pos_X = static_cast<float>(x);
+    pos_Y = static_cast<float>(y);
 }
 
 //Смещение объекта со временем
@@ -469,7 +477,7 @@ void CCloud::Move()
 
     pos_X -= speed;
 
-    if (static_cast<int>(pos_X) <= (CConfig::leftBorder - width * CConfig::SizeScale))
+    if (static_cast<int>(pos_X) + speed + width * CConfig::SizeScale <= CConfig::leftBorder)
         visible = false;
         //pos_X = startPos_X;
 

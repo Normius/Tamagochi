@@ -4,7 +4,7 @@
 
 // ------------ Конструктор
 CEngine::CEngine()
-    :GameState(EGameState::FreeMovingLevel), BackgroundObjects{ 0 }
+    :GameState(EGameState::FreeMovingLevel), BackgroundObjects{ 0 }, lastCloudTimerDisappear(0), newCloudTimerDelay(0)
 {
 }
 // -----------------------------------------------------------------------------------
@@ -14,22 +14,26 @@ void CEngine::InitEngine(HWND hwnd)
 {
     CConfig::Hwnd = hwnd;
 
-    SYSTEMTIME systemTime; //струткура для хранения системеного времени
-    GetSystemTime(&systemTime); //получаем текущее системное время и сохраняем
+    SYSTEMTIME systemTime; //Струткура для хранения системеного времени
+    GetSystemTime(&systemTime); //Получаем текущее системное время и сохраняем
 
-    srand(systemTime.wMilliseconds); //устанавливаем случайный рандом в зависимости от текущего значения миллесекунд
+    srand(systemTime.wMilliseconds); //Устанавливаем случайный рандом в зависимости от текущего значения миллесекунд
 
-    int CloudsCount = CConfig::GetRandom(1, 4);
+    int startCloudsCount = CConfig::GetRandom(1, 4); //Задаём стартовое количество облаков
 
-    for (int i = 0; i < CloudsCount; ++i)
+    //Отрисовываем стартовые облака
+    for (int i = 0; i < startCloudsCount; ++i)
     {
-        Clouds[i].visible = true;
-        Clouds[i].Init();
+        int x = CConfig::GetRandom(100, 700);
+        int y = CConfig::GetRandom(20, 120);
+
+        Clouds[i].Init(x, y);
     }
 
-    for (int i = 0; i < CloudsCount; ++i)
+    for (int i = 0; i < startCloudsCount; ++i)
     {
-        Clouds[i].Redraw();
+        if (Clouds[i].visible == true)
+            Clouds[i].Redraw();
     }
 
     Dinosaur.Redraw();
@@ -39,7 +43,7 @@ void CEngine::InitEngine(HWND hwnd)
 
     SetTimer(CConfig::Hwnd, TimerId, 1000 / CConfig::FPS, 0);
 
-    memset(BackgroundObjects, 0, sizeof(BackgroundObjects));
+    memset(BackgroundObjects, 0, sizeof(BackgroundObjects)); //Обнуляем указатели в массиве
 
     //BackgroundObjects[0] = &Cloud;
     BackgroundObjects[1] = &Bird;
@@ -56,9 +60,7 @@ void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
     for (int i = 0; i < 4; ++i)
     {
         if (Clouds[i].visible == true)
-        {
             Clouds[i].Draw(hdc, paintArea);
-        }
     }
 
     RoadLevel.Draw(hdc, paintArea);
@@ -108,9 +110,9 @@ int CEngine::OnKey(EKeyType keyType, bool keyPressed) //keyPressed == true (на
 // ------------ Метод для обработки действий по таймеру
 int CEngine::OnTimer()
 {
-    ++CConfig::CurrentTimerValue;
+    ++CConfig::currentTimerValue; //значение
 
-    CConfig::MovingLegsSpeed += 0.5f;
+    CConfig::slowCurrentTimerValue += 0.5f;
 
     Dinosaur.MoveVertical(Dinosaur.MaxSpeed_Y);
 
@@ -123,28 +125,44 @@ int CEngine::OnTimer()
             BackgroundObjects[i]->Move();
     }
 
-    for (int i = 0; i < 4; i++)
+    //TO DO: !!!Логика для облака, возможно создать метод и перенести в класс облака и вызывать здесь в цикле этот метод
+
+    newCloudTimerDelay = CConfig::FPS/2 * CConfig::GetRandom(1, 8); //Случайное время до появления нового облака
+    //Отрисовываем новые облака
+    if (lastCloudTimerDisappear + newCloudTimerDelay <= CConfig::currentTimerValue) //Отрисовываем новое облако только через некоторую временную паузу
+    {
+        lastCloudTimerDisappear = CConfig::currentTimerValue + newCloudTimerDelay; //Обновляем время последнего исчезновения облака
+
+        for (int i = 0; i < CConfig::MaxClouds; ++i) //Перебираем все облака, находим ушедшее за экран и отрисовываем его
+        {
+            if (Clouds[i].visible == false)
+            {
+                int y = CConfig::GetRandom(40, 130);
+                Clouds[i].Init(CConfig::rightBorder, y);
+                break;
+            }
+        }
+    }
+
+    //Передвигаем облака
+    for (int i = 0; i < CConfig::MaxClouds; i++)
     {
         if (Clouds[i].visible == true)
-        {
             Clouds[i].Move();
-        }
     }
 
     Bird.Redraw();
     Dinosaur.Redraw();
 
-    //Cloud.Redraw();
-
     RoadLevel.Redraw();
     Cactus.Redraw();
 
     //Ускорение объектов заднего плана
-    //for (int i = 1; i < 4; i++) //Пропускаем индекс = 0, чтобы не ускорять облака
-    //{
-    //    if (BackgroundObjects[i] != 0)
-    //        BackgroundObjects[i]->speed += CConfig::backgroundAcceleration;
-    //}
+    for (int i = 1; i < 4; i++) //Пропускаем индекс = 0, чтобы не ускорять облака
+    {
+        if (BackgroundObjects[i] != 0)
+            BackgroundObjects[i]->speed += CConfig::backgroundAcceleration;
+    }
 
     return 0;
 }

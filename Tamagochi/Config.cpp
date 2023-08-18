@@ -31,10 +31,10 @@ const CColor CConfig::secondPaleColor(60, 75, 67);
 
 const float CConfig::FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
 const float CConfig::minShift = 1.0f;
-const float CConfig::backgroundAcceleration = 0.05f;
+const float CConfig::backgroundAcceleration = 0.025f;
 
-float CConfig::MovingLegsSpeed = 0.0f;
+float CConfig::slowCurrentTimerValue = 0.0f;
 
-int CConfig::CurrentTimerValue = 0;
+int CConfig::currentTimerValue = 0;
 
 HWND CConfig::Hwnd;

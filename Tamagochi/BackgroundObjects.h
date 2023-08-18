@@ -30,6 +30,8 @@ public:
 
     float pos_X;
     float pos_Y;
+
+    bool visible;
     
 private:
     void DrawBird(HDC hdc);
@@ -67,6 +69,8 @@ public:
 
     float pos_X;
     float pos_Y;
+
+    bool visible;
 
 private:
     const int height = 48;
@@ -117,7 +121,9 @@ public:
 
     void Draw(HDC hdc, RECT& paintArea);
     void Redraw();
-    void Init();
+    void Init(int x, int y);
+
+    const int width = 58;
 
     const float startPos_X = 800.0f;
 
@@ -128,7 +134,7 @@ public:
 
 private:
     const int height = 16;
-    const int width = 58;
+    
 
     RECT cloudRect;
     RECT prevCloudRect;

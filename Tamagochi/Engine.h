@@ -38,6 +38,9 @@ public:
     int OnKey(EKeyType keyType, bool keyPress);
     int OnTimer();
 
+    int lastCloudTimerDisappear;
+    int newCloudTimerDelay;
+
     EGameState GameState;
 
 private:
@@ -48,6 +51,6 @@ private:
 
     CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects];
 
-    CCloud Clouds[4];
+    CCloud Clouds[CConfig::MaxClouds];
 };
 // -----------------------------------------------------------------------------------

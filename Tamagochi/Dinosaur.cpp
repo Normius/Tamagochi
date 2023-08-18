@@ -540,7 +540,7 @@ void CDinosaur::DrawLeftCrawling(HDC hdc)
 // ------------ Анимация ног при движении вправо
 void CDinosaur::MoveLegsRight(HDC hdc)
 {
-    if (static_cast<int>(CConfig::MovingLegsSpeed) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
+    if (static_cast<int>(CConfig::slowCurrentTimerValue) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
     {
         DrawRightFirstStep(hdc);
 
@@ -555,7 +555,7 @@ void CDinosaur::MoveLegsRight(HDC hdc)
 // ------------ Анимация ног при движении вправо
 void CDinosaur::MoveLegsLeft(HDC hdc)
 {
-    if (static_cast<int>(CConfig::MovingLegsSpeed) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой
+    if (static_cast<int>(CConfig::slowCurrentTimerValue) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой
     {
         DrawLeftFirstStep(hdc);
 

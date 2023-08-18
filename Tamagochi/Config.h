@@ -34,10 +34,10 @@ public:
 	static const float minShift;
 	static const float backgroundAcceleration;
 
-	static float MovingLegsSpeed;
+	static float slowCurrentTimerValue;
 
 
-	static int CurrentTimerValue;
+	static int currentTimerValue;
 
 
 	static const CColor backgroundColor, mainBrightColor, secondPaleColor;
@@ -45,5 +45,6 @@ public:
 	static HWND Hwnd;
 
 	static const int MaxBackgroundObjects = 10;
+	static const int MaxClouds = 4;
 };
 // -----------------------------------------------------------------------------------
