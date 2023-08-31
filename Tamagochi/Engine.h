@@ -37,20 +37,35 @@ public:
     void DrawFrame(HDC hdc, RECT& paintArea);
     int OnKey(EKeyType keyType, bool keyPress);
     int OnTimer();
+    //bool CheckHit(float movingObjectPos_x, float movingObjectPos_y);
+    float GetMaxSpeed();
 
     int lastCloudTimerDisappear;
     int newCloudTimerDelay;
+
+    int lastCollisionObjectTimerDisappear;
+    int newCollisionObjectTimerDelay;
+
+    int lastRoadBumpTimerDisappear;
+    int newRoadBumpTimerDelay;
+
+    float objectRestDistance;
 
     EGameState GameState;
 
 private:
     CDinosaur Dinosaur;
+
     CBird Bird;
-    CCactus Cactus;
-    CRoadLevel RoadLevel;
+    CCactus Cactuses[CConfig::MaxCactuses]; //Массив кактусов
+    CCollisionObjects* CollisionObjects[CConfig::MaxCollisionObjects]; //Массив указателей на объекты заднего плана с столкновениями(кактусы и птица)
 
-    CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects];
-
-    CCloud Clouds[CConfig::MaxClouds];
+    CRoadLine RoadLine;
+    CRoadStones RoadStones[CConfig::MaxRoadStones];
+    CRoadBump RoadBumps[CConfig::MaxRoadBumps];
+    CCloud Clouds[CConfig::MaxClouds]; //Массив облаков
+    
+    //CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects]; //Массив указателей на объекты заднего плана без столкновений(облака и дорога)
+    
 };
 // -----------------------------------------------------------------------------------

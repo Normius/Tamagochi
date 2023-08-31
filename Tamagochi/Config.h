@@ -33,18 +33,24 @@ public:
 	static const float FSizeScale; //Дробный масштаб
 	static const float minShift;
 	static const float backgroundAcceleration;
+	static const float DinosaurConstPos_X;
 
-	static float slowCurrentTimerValue;
+	static float slowCurrentFrameValue; //Текущее значение кадра от начала игры с замедлением в 2 раза (+1 каждые 2 кадра). Используется для замедления анимации крыльев птицы и шагов Дино
 
-
-	static int currentTimerValue;
-
+	static unsigned int currentFrameValue; //Текущее значение кадра от начала игры
 
 	static const CColor backgroundColor, mainBrightColor, secondPaleColor;
 
 	static HWND Hwnd;
 
-	static const int MaxBackgroundObjects = 10;
 	static const int MaxClouds = 4;
+	static const int MaxRoadStones = 2; //Количество маленьких камней на дороге
+	static const int MaxRoadBumps = 2;
+	static const int MaxRoadObjects = 1;
+	static const int MaxBackgroundObjects = MaxClouds + MaxRoadObjects + MaxRoadStones + MaxRoadBumps;
+
+	static const int MaxCactuses = 2;
+	static const int MaxBirds = 1;
+	static const int MaxCollisionObjects = MaxCactuses + MaxBirds; //(Всего создано 3 объекта, с которыми можно столкнуться (2 кактуса и 1 птица). Одновременно могут появится 2 из этих объектов
 };
 // -----------------------------------------------------------------------------------

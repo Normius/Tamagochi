@@ -45,33 +45,39 @@ public:
     void MoveLegsRight(HDC hdc);
     void MoveLegsLeft(HDC hdc);
     void SetBodyState(EDinosaurBodyState state);
+    void CorrectVerticalEdgePosition();
     void MoveVertical(float maxSpeed);
+    void CorrectHorizontalEdgePosition();
     void MoveHorizontal(float maxSpeed);
     void CheckHorizontalDirection(bool leftDirection, bool keyPress);
     void Jump();
-
+    void DrawRightEye(HDC hdc);
+    static int count;
     static const int StandingHeight = 44;
     static const int CrawlingHeight = 26;
     static const int StandingWidth = 44;
     static const int CrawlingWidth = 60;
-    static const int OnGroundPos_Y = 150 * CConfig::SizeScale;
+    static const int StandingPos_Y = 150 * CConfig::SizeScale; //(Стартовая позиция по Y)
+    static const int CrawlingPos_Y = StandingPos_Y + (StandingHeight - CrawlingHeight); //(Стартовая позиция по Y)
+    static const int OnGroundLegsPos_Y = (StandingPos_Y + StandingHeight) * CConfig::SizeScale; //Позиция ног на земле (раньше было 150 - верх)
 
-    const int MaxJumpHeight = 70;
+    const int MaxJumpHeight = 80; //last 70
 
     int height;
     int width;
-    const float MaxSpeed_X = 5.0f;
-    const float MaxSpeed_Y = 18.0f;
-    const float startPos_X = 100.0f;
+    const float MaxSpeed_X = 10.0f;
+    const float MaxSpeed_Y = 20.0f; //last 18.0f
 
     float pos_X;
     float pos_Y;
     float horizontalSpeed;
     float verticalSpeed;
 
+    bool collision;
+    bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
+
     EDinosaurDirectionState DinosaurDirectionState;
     EDinosaurMovingState DinosaurMovingState;
-    bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
 
 private:
     void ClearRightLegsBackground(HDC hdc);
@@ -82,7 +88,7 @@ private:
     void DrawLeftFirstStep(HDC hdc);
     void DrawRightSecondStep(HDC hdc);
     void DrawLeftSecondStep(HDC hdc);
-    void DrawRightEye(HDC hdc);
+    
     void DrawLeftEye(HDC hdc);
     void DrawRightStanding(HDC hdc);
     void DrawLeftStanding(HDC hdc);

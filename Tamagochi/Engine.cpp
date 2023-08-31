@@ -4,7 +4,8 @@
 
 // ------------ Конструктор
 CEngine::CEngine()
-    :GameState(EGameState::FreeMovingLevel), BackgroundObjects{ 0 }, lastCloudTimerDisappear(0), newCloudTimerDelay(0)
+    :GameState(EGameState::FreeMovingLevel), CollisionObjects{ 0 }, lastCloudTimerDisappear(0), newCloudTimerDelay(CConfig::FPS * 4),
+    lastCollisionObjectTimerDisappear(0), newCollisionObjectTimerDelay(CConfig::FPS * 2), lastRoadBumpTimerDisappear(0), newRoadBumpTimerDelay(CConfig::FPS * 2), objectRestDistance(0.0f)
 {
 }
 // -----------------------------------------------------------------------------------
@@ -14,59 +15,103 @@ void CEngine::InitEngine(HWND hwnd)
 {
     CConfig::Hwnd = hwnd;
 
+    SetTimer(CConfig::Hwnd, TimerId, 1000 / CConfig::FPS, 0);
+
     SYSTEMTIME systemTime; //Струткура для хранения системеного времени
     GetSystemTime(&systemTime); //Получаем текущее системное время и сохраняем
 
     srand(systemTime.wMilliseconds); //Устанавливаем случайный рандом в зависимости от текущего значения миллесекунд
+
+    //Инициализируем указатели
+    /*for (int i = 0; i < CConfig::MaxClouds; ++i)
+    {
+        BackgroundObjects[i] = &Clouds[i];
+    }*/
+
+    //TO DO: Переделать инициализацию массивов, скомпоновать как-то по-другому
+    //BackgroundObjects[CConfig::MaxClouds] = &RoadLine;
+
+    //BackgroundObjects[CConfig::MaxBackgroundObjects - 4] = &RoadStones[0];
+    //BackgroundObjects[CConfig::MaxBackgroundObjects - 3] = &RoadStones[1];
+
+    RoadBumps[0].firstBumpType = true; //Неровность на дороге из 2 кочек
+    RoadBumps[1].firstBumpType = false; //Неровность на дороге из кочки и ямы
+
+    //BackgroundObjects[CConfig::MaxBackgroundObjects - 2] = &RoadBumps[0];
+    //BackgroundObjects[CConfig::MaxBackgroundObjects - 1] = &RoadBumps[1];
+
+    CollisionObjects[0] = &Cactuses[0];
+    CollisionObjects[1] = &Cactuses[1];
+    CollisionObjects[2] = &Bird;
+
+    /*for (int i = 0; i < CConfig::MaxCactuses; ++i)
+    {
+        CollisionObjects[i] = &Cactuses[i];
+    }
+
+    CollisionObjects[CConfig::MaxCollisionObjects - 1] = &Bird;*/
+
 
     int startCloudsCount = CConfig::GetRandom(1, 4); //Задаём стартовое количество облаков
 
     //Отрисовываем стартовые облака
     for (int i = 0; i < startCloudsCount; ++i)
     {
-        int x = CConfig::GetRandom(100, 700);
-        int y = CConfig::GetRandom(20, 120);
-
-        Clouds[i].Init(x, y);
+        Clouds[i].FirstActivate();
     }
 
     for (int i = 0; i < startCloudsCount; ++i)
     {
-        if (Clouds[i].visible == true)
+        if (Clouds[i].active == true)
             Clouds[i].Redraw();
     }
 
+    RoadLine.Activate();
+    RoadStones[0].FirstActivate();
+
     Dinosaur.Redraw();
+    RoadLine.Redraw();
+    RoadStones[0].Redraw();
+
+    Bird.TestActivate(400.0f, 170.0f);
     Bird.Redraw();
-    RoadLevel.Redraw();
-    Cactus.Redraw();
+    //Cactus.Redraw();
 
-    SetTimer(CConfig::Hwnd, TimerId, 1000 / CConfig::FPS, 0);
+    //RoadBumps[1].TestActivate();
+    //RoadBumps[1].Redraw();
 
-    memset(BackgroundObjects, 0, sizeof(BackgroundObjects)); //Обнуляем указатели в массиве
-
-    //BackgroundObjects[0] = &Cloud;
-    BackgroundObjects[1] = &Bird;
-    BackgroundObjects[2] = &Cactus;
-    BackgroundObjects[3] = &RoadLevel;
+    //RoadLevel.Redraw();
+    //Bird.Redraw();
+    //Cactus.Redraw();
 }
 // -----------------------------------------------------------------------------------
 
 // ------------ Отрисовка кадра
 void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
 {
-    //Cloud.Draw(hdc, paintArea, 0, 0);
 
-    for (int i = 0; i < 4; ++i)
+    /*for (int i = 0; i < CConfig::MaxBackgroundObjects; ++i)
     {
-        if (Clouds[i].visible == true)
-            Clouds[i].Draw(hdc, paintArea);
+        BackgroundObjects[i]->Draw(hdc, paintArea);
+    }*/
+
+    for (int i = 0; i < CConfig::CConfig::MaxClouds; ++i)
+    {
+        Clouds[i].Draw(hdc, paintArea);
     }
 
-    RoadLevel.Draw(hdc, paintArea);
+    RoadLine.Draw(hdc, paintArea);
+    RoadStones[0].Draw(hdc, paintArea);
+    RoadStones[1].Draw(hdc, paintArea);
+    RoadBumps[0].Draw(hdc, paintArea);
+    RoadBumps[1].Draw(hdc, paintArea);
+    
+    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+    {
+        CollisionObjects[i]->Draw(hdc, paintArea);
+    }
+
     Dinosaur.Draw(hdc, paintArea);
-    Cactus.Draw(hdc, paintArea);
-    Bird.Draw(hdc, paintArea);
 }
 // -----------------------------------------------------------------------------------
 
@@ -107,62 +152,145 @@ int CEngine::OnKey(EKeyType keyType, bool keyPressed) //keyPressed == true (на
 }
 // -----------------------------------------------------------------------------------
 
+float CEngine::GetMaxSpeed()
+{
+    if (fabs(Dinosaur.verticalSpeed) > CBackgroundObjects::speed)
+        return fabs(Dinosaur.verticalSpeed);
+    else
+        return CBackgroundObjects::speed;
+}
+
 // ------------ Метод для обработки действий по таймеру
 int CEngine::OnTimer()
 {
-    ++CConfig::currentTimerValue; //значение
+    if (GameState == EGameState::LoseRunLevel)
+        return 0;
 
-    CConfig::slowCurrentTimerValue += 0.5f;
+    ++CConfig::currentFrameValue; //значение таймера
 
-    Dinosaur.MoveVertical(Dinosaur.MaxSpeed_Y);
+    CConfig::slowCurrentFrameValue += 0.5f;
 
-    Dinosaur.MoveHorizontal(Dinosaur.MaxSpeed_Y);
-
-    //Передвигаем все объекты заднего плана
-    for (int i = 1; i < 4; i++)
+    //Активируем по таймеру неровности на дороге
+    if (lastRoadBumpTimerDisappear + newRoadBumpTimerDelay == CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
     {
-        if (BackgroundObjects[i] != 0)
-            BackgroundObjects[i]->Move();
+        newRoadBumpTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(1, 4); //Случайное время до появления нового облака
+        lastRoadBumpTimerDisappear = CConfig::currentFrameValue + newRoadBumpTimerDelay; //Обновляем время последнего исчезновения облака
+
+        int bumpObjectIndex = CConfig::GetRandom(0, CConfig::MaxRoadBumps - 1);
+        if (RoadBumps[bumpObjectIndex].active == false)
+        {
+            RoadBumps[bumpObjectIndex].Activate();
+        }
     }
 
-    //TO DO: !!!Логика для облака, возможно создать метод и перенести в класс облака и вызывать здесь в цикле этот метод
-
-    newCloudTimerDelay = CConfig::FPS/2 * CConfig::GetRandom(1, 8); //Случайное время до появления нового облака
-    //Отрисовываем новые облака
-    if (lastCloudTimerDisappear + newCloudTimerDelay <= CConfig::currentTimerValue) //Отрисовываем новое облако только через некоторую временную паузу
+    //Двигаем неровности на дороге
+    if (GameState == EGameState::FreeMovingLevel)
     {
-        lastCloudTimerDisappear = CConfig::currentTimerValue + newCloudTimerDelay; //Обновляем время последнего исчезновения облака
+        for (int i = 0; i < CConfig::MaxRoadBumps; i++)
+        {
+            //RoadBumps[i].Move(CBackgroundObjects::speed);
+        }
+    }
+
+    //Активируем облака по таймеру
+    if (lastCloudTimerDisappear + newCloudTimerDelay == CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
+    {
+        newCloudTimerDelay = CConfig::FPS / 2 * CConfig::GetRandom(2, 4); //Случайное время до появления нового облака
+        lastCloudTimerDisappear = CConfig::currentFrameValue + newCloudTimerDelay; //Обновляем время последнего исчезновения облака
 
         for (int i = 0; i < CConfig::MaxClouds; ++i) //Перебираем все облака, находим ушедшее за экран и отрисовываем его
         {
-            if (Clouds[i].visible == false)
+            if (Clouds[i].active == false)
             {
-                int y = CConfig::GetRandom(40, 130);
-                Clouds[i].Init(CConfig::rightBorder, y);
+                Clouds[i].Activate();
                 break;
             }
         }
     }
 
-    //Передвигаем облака
-    for (int i = 0; i < CConfig::MaxClouds; i++)
+    //Зацикливаем камни (штрихи) на дороге
+    if (RoadStones[0].pos_X <= CConfig::leftBorder && RoadStones[1].active == false)
+        RoadStones[1].Activate();
+    else if (RoadStones[1].pos_X <= CConfig::leftBorder && RoadStones[0].active == false)
+        RoadStones[0].Activate();
+
+    //Двигаем камни (штрихи) на дороге
+    //RoadStones[0].Move(CBackgroundObjects::speed);
+    //RoadStones[1].Move(CBackgroundObjects::speed);
+
+    //Передвигаем облака (объединить в сдвиг BackgroundObjects)
+    if (GameState == EGameState::FreeMovingLevel)
     {
-        if (Clouds[i].visible == true)
-            Clouds[i].Move();
+        for (int i = 0; i < CConfig::MaxClouds; i++)
+        {
+            //Clouds[i].Move(Clouds[i].cloudsSpeed);
+        }
     }
 
-    Bird.Redraw();
+
+
+
+
+
+
+    //Активируем по таймеру случайный объект столкновения
+    if (lastCollisionObjectTimerDisappear + newCollisionObjectTimerDelay == CConfig::currentFrameValue)
+    {
+        newCollisionObjectTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(2, 4);
+        lastCollisionObjectTimerDisappear = CConfig::currentFrameValue + newCollisionObjectTimerDelay;
+
+        int collisionObjectIndex = CConfig::GetRandom(0, CConfig::MaxCollisionObjects - 1);
+
+        if (CollisionObjects[collisionObjectIndex]->CheckActive() == false) //TO DO Если попадают на активный объект, то ничего не отображают, хотя таймер прошёл
+        {
+            CollisionObjects[collisionObjectIndex]->Activate();
+        }
+    }
+
+
+    //Смещение объектов столкновения на небольшие шажки (вытащили из метода Move)
+    float currentMaxObjectsSpeed = GetMaxSpeed();
+    objectRestDistance += currentMaxObjectsSpeed;
+     //Увеличиваем сдвиг при падении, то есть ускоряемся при движении вниз (значение подобрано вручную)
+
+    while (objectRestDistance > 0.0f)
+    {
+        Dinosaur.MoveHorizontal(currentMaxObjectsSpeed);
+        Dinosaur.MoveVertical(currentMaxObjectsSpeed);
+
+        for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+        {
+            if (CollisionObjects[i] != 0)
+            {
+                if (CollisionObjects[i]->CheckHit(Dinosaur.pos_X, Dinosaur.pos_Y, Dinosaur.height, Dinosaur.width) == true)
+                {
+                    GameState = EGameState::LoseRunLevel;
+                    CBackgroundObjects::speed = 0.0f;
+                    Dinosaur.collision = true;
+                    break;
+                }
+
+                //CollisionObjects[i]->Move(currentMaxObjectsSpeed);
+            }
+        }
+        if (Dinosaur.collision == true)
+            break;
+        objectRestDistance -= CConfig::minShift;
+    }
+
+    //Перерисовка (Redraw) объектов столкновения (вытащили из метода Move)
+    for (int i = 0; i <= CConfig::MaxCollisionObjects - 1; ++i)
+    {
+        if (CollisionObjects[i] != 0)
+            CollisionObjects[i]->Redraw();
+    }
+
     Dinosaur.Redraw();
 
-    RoadLevel.Redraw();
-    Cactus.Redraw();
+    if (GameState == EGameState::FreeMovingLevel)
+        CBackgroundObjects::speed += CConfig::backgroundAcceleration;
 
-    //Ускорение объектов заднего плана
-    for (int i = 1; i < 4; i++) //Пропускаем индекс = 0, чтобы не ускорять облака
-    {
-        if (BackgroundObjects[i] != 0)
-            BackgroundObjects[i]->speed += CConfig::backgroundAcceleration;
-    }
+    Dinosaur.verticalSpeed += 2.9f;
 
     return 0;
 }

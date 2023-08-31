@@ -21,7 +21,7 @@ void CColor::SelectColor(HDC hdc) const
 
 // ------------ Вычисляет псевдослучайное число в диапазоне [minValue, .. maxValue]
 int CConfig::GetRandom(int minValue, int maxValue)
-{//123
+{ 
 	return minValue + rand() % (maxValue - minValue + 1);
 }
 
@@ -31,10 +31,11 @@ const CColor CConfig::secondPaleColor(60, 75, 67);
 
 const float CConfig::FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
 const float CConfig::minShift = 1.0f;
-const float CConfig::backgroundAcceleration = 0.025f;
+const float CConfig::backgroundAcceleration = 0.05f;
+const float CConfig::DinosaurConstPos_X = 100.0f;
 
-float CConfig::slowCurrentTimerValue = 0.0f;
+float CConfig::slowCurrentFrameValue = 0.0f;
 
-int CConfig::currentTimerValue = 0;
+unsigned int CConfig::currentFrameValue = 0;
 
 HWND CConfig::Hwnd;
