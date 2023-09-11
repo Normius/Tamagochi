@@ -6,7 +6,8 @@ int CDinosaur::count = 0;
 CDinosaur::CDinosaur()
     : DinosaurBodyState(EDinosaurBodyState::Standing), DinosaurDirectionState(EDinosaurDirectionState::Right), DinosaurMovingState(EDinosaurMovingState::Stop),
     DinosaurLevelState(EDinosaurLevelState::FreeMovingLevel), leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth),
-    pos_X(CConfig::DinosaurConstPos_X), pos_Y(static_cast<float>(StandingPos_Y)), horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), dinoRect{}, prevDinoRect{}
+    pos_X(CConfig::DinosaurConstPos_X), pos_Y(static_cast<float>(StandingPos_Y)), horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), dinoRect{0}, prevDinoRect{0}, 
+    dinoCollisionRects{0}
 {
 }
 // -----------------------------------------------------------------------------------
@@ -96,20 +97,10 @@ void CDinosaur::Redraw()
 {
     prevDinoRect = dinoRect;
 
-    if (DinosaurBodyState == EDinosaurBodyState::Standing) //Прямоугольник для Дино в положении стоя
-    {
-        dinoRect.left = static_cast<int>(pos_X);
-        dinoRect.top = static_cast<int>(pos_Y);
-        dinoRect.right = dinoRect.left + width * CConfig::SizeScale;
-        dinoRect.bottom = dinoRect.top + height * CConfig::SizeScale;
-    }
-    else //Прямоугольник для Дино в положении присяда
-    {
-        dinoRect.left = static_cast<int>(pos_X);
-        dinoRect.top = static_cast<int>(pos_Y);
-        dinoRect.right = dinoRect.left + width * CConfig::SizeScale;
-        dinoRect.bottom = dinoRect.top + height * CConfig::SizeScale;
-    }
+    dinoRect.left = static_cast<int>(pos_X);
+    dinoRect.top = static_cast<int>(pos_Y);
+    dinoRect.right = dinoRect.left + width * CConfig::SizeScale;
+    dinoRect.bottom = dinoRect.top + height * CConfig::SizeScale;
 
     InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
     InvalidateRect(CConfig::Hwnd, &dinoRect, TRUE);
@@ -159,8 +150,6 @@ void CDinosaur::ClearLeftLegsBackground(HDC hdc)
 // ------------ Отрисовка ног стоя
 void CDinosaur::DrawRightStandingLegs(HDC hdc)
 {
-    //ClearRightLegsBackground(hdc);
-
     //Рисуем ноги
     CConfig::mainBrightColor.SelectColor(hdc);
 
@@ -183,8 +172,6 @@ void CDinosaur::DrawRightStandingLegs(HDC hdc)
 // ------------ Отрисовка ног стоя влево 
 void CDinosaur::DrawLeftStandingLegs(HDC hdc)
 {
-    //ClearLeftLegsBackground(hdc);
-
     //Рисуем ноги
     CConfig::mainBrightColor.SelectColor(hdc);
 
@@ -691,7 +678,7 @@ void CDinosaur::MoveHorizontal(float maxSpeed)
 
     pos_X += nextStep;
 
-    CorrectHorizontalEdgePosition();   
+    CorrectHorizontalEdgePosition();
 }
 
 // ------------ Выбор направления движения по горизонтали (обрабатывает нажатия и отжатие клавиш влево-вправо)
@@ -737,6 +724,27 @@ void CDinosaur::Jump()
         verticalSpeed = -MaxSpeed_Y;
 
         Beep(300, 50); //TO DO: Перенести обработку звука в отдельный поток, чтобы не вызывало задержку
+    }
+}
+// -----------------------------------------------------------------------------------
+
+// ------------ Прыжок (начало прыжка, подъём Дино от земли, дальше работает метод MoveHorizontal)  (обрабатывает нажатие пробела)
+void CDinosaur::SetDinoCollisionRects()
+{
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
+    if (DinosaurBodyState == EDinosaurBodyState::Standing)
+    {
+        SetRect(&dinoCollisionRects[0], pos_x + 23 * CConfig::SizeScale, pos_y, pos_x + 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
+        SetRect(&dinoCollisionRects[1], pos_x + 9 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + 27 * CConfig::SizeScale, pos_y + 43 * CConfig::SizeScale);
+        SetRect(&dinoCollisionRects[2], pos_x, pos_y + 13 * CConfig::SizeScale, pos_x + 6 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
+    }
+    else
+    {
+        SetRect(&dinoCollisionRects[0], pos_x + 6 * CConfig::SizeScale, pos_y, pos_x + 59 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
+        SetRect(&dinoCollisionRects[1], pos_x + 11 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + 35 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);
+        SetRect(&dinoCollisionRects[2], pos_x, pos_y, pos_x + 5 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
     }
 }
 // -----------------------------------------------------------------------------------

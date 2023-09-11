@@ -2,7 +2,6 @@
 
 // ----------------------------- Класс Color ----------------------------------------------
 
-// ------------ Конструктор
 CColor::CColor(unsigned char r, unsigned char g, unsigned char b)
 	:R(r), G(g), B(b)
 {
@@ -25,17 +24,13 @@ int CConfig::GetRandom(int minValue, int maxValue)
 	return minValue + rand() % (maxValue - minValue + 1);
 }
 
-const CColor CConfig::backgroundColor(97, 121, 107);
-const CColor CConfig::mainBrightColor(19, 30, 24);
-const CColor CConfig::secondPaleColor(60, 75, 67);
-
-const float CConfig::FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
-const float CConfig::minShift = 1.0f;
-const float CConfig::backgroundAcceleration = 0.05f;
-const float CConfig::DinosaurConstPos_X = 100.0f;
-
 float CConfig::slowCurrentFrameValue = 0.0f;
 
 unsigned int CConfig::currentFrameValue = 0;
 
+const CColor CConfig::backgroundColor(97, 121, 107);
+const CColor CConfig::mainBrightColor(19, 30, 24);
+const CColor CConfig::secondPaleColor(60, 75, 67);
+
 HWND CConfig::Hwnd;
+//static const CColor backgroundColor(0, 0, 0);

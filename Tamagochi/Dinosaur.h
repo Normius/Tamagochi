@@ -52,21 +52,23 @@ public:
     void CheckHorizontalDirection(bool leftDirection, bool keyPress);
     void Jump();
     void DrawRightEye(HDC hdc);
-    static int count;
-    static const int StandingHeight = 44;
-    static const int CrawlingHeight = 26;
-    static const int StandingWidth = 44;
-    static const int CrawlingWidth = 60;
-    static const int StandingPos_Y = 150 * CConfig::SizeScale; //(Стартовая позиция по Y)
-    static const int CrawlingPos_Y = StandingPos_Y + (StandingHeight - CrawlingHeight); //(Стартовая позиция по Y)
-    static const int OnGroundLegsPos_Y = (StandingPos_Y + StandingHeight) * CConfig::SizeScale; //Позиция ног на земле (раньше было 150 - верх)
+    void SetDinoCollisionRects();
 
-    const int MaxJumpHeight = 80; //last 70
+    static int count;
+    static constexpr int StandingHeight = 44;
+    static constexpr int CrawlingHeight = 26;
+    static constexpr int StandingWidth = 44;
+    static constexpr int CrawlingWidth = 60;
+    static constexpr int StandingPos_Y = 150; //(Стартовая позиция по Y)
+    static constexpr int CrawlingPos_Y = StandingPos_Y + (StandingHeight - CrawlingHeight); //(Стартовая позиция по Y)
+    static constexpr int OnGroundLegsPos_Y = (StandingPos_Y + StandingHeight); //Позиция ног на земле (раньше было 150 - верх)
+    static constexpr int MaxJumpHeight = 80; //last 70
+
+    static constexpr float MaxSpeed_X = 10.0f;
+    static constexpr float MaxSpeed_Y = 20.0f; //last 18.0f
 
     int height;
     int width;
-    const float MaxSpeed_X = 10.0f;
-    const float MaxSpeed_Y = 20.0f; //last 18.0f
 
     float pos_X;
     float pos_Y;
@@ -78,6 +80,12 @@ public:
 
     EDinosaurDirectionState DinosaurDirectionState;
     EDinosaurMovingState DinosaurMovingState;
+
+    //RECT dinoCollisionRect_1, dinoCollisionRect_2, dinoCollisionRect_3;
+
+    static constexpr unsigned int collisionRectsAmount = 3;
+    
+    RECT dinoCollisionRects[collisionRectsAmount];
 
 private:
     void ClearRightLegsBackground(HDC hdc);
@@ -100,7 +108,6 @@ private:
     EDinosaurBodyState DinosaurBodyState;
     EDinosaurLevelState DinosaurLevelState;
 
-    RECT dinoRect;
-    RECT prevDinoRect;
+    RECT dinoRect, prevDinoRect;
 };
 // -----------------------------------------------------------------------------------

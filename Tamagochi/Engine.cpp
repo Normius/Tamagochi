@@ -73,9 +73,11 @@ void CEngine::InitEngine(HWND hwnd)
     RoadLine.Redraw();
     RoadStones[0].Redraw();
 
-    Bird.TestActivate(400.0f, 170.0f);
+    Bird.TestActivate(400.0f, Bird.startPos_Y);
     Bird.Redraw();
-    //Cactus.Redraw();
+
+    Cactuses[0].TestActivate(600.0f, CCactus::startPos_Y);
+    Cactuses[0].Redraw();
 
     //RoadBumps[1].TestActivate();
     //RoadBumps[1].Redraw();
@@ -188,7 +190,7 @@ int CEngine::OnTimer()
     {
         for (int i = 0; i < CConfig::MaxRoadBumps; i++)
         {
-            //RoadBumps[i].Move(CBackgroundObjects::speed);
+            RoadBumps[i].Move(CBackgroundObjects::speed);
         }
     }
 
@@ -215,15 +217,15 @@ int CEngine::OnTimer()
         RoadStones[0].Activate();
 
     //Двигаем камни (штрихи) на дороге
-    //RoadStones[0].Move(CBackgroundObjects::speed);
-    //RoadStones[1].Move(CBackgroundObjects::speed);
+    RoadStones[0].Move(CBackgroundObjects::speed);
+    RoadStones[1].Move(CBackgroundObjects::speed);
 
     //Передвигаем облака (объединить в сдвиг BackgroundObjects)
     if (GameState == EGameState::FreeMovingLevel)
     {
         for (int i = 0; i < CConfig::MaxClouds; i++)
         {
-            //Clouds[i].Move(Clouds[i].cloudsSpeed);
+            Clouds[i].Move(Clouds[i].cloudsSpeed);
         }
     }
 
@@ -236,14 +238,22 @@ int CEngine::OnTimer()
     //Активируем по таймеру случайный объект столкновения
     if (lastCollisionObjectTimerDisappear + newCollisionObjectTimerDelay == CConfig::currentFrameValue)
     {
-        newCollisionObjectTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(2, 4);
+        newCollisionObjectTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(1, 4);
         lastCollisionObjectTimerDisappear = CConfig::currentFrameValue + newCollisionObjectTimerDelay;
 
         int collisionObjectIndex = CConfig::GetRandom(0, CConfig::MaxCollisionObjects - 1);
 
-        if (CollisionObjects[collisionObjectIndex]->CheckActive() == false) //TO DO Если попадают на активный объект, то ничего не отображают, хотя таймер прошёл
+        for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
         {
-            CollisionObjects[collisionObjectIndex]->Activate();
+            if (CollisionObjects[collisionObjectIndex]->CheckActive() == false) //TO DO Если попадают на активный объект, то ничего не отображают, хотя таймер прошёл
+            {
+                CollisionObjects[collisionObjectIndex]->Activate();
+                break;
+            }
+
+            ++collisionObjectIndex;
+            if (collisionObjectIndex >= CConfig::MaxCollisionObjects)
+                collisionObjectIndex = 0;
         }
     }
 
@@ -257,12 +267,13 @@ int CEngine::OnTimer()
     {
         Dinosaur.MoveHorizontal(currentMaxObjectsSpeed);
         Dinosaur.MoveVertical(currentMaxObjectsSpeed);
+        Dinosaur.SetDinoCollisionRects();
 
         for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
         {
             if (CollisionObjects[i] != 0)
             {
-                if (CollisionObjects[i]->CheckHit(Dinosaur.pos_X, Dinosaur.pos_Y, Dinosaur.height, Dinosaur.width) == true)
+                if (CollisionObjects[i]->CheckHit(Dinosaur.dinoCollisionRects, Dinosaur.collisionRectsAmount) == true)
                 {
                     GameState = EGameState::LoseRunLevel;
                     CBackgroundObjects::speed = 0.0f;
@@ -270,7 +281,7 @@ int CEngine::OnTimer()
                     break;
                 }
 
-                //CollisionObjects[i]->Move(currentMaxObjectsSpeed);
+                CollisionObjects[i]->Move(currentMaxObjectsSpeed);
             }
         }
         if (Dinosaur.collision == true)
@@ -290,7 +301,8 @@ int CEngine::OnTimer()
     if (GameState == EGameState::FreeMovingLevel)
         CBackgroundObjects::speed += CConfig::backgroundAcceleration;
 
-    Dinosaur.verticalSpeed += 2.9f;
+    if (static_cast<int>(Dinosaur.pos_Y) + Dinosaur.height != Dinosaur.OnGroundLegsPos_Y) //Если Дино на земле, ничего не делаем
+        Dinosaur.verticalSpeed += 2.9f;
 
     return 0;
 }

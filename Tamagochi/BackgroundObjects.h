@@ -21,10 +21,11 @@ public:
 class CCollisionObjects : public CBackgroundObjects
 {
 public:
-    virtual bool CheckHit(float dinoPos_x, float dinopos_Y, int dinoHeight, int dinoWidth) = 0;
+    //virtual bool CheckHit(float dinoPos_x, float dinopos_Y, int dinoHeight, int dinoWidth) = 0;
+    virtual bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) = 0;
     virtual bool CheckActive() = 0;
 
-    static const unsigned int maxCollisionObjectsActive = 2; //Максимальное количество активных объектов (на экране)
+    static constexpr unsigned int maxCollisionObjectsActive = 2; //Максимальное количество активных объектов (на экране)
     static unsigned int CollisionObjectsActiveCount; //Текущее количество активных объектов (на экране)
 };
 // -----------------------------------------------------------------------------------
@@ -39,35 +40,35 @@ public:
     void Redraw() override;
     void Move(float maxSpeed) override;
 
-    bool CheckHit(float dinoPos_x, float dinopos_y, int dinoHeight, int dinoWidth) override;
+    bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
 
     void Activate() override;
 
     void TestActivate(float pos_x, float pos_y);
 
-    const float startPos_X = 800.0f;
-    const float startPos_Y = 130.0f;
+    static constexpr float startPos_X = 800.0f;
+    static constexpr float startPos_Y = 130.0f;
 
     float pos_X;
     float pos_Y;
-
-    float restDistance;
 
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
     
 private:
     void DrawBird(HDC hdc);
-
     void DrawUpWing(HDC hdc);
-
     void DrawDownWing(HDC hdc);
-
     void MoveWings(HDC hdc);
 
-    const int upWingHeight = 23;
-    const int downWingHeight = 27;
-    const int width = 46;
+    static constexpr int upWingHeight = 23;
+    static constexpr int downWingHeight = 27;
+    static constexpr int width = 46;
+
+    static constexpr unsigned int upWingPointsAmount = 22;
+    static constexpr unsigned int downWingPointsAmount = 22;
+
+    HRGN currentBirdRgn;
 
     int height;
 
@@ -90,23 +91,25 @@ public:
     void Activate() override;
     void Redraw() override;
 
-    bool CheckHit(float dinoPos_x, float dinopos_y, int dinoHeight, int dinoWidth) override;
+    bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
 
     void TestActivate(float pos_x, float pos_y);
 
-    const float startPos_X = 800.0f;
-    const float startPos_Y = 150.0f;
+    static constexpr float startPos_X = 800.0f;
+    static constexpr float startPos_Y = 150.0f;
 
     float pos_X;
     float pos_Y;
 
-    float restDistance;
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
 
 private:
-    const int height = 48;
-    const int width = 22;
+    static constexpr int height = 48;
+    static constexpr int width = 22;
+    static constexpr unsigned int cactusPointsAmount = 22;
+
+    HRGN currentCactusRgn;
 
     RECT cactusRect;
     RECT prevCactusRect;
@@ -123,16 +126,15 @@ public:
     void Redraw() override;
     void Activate() override;
 
-    const float pos_X = 0.0f;
-    const float pos_Y = 186.0f;
+    static constexpr float pos_X = 0.0f;
+    static constexpr float pos_Y = 186.0f;
 
-    const int lineHeight = 1; //высота линии дороги
-    const int lineWidth = CConfig::rightBorder; //ширина линии дороги (не домножаем на SizeScale, так как рисуется на ширину всего экрана)
+    static constexpr int lineHeight = 1; //высота линии дороги
+    static constexpr int lineWidth = CConfig::rightBorder; //ширина линии дороги (не домножаем на SizeScale, так как рисуется на ширину всего экрана)
 
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
 
 private:
-
     RECT roadLineRect;
     RECT prevRoadLineRect;
 };
@@ -150,13 +152,13 @@ public:
 
     void FirstActivate();
 
-    const float startPos_X = 10.0f;
-    const float startPos_Y = 188.0f;
-    const float restartPos_X = 800.0f;
-
-    const int stonesHeight = 1; //высота камня дороги
-    const int maxStonesHeight = 7;
-    const int stonesWidth = 10; //ширина камня дороги
+    static constexpr float startPos_X = 10.0f;
+    static constexpr float startPos_Y = 188.0f;
+    static constexpr float restartPos_X = 800.0f;
+    
+    static constexpr int stonesHeight = 1; //высота камня дороги
+    static constexpr int maxStonesHeight = 7;
+    static constexpr int stonesWidth = 10; //ширина камня дороги
 
     float pos_X;
     float pos_Y;
@@ -182,8 +184,8 @@ public:
 
     void TestActivate();
 
-    const float pos_Y = 183.0f;
-    const float restartPos_X = 800.0f;
+    static constexpr float pos_Y = 183.0f;
+    static constexpr float restartPos_X = 800.0f;
 
     float pos_X;
 
@@ -194,8 +196,8 @@ private:
     void DrawPit(HDC hdc, RECT& paintArea, float offset_x);
     void DrawBump(HDC hdc, RECT& paintArea, float offset_x);
 
-    const int height = 7; //высота ямы и глубина кочки
-    const int width = 44; //ширина ямы и кочки
+    static constexpr int height = 7; //высота ямы и глубина кочки
+    static constexpr int width = 44; //ширина ямы и кочки
 
     RECT bumpRect;
     RECT prevBumpRect;
@@ -217,11 +219,11 @@ public:
     
     void FirstActivate();
 
-    const float restartPos_X = 800.0f;
-    const float startPos_Y = 0.0f;
+    static constexpr float restartPos_X = 800.0f;
+    static constexpr float startPos_Y = 0.0f;
 
-    const int width = 58;
-    const int height = 16;
+    static constexpr int width = 58;
+    static constexpr int height = 16;
 
     float pos_X;
     float pos_Y;

@@ -22,18 +22,17 @@ class CConfig
 public:
 	static int GetRandom(int minValue, int maxValue);
 
-	static const int leftBorder = 0; //Границы с учётом отрисовки
-	static const int rightBorder = 800;
-	static const int topBorder = 0;
-	static const int downBorder = 600;
+	static constexpr int leftBorder = 0; //Границы с учётом отрисовки
+	static constexpr int rightBorder = 800;
+	static constexpr int topBorder = 0;
+	static constexpr int downBorder = 600;
+	static constexpr int FPS = 20;
 
-	static const int SizeScale = 1; //Целочисленный масштаб (При изменении масштаба, изменить также дробный FSizeScale)
-	static const int FPS = 20;
-
-	static const float FSizeScale; //Дробный масштаб
-	static const float minShift;
-	static const float backgroundAcceleration;
-	static const float DinosaurConstPos_X;
+	static constexpr int SizeScale = 1; //Целочисленный масштаб (При изменении масштаба, изменить также дробный FSizeScale)
+	static constexpr float FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
+	static constexpr float minShift = 1.0f;
+	static constexpr float backgroundAcceleration = 0.05f;
+	static constexpr float DinosaurConstPos_X = 100.0f;
 
 	static float slowCurrentFrameValue; //Текущее значение кадра от начала игры с замедлением в 2 раза (+1 каждые 2 кадра). Используется для замедления анимации крыльев птицы и шагов Дино
 
@@ -43,14 +42,14 @@ public:
 
 	static HWND Hwnd;
 
-	static const int MaxClouds = 4;
-	static const int MaxRoadStones = 2; //Количество маленьких камней на дороге
-	static const int MaxRoadBumps = 2;
-	static const int MaxRoadObjects = 1;
-	static const int MaxBackgroundObjects = MaxClouds + MaxRoadObjects + MaxRoadStones + MaxRoadBumps;
+	static constexpr int MaxClouds = 4;
+	static constexpr int MaxRoadStones = 2; //Количество маленьких камней на дороге
+	static constexpr int MaxRoadBumps = 2;
+	static constexpr int MaxRoadObjects = 1;
+	static constexpr int MaxBackgroundObjects = MaxClouds + MaxRoadObjects + MaxRoadStones + MaxRoadBumps;
 
-	static const int MaxCactuses = 2;
-	static const int MaxBirds = 1;
-	static const int MaxCollisionObjects = MaxCactuses + MaxBirds; //(Всего создано 3 объекта, с которыми можно столкнуться (2 кактуса и 1 птица). Одновременно могут появится 2 из этих объектов
+	static constexpr int MaxCactuses = 2;
+	static constexpr int MaxBirds = 1;
+	static constexpr int MaxCollisionObjects = MaxCactuses + MaxBirds; //(Всего создано 3 объекта, с которыми можно столкнуться (2 кактуса и 1 птица). Одновременно могут появится 2 из этих объектов
 };
 // -----------------------------------------------------------------------------------

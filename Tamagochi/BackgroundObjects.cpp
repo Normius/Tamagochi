@@ -11,9 +11,10 @@ unsigned int CCollisionObjects::CollisionObjectsActiveCount = 0;
 // -----------------------------------------------------------------------------------
 
 // ----------------------------- Класс птицы (противник) -----------------------------
+
 //Конструктор
 CBird::CBird()
-    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), restDistance(0.0f), active(false), birdRect{}, prevBirdRect{}
+    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), birdRect{}, prevBirdRect{}, currentBirdRgn{ 0 }
 {
 }
 
@@ -25,35 +26,33 @@ void CBird::DrawBird(HDC hdc)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Тело
-    Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
+    //if (upWing == false) //Корректируем позицию отрисовки тела птицы из-за изменения pos_Y
+    //    pos_y -= 7;
 
-    //Голова
-    Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 16 * CConfig::SizeScale);
-
-    //Фоновые пропуски
-    CConfig::backgroundColor.SelectColor(hdc);
-
-    //Голова
-    Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x, pos_y + 8 * CConfig::SizeScale, pos_x + 6 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x, pos_y + 10 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x, pos_y + 12 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 11 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
-
-    //Тело
-    Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 24 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 31 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 33 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale);
-
-    //Хвост
-    Rectangle(hdc, pos_x + 39 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 44 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
-
-    //Глаз
-    Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
+    //Отрисовка прямоугольниками
+    ////Тело
+    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
+    ////Голова
+    //Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 16 * CConfig::SizeScale);
+    ////Фоновые пропуски
+    //CConfig::backgroundColor.SelectColor(hdc);
+    ////Голова
+    //Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 8 * CConfig::SizeScale, pos_x + 6 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 10 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 12 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 11 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
+    ////Тело
+    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 24 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 31 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 33 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale);
+    ////Хвост
+    //Rectangle(hdc, pos_x + 39 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 44 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
+    ////Глаз
+    //Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
 }
 
 //Отрисовка верхнего крыла
@@ -65,13 +64,37 @@ void CBird::DrawUpWing(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     //Крыло
-    Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y, pos_x + 17 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
+    /*Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y, pos_x + 17 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 17 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 21 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + 27 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 29 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 29 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);*/
+
+    /*const POINT upWingbirdPoints[upWingPointsAmount]{ {pos_x + 12, pos_y + 13}, {pos_x + 17, pos_y + 13}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},
+                                          {pos_x + 15, pos_y}, {pos_x + 16, pos_y}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 13},
+                                          {pos_x + 33, pos_y + 17}, {pos_x + 45, pos_y + 17}, {pos_x + 45, pos_y + 18}, {pos_x + 38, pos_y + 18},
+                                          {pos_x + 38, pos_y + 21}, {pos_x + 43, pos_y + 21},{pos_x + 43, pos_y + 22}, {pos_x + 17, pos_y + 22},
+                                          {pos_x + 12, pos_y + 15}, {pos_x, pos_y + 15}, {pos_x, pos_y + 14}, {pos_x + 1, pos_y + 14}, {pos_x + 8, pos_y + 7},
+                                          {pos_x + 10, pos_y + 7} };*/
+
+    const POINT upWingbirdPoints[upWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale}, {pos_x + 15 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale},
+                                          {pos_x + 15 * CConfig::SizeScale, pos_y}, {pos_x + 16 * CConfig::SizeScale, pos_y}, {pos_x + 29 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale},
+                                          {pos_x + 33 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale},
+                                          {pos_x + 38 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale}, {pos_x + 43 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale},{pos_x + 43 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale},
+                                          {pos_x + 12 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x, pos_y + 15 * CConfig::SizeScale}, {pos_x, pos_y + 14 * CConfig::SizeScale}, {pos_x + 1 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale}, {pos_x + 8 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale},
+                                          {pos_x + 10 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale} };
+
+    Polygon(hdc, upWingbirdPoints, upWingPointsAmount);
+
+    //Фоновые пропуски
+    CConfig::backgroundColor.SelectColor(hdc);
+
+    //Глаз
+    Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
+
+    currentBirdRgn = CreatePolygonRgn(upWingbirdPoints, upWingPointsAmount, 2);
 }
 
 //Отрисовка нижнего крыла
@@ -83,10 +106,57 @@ void CBird::DrawDownWing(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     //Крыло
-    Rectangle(hdc, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 34 * CConfig::SizeScale);
+    /*Rectangle(hdc, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 34 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 21 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);*/
+
+    /*const POINT downWingbirdPoints[downWingPointsAmount]{ {pos_x + 12, pos_y + 6}, {pos_x + 30, pos_y + 6}, {pos_x + 33, pos_y + 10}, {pos_x + 45, pos_y + 10},
+                                          {pos_x + 45, pos_y + 11}, {pos_x + 38, pos_y + 11}, {pos_x + 38, pos_y + 14}, {pos_x + 43, pos_y + 14},
+                                          {pos_x + 43, pos_y + 15}, {pos_x + 24, pos_y + 15}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23}, 
+                                          {pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 15},
+                                          {pos_x + 12, pos_y + 8}, {pos_x, pos_y + 8}, {pos_x, pos_y + 7}, {pos_x + 1, pos_y + 7}, {pos_x + 8, pos_y},
+                                          {pos_x + 10, pos_y} };*/
+
+    const POINT downWingbirdPoints[downWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 33 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale},
+                                          {pos_x + 45 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale}, {pos_x + 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale},
+                                          {pos_x + 43 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x + 24 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x + 24 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 19 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale},
+                                          {pos_x + 18 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale}, {pos_x + 18 * CConfig::SizeScale, pos_y + 26 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 26 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale},
+                                          {pos_x + 12 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale}, {pos_x, pos_y + 8 * CConfig::SizeScale}, {pos_x, pos_y + 7 * CConfig::SizeScale}, {pos_x + 1 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale}, {pos_x + 8 * CConfig::SizeScale, pos_y},
+                                          {pos_x + 10 * CConfig::SizeScale, pos_y} };
+
+    Polygon(hdc, downWingbirdPoints, downWingPointsAmount);
+
+    //Фоновые пропуски
+    CConfig::backgroundColor.SelectColor(hdc);
+
+    //Глаз
+    Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+
+    currentBirdRgn = CreatePolygonRgn(downWingbirdPoints, downWingPointsAmount, 2);
+}
+
+//Анимация крыльев
+void CBird::MoveWings(HDC hdc)
+{
+    if (static_cast<int>(CConfig::slowCurrentFrameValue) % 2 == 0)
+    {
+        if (upWing == false)
+            pos_Y -= 7.0f;
+
+        upWing = true;
+        DrawUpWing(hdc);
+        height = upWingHeight;
+    }
+    else
+    {
+        if (upWing == true)
+            pos_Y += 7.0f;
+
+        upWing = false;
+        DrawDownWing(hdc);
+        height = downWingHeight;
+    }
 }
 
 //Отрисовка птицы полностью
@@ -94,14 +164,11 @@ void CBird::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-
     if (!IntersectRect(&intersectionRect, &paintArea, &birdRect))
     {
         return;
     }
 
-    DrawBird(hdc);
     MoveWings(hdc);
 }
 
@@ -113,10 +180,12 @@ void CBird::Redraw()
 
     prevBirdRect = birdRect;
 
+    //SetRect(&birdRect, static_cast<int>(pos_X), static_cast<int>(pos_Y), static_cast<int>(pos_X) + width * CConfig::SizeScale, static_cast<int>(pos_Y) + height * CConfig::SizeScale);
+
     birdRect.left = static_cast<int>(pos_X);
     birdRect.top = static_cast<int>(pos_Y);
     birdRect.right = birdRect.left + width * CConfig::SizeScale;
-    birdRect.bottom = birdRect.top + (downWingHeight + 7) * CConfig::SizeScale;
+    birdRect.bottom = birdRect.top + height * CConfig::SizeScale;
 
     InvalidateRect(CConfig::Hwnd, &prevBirdRect, TRUE);
     InvalidateRect(CConfig::Hwnd, &birdRect, TRUE);
@@ -124,27 +193,35 @@ void CBird::Redraw()
 
 //Проверка столкновения
 //TO DO: Улучшенная обработка столкновений (разделить объект на несколько примитивов)
-bool CBird::CheckHit(float dinoPos_x, float dinopos_y, int dinoHeight, int dinoWidth)
+bool CBird::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
         return false;
 
-    float dinoUpPos = dinopos_y;
-    float dinoDownPos = dinopos_y + dinoHeight;
-    float dinoLeftPos = dinoPos_x;
+    /*float dinoLeftPos = dinoPos_x;
     float dinoRightPos = dinoPos_x + dinoWidth;
 
-    float birdUpPos = pos_Y;
-    float birdDownPos = pos_Y + height;
     float birdLeftPos = pos_X;
     float birdRightPos = pos_X + width;
 
-    if (dinoRightPos >= birdLeftPos && dinoLeftPos <= birdRightPos)
-        if (dinoDownPos >= birdUpPos && dinoUpPos <= birdDownPos)
+    if (dinoRightPos < birdLeftPos || dinoLeftPos > birdRightPos)
+        return false;
+
+    RECT dinoRect{ 0 };
+
+    dinoRect.left = static_cast<int>(dinoPos_x);
+    dinoRect.top = static_cast<int>(dinopos_y);
+    dinoRect.right = dinoRect.left + dinoWidth * CConfig::SizeScale;
+    dinoRect.bottom = dinoRect.top + dinoHeight * CConfig::SizeScale;*/
+
+    for (int i = 0; i < rectsAmount; ++i)
+    {
+        if (RectInRegion(currentBirdRgn, &dinosaurCollisionRects[i]) != 0)
         {
-            //Beep(100, 10);
             return true;
         }
+    }
+
     return false;
 }
 
@@ -155,26 +232,6 @@ bool CBird::CheckActive()
         return true;
     else
         return false;
-}
-
-//Анимация крыльев
-void CBird::MoveWings(HDC hdc)
-{
-    if (static_cast<int>(CConfig::slowCurrentFrameValue) % 2 == 0) //TO DO: Исправить скорость движения левой и правой ногой. Это условие подходит только для 10 фпс
-    {
-        upWing = true;
-        height = upWingHeight;
-        DrawUpWing(hdc);
-    }
-    else
-    {
-        /*upWing = false;
-        height = downWingHeight;
-        DrawDownWing(hdc);*/
-        upWing = true;
-        height = upWingHeight;
-        DrawUpWing(hdc);
-    }
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -214,34 +271,25 @@ void CBird::Move(float maxSpeed)
     if (CBackgroundObjects::speed == 0.0f)
         return;
 
-    ////Смещение на небольшие шажки 
-    //restDistance += CBackgroundObjects::speed; //Не обнуляем оставшуюся дистанцию, а накапливаем, если не дошли до конца
-
-    //while (restDistance > 0)
-    //{
-    //    //Сдвиг на минимальный шаг (1 pxl)
-    //    pos_X -= CConfig::minShift;
-
-    //    restDistance -= CConfig::minShift;
-    //}
-
     float nextStep = CBackgroundObjects::speed / maxSpeed * CConfig::minShift;
+
+    pos_X -= nextStep;
 
     if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width * CConfig::SizeScale <= CConfig::leftBorder)
     {
         active = false; //Если объект уходить за границу экрана, деактивируем его
         CCollisionObjects::CollisionObjectsActiveCount--;
+        return;
     }
-
-    pos_X -= nextStep;
 }
 // -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс Кактуса (препятствие) -------------------------
+
 //Конструктор
 CCactus::CCactus()
-    :pos_X(startPos_X), pos_Y(startPos_Y), restDistance(0.0f), active(false), cactusRect{}, prevCactusRect{}
+    :pos_X(startPos_X), pos_Y(startPos_Y), active(false), cactusRect{}, prevCactusRect{}, currentCactusRgn{0}
 {
 
 }
@@ -264,28 +312,16 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
     int pos_y = static_cast<int>(pos_Y);
 
     //Ствол кактуса
-    Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 48 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 10 * CConfig::SizeScale, pos_y, pos_x + 12 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 48 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 10 * CConfig::SizeScale, pos_y, pos_x + 12 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
 
-    //Левая ветка кактуса
-    Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x, pos_y + 15 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 * CConfig::SizeScale);
+    ////Левая ветка кактуса
+    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 15 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 * CConfig::SizeScale);
 
-    //Правая ветка кактуса
-    Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
-
-    //Левая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
-
-    //Правая ветка кактуса вариант 2
+    ////Правая ветка кактуса
     //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
     //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
     //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
@@ -302,6 +338,28 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
     //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
     //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
     //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
+
+    //Левая ветка кактуса вариант 2
+    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
+
+    //Правая ветка кактуса вариант 2
+    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
+    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
+
+    const POINT cactusPoints[]{ {pos_x + 10, pos_y}, {pos_x + 11, pos_y}, {pos_x + 13, pos_y + 2}, {pos_x + 13, pos_y + 27},
+                                {pos_x + 19, pos_y + 27}, {pos_x + 19, pos_y + 13}, {pos_x + 20, pos_y + 11}, {pos_x + 21, pos_y + 13},
+                                {pos_x + 21, pos_y + 26}, {pos_x + 18, pos_y + 28}, {pos_x + 13, pos_y + 28}, {pos_x + 13, pos_y + 47},
+                                {pos_x + 8, pos_y + 47}, {pos_x + 8, pos_y + 30}, {pos_x + 3, pos_y + 30}, {pos_x, pos_y + 28},
+                                {pos_x, pos_y + 15}, {pos_x + 1, pos_y + 13}, {pos_x + 2, pos_y + 15}, {pos_x + 2, pos_y + 29},
+                                {pos_x + 8, pos_y + 29}, {pos_x + 8, pos_y + 2} };
+
+    Polygon(hdc, cactusPoints, cactusPointsAmount);
+    currentCactusRgn = CreatePolygonRgn(cactusPoints, cactusPointsAmount, 2);
 }
 
 //Перерисовка персонажа в новых координатах
@@ -315,24 +373,35 @@ void CCactus::Redraw()
     cactusRect.left = static_cast<int>(pos_X);
     cactusRect.top = static_cast<int>(pos_Y);
     cactusRect.right = cactusRect.left + width * CConfig::SizeScale;
-    cactusRect.bottom = cactusRect.top + (height) * CConfig::SizeScale;
+    cactusRect.bottom = cactusRect.top + (height)*CConfig::SizeScale;
 
     InvalidateRect(CConfig::Hwnd, &prevCactusRect, TRUE);
     InvalidateRect(CConfig::Hwnd, &cactusRect, TRUE);
 }
 
 //Проверка столкновения
-bool CCactus::CheckHit(float dinoPos_x, float dinopos_y, int dinoHeight, int dinoWidth)
+bool CCactus::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
         return false;
 
-    if (dinoPos_x + dinoWidth >= pos_X && dinoPos_x <= pos_X + width)
-        if (dinopos_y + dinoHeight >= pos_Y && dinopos_y <= pos_Y + height)
+    /*float dinoLeftPos = dinoPos_x;
+    float dinoRightPos = dinoPos_x + dinoWidth;
+
+    float cactusLeftPos = pos_X;
+    float cactusRightPos = pos_X + width;
+
+    if (dinoRightPos < cactusLeftPos || dinoLeftPos > cactusRightPos)
+        return false;*/
+
+    for (int i = 0; i < rectsAmount; ++i)
+    {
+        if (RectInRegion(currentCactusRgn, &dinosaurCollisionRects[i]) != 0)
         {
-            //Beep(100, 10);
             return true;
         }
+    }
+
     return false;
 }
 
@@ -380,16 +449,6 @@ void CCactus::Move(float maxSpeed)
     if (CBackgroundObjects::speed == 0.0f)
         return;
 
-    ////Смещение на небольшие шажки 
-    //restDistance += CBackgroundObjects::speed;
-
-    //while (restDistance > 0.0f)
-    //{
-    //    //Сдвиг на минимальный шаг (1 pxl)
-    //    pos_X -= CConfig::minShift;
-    //    restDistance -= CConfig::minShift;
-    //}
-
     float nextStep = CBackgroundObjects::speed / maxSpeed * CConfig::minShift;
 
     pos_X -= nextStep;
@@ -398,12 +457,14 @@ void CCactus::Move(float maxSpeed)
     {
         active = false;
         CCollisionObjects::CollisionObjectsActiveCount--;
+        return;
     }
 }
 // -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс линия дороги (фоновый задний план) ------------------
+
 //Конструктор
 CRoadLine::CRoadLine()
     :active(false), roadLineRect{}, prevRoadLineRect{}
@@ -470,6 +531,7 @@ void CRoadLine::Move(float maxSpeed) //В отличие от других объектов, не смещаем 
 
 
 // ----------------------------- Класс камней (штрихов) на дороге (фоновый задний план) ------------------
+
 //Конструктор
 CRoadStones::CRoadStones()
     :pos_X(startPos_X), pos_Y(startPos_Y), active(false), roadStonesRect{}, prevRoadStonesRect{}
@@ -644,6 +706,7 @@ void CRoadStones::Move(float maxSpeed)
 
 // ----------------------------- Класс ямы на дороге (фоновый задний план) ------------------
 
+//Конструктор
 CRoadBump::CRoadBump()
     :pos_X(restartPos_X), firstBumpType(true), active(false), bumpRect{}, prevBumpRect{}
 {
