@@ -7,7 +7,17 @@
 #define MAX_LOADSTRING 100
 
 // Global Variables:
+
+//Добавленные глобальные переменные
 CEngine Engine;
+
+//Переменные для двойной буферизации изображения (пока не нужны)
+//HDC FrameDC = 0;
+//HBITMAP FrameBitmap = 0;
+//int FrameDCWidth = 0;
+//int FrameDCHeight = 0;
+//------------------------------------------------------
+
 
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
@@ -157,12 +167,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT:
 	{
+		HDC hdc; //Изначально был в программе, вынес его из секции case
 		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
+
+		hdc = BeginPaint(hWnd, &ps);
 		//  ------------------------------------------------------------------------------- Рисование графики -----------------------------------------------------
 		// TODO: Add any drawing code that uses hdc here...
 
-		Engine.DrawFrame(hdc, ps.rcPaint);
+		// --------------------------- Код для двойной буферизации изображения, если изображение при отрисовке мигает (пока не нужно) (нужна дополнительная очистка фона)
+		//RECT rect;
+		//GetClientRect(hWnd, &rect); //Получаем прямоугольник клиентской области окна для перерисовки
+
+		//int frameDCWidth = rect.right - rect.left;
+		//int frameDCHeight = rect.bottom - rect.top;
+
+		//if (frameDCWidth != FrameDCWidth && frameDCHeight != FrameDCHeight) //если размеры клиентской области окна изменились, то создаём новые объекты FrameDC и FrameBitmap
+		//{
+		//	if (FrameBitmap != 0)
+		//		DeleteObject(FrameBitmap); //Перед созданием новых объектов удаляем старые, если не равны 0
+
+		//	if (FrameDC != 0)
+		//		DeleteObject(FrameDC);
+
+		//	FrameDCWidth = frameDCWidth;
+		//	FrameDCHeight = frameDCHeight;
+
+		//	FrameDC = CreateCompatibleDC(hdc);
+		//	FrameBitmap = CreateCompatibleBitmap(hdc, FrameDCWidth, FrameDCHeight);
+
+		//	SelectObject(FrameDC, FrameBitmap);
+
+		//	CConfig::backgroundColor.SelectColor(FrameDC);
+		//	Rectangle(FrameDC, rect.left, rect.top, rect.right, rect.bottom);
+		//}
+
+		Engine.DrawFrame(hdc, ps.rcPaint); //Заменили отрисовку с помощью hdc на memdc
+
+		//BitBlt(hdc, 0, 0, FrameDCWidth, FrameDCHeight, FrameDC, 0, 0, SRCCOPY); //Использется для копирования в hdc из FrameDC, в который мы отрисовываем изображение первоначально
 
 		EndPaint(hWnd, &ps);
 	}
@@ -219,7 +260,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_TIMER:
 	{
-		if (wParam == TimerId)
+		if (wParam == Engine.TimerId)
 		{
 			return Engine.OnTimer();
 		}

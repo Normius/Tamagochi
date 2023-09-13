@@ -25,7 +25,7 @@ enum class EGameState: unsigned char
     FreeMovingLevel //Свободное передвижение влево и вправо
 };
 
-const int TimerId = WM_USER + 1; //ID таймера для работы ф-ции таймера в Main
+
 
 // ----------------------------- Класс Engine ----------------------------------------------
 class CEngine
@@ -37,8 +37,10 @@ public:
     void DrawFrame(HDC hdc, RECT& paintArea);
     int OnKey(EKeyType keyType, bool keyPress);
     int OnTimer();
-    //bool CheckHit(float movingObjectPos_x, float movingObjectPos_y);
     float GetMaxSpeed();
+    bool CheckCollisionObjectsDistance();
+
+    const int TimerId; //ID таймера для работы ф-ции таймера в Main
 
     int lastCloudTimerDisappear;
     int newCloudTimerDelay;
@@ -49,6 +51,7 @@ public:
     int lastRoadBumpTimerDisappear;
     int newRoadBumpTimerDelay;
 
+    float currentMaxObjectsSpeed;
     float objectRestDistance;
 
     EGameState GameState;

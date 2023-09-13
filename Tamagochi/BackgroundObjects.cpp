@@ -18,66 +18,13 @@ CBird::CBird()
 {
 }
 
-//Отрисовка тела
-void CBird::DrawBird(HDC hdc)
-{
-    CConfig::mainBrightColor.SelectColor(hdc);
-
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    //if (upWing == false) //Корректируем позицию отрисовки тела птицы из-за изменения pos_Y
-    //    pos_y -= 7;
-
-    //Отрисовка прямоугольниками
-    ////Тело
-    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
-    ////Голова
-    //Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 16 * CConfig::SizeScale);
-    ////Фоновые пропуски
-    //CConfig::backgroundColor.SelectColor(hdc);
-    ////Голова
-    //Rectangle(hdc, pos_x, pos_y + 7 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 8 * CConfig::SizeScale, pos_x + 6 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 10 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 12 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 11 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale);
-    ////Тело
-    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 20 * CConfig::SizeScale, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 24 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 31 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 33 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale);
-    ////Хвост
-    //Rectangle(hdc, pos_x + 39 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 44 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale);
-    ////Глаз
-    //Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-}
-
 //Отрисовка верхнего крыла
-void CBird::DrawUpWing(HDC hdc)
+void CBird::DrawUpWingBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
-
-    //Крыло
-    /*Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y, pos_x + 17 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 17 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 21 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + 27 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 29 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);*/
-
-    /*const POINT upWingbirdPoints[upWingPointsAmount]{ {pos_x + 12, pos_y + 13}, {pos_x + 17, pos_y + 13}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},
-                                          {pos_x + 15, pos_y}, {pos_x + 16, pos_y}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 13},
-                                          {pos_x + 33, pos_y + 17}, {pos_x + 45, pos_y + 17}, {pos_x + 45, pos_y + 18}, {pos_x + 38, pos_y + 18},
-                                          {pos_x + 38, pos_y + 21}, {pos_x + 43, pos_y + 21},{pos_x + 43, pos_y + 22}, {pos_x + 17, pos_y + 22},
-                                          {pos_x + 12, pos_y + 15}, {pos_x, pos_y + 15}, {pos_x, pos_y + 14}, {pos_x + 1, pos_y + 14}, {pos_x + 8, pos_y + 7},
-                                          {pos_x + 10, pos_y + 7} };*/
 
     const POINT upWingbirdPoints[upWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale}, {pos_x + 15 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale},
                                           {pos_x + 15 * CConfig::SizeScale, pos_y}, {pos_x + 16 * CConfig::SizeScale, pos_y}, {pos_x + 29 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale},
@@ -98,25 +45,12 @@ void CBird::DrawUpWing(HDC hdc)
 }
 
 //Отрисовка нижнего крыла
-void CBird::DrawDownWing(HDC hdc)
+void CBird::DrawDownWingBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
-
-    //Крыло
-    /*Rectangle(hdc, pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 34 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 21 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);*/
-
-    /*const POINT downWingbirdPoints[downWingPointsAmount]{ {pos_x + 12, pos_y + 6}, {pos_x + 30, pos_y + 6}, {pos_x + 33, pos_y + 10}, {pos_x + 45, pos_y + 10},
-                                          {pos_x + 45, pos_y + 11}, {pos_x + 38, pos_y + 11}, {pos_x + 38, pos_y + 14}, {pos_x + 43, pos_y + 14},
-                                          {pos_x + 43, pos_y + 15}, {pos_x + 24, pos_y + 15}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23}, 
-                                          {pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 15},
-                                          {pos_x + 12, pos_y + 8}, {pos_x, pos_y + 8}, {pos_x, pos_y + 7}, {pos_x + 1, pos_y + 7}, {pos_x + 8, pos_y},
-                                          {pos_x + 10, pos_y} };*/
 
     const POINT downWingbirdPoints[downWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 33 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale},
                                           {pos_x + 45 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale}, {pos_x + 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale},
@@ -145,7 +79,7 @@ void CBird::MoveWings(HDC hdc)
             pos_Y -= 7.0f;
 
         upWing = true;
-        DrawUpWing(hdc);
+        DrawUpWingBird(hdc);
         height = upWingHeight;
     }
     else
@@ -154,7 +88,7 @@ void CBird::MoveWings(HDC hdc)
             pos_Y += 7.0f;
 
         upWing = false;
-        DrawDownWing(hdc);
+        DrawDownWingBird(hdc);
         height = downWingHeight;
     }
 }
@@ -172,6 +106,20 @@ void CBird::Draw(HDC hdc, RECT& paintArea)
     MoveWings(hdc);
 }
 
+void CBird::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevBirdRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevBirdRect.left, prevBirdRect.top, prevBirdRect.right, prevBirdRect.bottom);
+}
+
+//TO DO: Иногда часть птицы не стирается
 //Перерисовка персонажа в новых координатах
 void CBird::Redraw()
 {
@@ -180,39 +128,20 @@ void CBird::Redraw()
 
     prevBirdRect = birdRect;
 
-    //SetRect(&birdRect, static_cast<int>(pos_X), static_cast<int>(pos_Y), static_cast<int>(pos_X) + width * CConfig::SizeScale, static_cast<int>(pos_Y) + height * CConfig::SizeScale);
-
     birdRect.left = static_cast<int>(pos_X);
     birdRect.top = static_cast<int>(pos_Y);
     birdRect.right = birdRect.left + width * CConfig::SizeScale;
     birdRect.bottom = birdRect.top + height * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevBirdRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &birdRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevBirdRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &birdRect, FALSE);
 }
 
 //Проверка столкновения
-//TO DO: Улучшенная обработка столкновений (разделить объект на несколько примитивов)
 bool CBird::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
         return false;
-
-    /*float dinoLeftPos = dinoPos_x;
-    float dinoRightPos = dinoPos_x + dinoWidth;
-
-    float birdLeftPos = pos_X;
-    float birdRightPos = pos_X + width;
-
-    if (dinoRightPos < birdLeftPos || dinoLeftPos > birdRightPos)
-        return false;
-
-    RECT dinoRect{ 0 };
-
-    dinoRect.left = static_cast<int>(dinoPos_x);
-    dinoRect.top = static_cast<int>(dinopos_y);
-    dinoRect.right = dinoRect.left + dinoWidth * CConfig::SizeScale;
-    dinoRect.bottom = dinoRect.top + dinoHeight * CConfig::SizeScale;*/
 
     for (int i = 0; i < rectsAmount; ++i)
     {
@@ -232,6 +161,11 @@ bool CBird::CheckActive()
         return true;
     else
         return false;
+}
+
+float CBird::GetPos_X()
+{
+    return pos_X;
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -277,7 +211,7 @@ void CBird::Move(float maxSpeed)
 
     if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width * CConfig::SizeScale <= CConfig::leftBorder)
     {
-        active = false; //Если объект уходить за границу экрана, деактивируем его
+        active = false; //Если объект уходит за границу экрана, деактивируем его
         CCollisionObjects::CollisionObjectsActiveCount--;
         return;
     }
@@ -298,8 +232,6 @@ CCactus::CCactus()
 void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
 
     if (!IntersectRect(&intersectionRect, &paintArea, &cactusRect))
     {
@@ -362,6 +294,19 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
     currentCactusRgn = CreatePolygonRgn(cactusPoints, cactusPointsAmount, 2);
 }
 
+void CCactus::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevCactusRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevCactusRect.left, prevCactusRect.top, prevCactusRect.right, prevCactusRect.bottom);
+}
+
 //Перерисовка персонажа в новых координатах
 void CCactus::Redraw()
 {
@@ -375,8 +320,8 @@ void CCactus::Redraw()
     cactusRect.right = cactusRect.left + width * CConfig::SizeScale;
     cactusRect.bottom = cactusRect.top + (height)*CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevCactusRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &cactusRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevCactusRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &cactusRect, FALSE);
 }
 
 //Проверка столкновения
@@ -384,15 +329,6 @@ bool CCactus::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
         return false;
-
-    /*float dinoLeftPos = dinoPos_x;
-    float dinoRightPos = dinoPos_x + dinoWidth;
-
-    float cactusLeftPos = pos_X;
-    float cactusRightPos = pos_X + width;
-
-    if (dinoRightPos < cactusLeftPos || dinoLeftPos > cactusRightPos)
-        return false;*/
 
     for (int i = 0; i < rectsAmount; ++i)
     {
@@ -412,6 +348,11 @@ bool CCactus::CheckActive()
         return true;
     else
         return false;
+}
+
+float CCactus::GetPos_X()
+{
+    return pos_X;
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -476,14 +417,11 @@ void CRoadLine::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-
     if (!IntersectRect(&intersectionRect, &paintArea, &roadLineRect))
     {
         return;
     }
     
-    //TO DO: Рисовать линию дороги без перерисовок
     CConfig::mainBrightColor.SelectColor(hdc);
 
     int pos_x = static_cast<int>(pos_X);
@@ -491,6 +429,20 @@ void CRoadLine::Draw(HDC hdc, RECT& paintArea)
 
     //Контур дороги
     Rectangle(hdc, pos_x, pos_y, pos_x + lineWidth, pos_y + lineHeight * CConfig::SizeScale);
+}
+
+void CRoadLine::Clear(HDC hdc, RECT& paintArea)
+{
+    return;
+    //RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    //if (!IntersectRect(&intersectionRect, &paintArea, &prevCactusRect))
+    //{
+    //    return;
+    //}
+
+    //CConfig::backgroundColor.SelectColor(hdc);
+    //Rectangle(hdc, prevCactusRect.left, prevCactusRect.top, prevCactusRect.right, prevCactusRect.bottom);
 }
 
 //Перерисовка в новых координатах
@@ -506,8 +458,8 @@ void CRoadLine::Redraw()
     roadLineRect.right = roadLineRect.left + lineWidth; //Не домножаем на SizeScale, так как рисуем на весь экран
     roadLineRect.bottom = roadLineRect.top + lineHeight  * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevRoadLineRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &roadLineRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevRoadLineRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &roadLineRect, FALSE);
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -543,8 +495,6 @@ void CRoadStones::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-
     if (!IntersectRect(&intersectionRect, &paintArea, &roadStonesRect))
     {
         return;
@@ -556,86 +506,98 @@ void CRoadStones::Draw(HDC hdc, RECT& paintArea)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //TO DO: Возможно прорядить и добавить умножение на Scale
     //Контур дороги
-    Rectangle(hdc, pos_x, pos_y + 6, pos_x + 4, pos_y + 6 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 7, pos_y + 3, pos_x + 7 + 5, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 15, pos_y + 6, pos_x + 15 + 2, pos_y + 6 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y + 6, pos_x + 4, pos_y + 6 + stonesHeight);
+    Rectangle(hdc, pos_x + 7, pos_y + 3, pos_x + 7 + 5, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 15, pos_y + 6, pos_x + 15 + 2, pos_y + 6 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 40, pos_y + 4, pos_x + 40 + 1, pos_y + 5 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 48, pos_y + 5, pos_x + 48 + 5, pos_y + 5 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 55, pos_y + 2, pos_x + 55 + 4, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 68, pos_y + 4, pos_x + 68 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 80, pos_y + 2, pos_x + 80 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 84, pos_y + 4, pos_x + 84 + 5, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 94, pos_y + 2, pos_x + 94 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 40, pos_y + 4, pos_x + 40 + 1, pos_y + 5 + stonesHeight);
+    Rectangle(hdc, pos_x + 48, pos_y + 5, pos_x + 48 + 5, pos_y + 5 + stonesHeight);
+    Rectangle(hdc, pos_x + 55, pos_y + 2, pos_x + 55 + 4, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 68, pos_y + 4, pos_x + 68 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 80, pos_y + 2, pos_x + 80 + 1, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 84, pos_y + 4, pos_x + 84 + 5, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 94, pos_y + 2, pos_x + 94 + 3, pos_y + 2 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 112, pos_y + 4, pos_x + 112 + 1, pos_y + 5 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 122, pos_y + 4, pos_x + 122 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 134, pos_y + 1, pos_x + 134 + 5, pos_y + 1 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 112, pos_y + 4, pos_x + 112 + 1, pos_y + 5 + stonesHeight);
+    Rectangle(hdc, pos_x + 122, pos_y + 4, pos_x + 122 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 134, pos_y + 1, pos_x + 134 + 5, pos_y + 1 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 156, pos_y + 3, pos_x + 156 + 1, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 160, pos_y + 2, pos_x + 160 + 2, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 166, pos_y + 3, pos_x + 166 + 4, pos_y + 3 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 156, pos_y + 3, pos_x + 156 + 1, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 160, pos_y + 2, pos_x + 160 + 2, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 166, pos_y + 3, pos_x + 166 + 4, pos_y + 3 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 186, pos_y + 2, pos_x + 186 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 200, pos_y + 2, pos_x + 200 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 206, pos_y + 3, pos_x + 206 + 1, pos_y + 4 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 186, pos_y + 2, pos_x + 186 + 1, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 200, pos_y + 2, pos_x + 200 + 3, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 206, pos_y + 3, pos_x + 206 + 1, pos_y + 4 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 220, pos_y + 3, pos_x + 220 + 2, pos_y + 3 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 220, pos_y + 3, pos_x + 220 + 2, pos_y + 3 + stonesHeight);
 
-    Rectangle(hdc, pos_x + 238, pos_y + 4, pos_x + 238 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 244, pos_y + 4, pos_x + 244 + 2, pos_y + 4 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 238, pos_y + 4, pos_x + 238 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 244, pos_y + 4, pos_x + 244 + 2, pos_y + 4 + stonesHeight);
 
-    Rectangle(hdc, pos_x + 260, pos_y + 4, pos_x + 260 + 4, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 280, pos_y + 3, pos_x + 280 + 3, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 304, pos_y + 2, pos_x + 304 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 320, pos_y + 4, pos_x + 320 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 340, pos_y + 1, pos_x + 340 + 3, pos_y + 1 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 350, pos_y + 2, pos_x + 350 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 370, pos_y + 2, pos_x + 370 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 260, pos_y + 4, pos_x + 260 + 4, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 280, pos_y + 3, pos_x + 280 + 3, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 304, pos_y + 2, pos_x + 304 + 1, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 320, pos_y + 4, pos_x + 320 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 340, pos_y + 1, pos_x + 340 + 3, pos_y + 1 + stonesHeight);
+    Rectangle(hdc, pos_x + 350, pos_y + 2, pos_x + 350 + 1, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 370, pos_y + 2, pos_x + 370 + 3, pos_y + 2 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 390, pos_y + 3, pos_x + 390 + 2, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 398, pos_y + 4, pos_x + 398 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 410, pos_y + 3, pos_x + 410 + 1, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 424, pos_y + 2, pos_x + 424 + 2, pos_y + 2 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 390, pos_y + 3, pos_x + 390 + 2, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 398, pos_y + 4, pos_x + 398 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 410, pos_y + 3, pos_x + 410 + 1, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 424, pos_y + 2, pos_x + 424 + 2, pos_y + 2 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 450, pos_y + 3, pos_x + 450 + 3, pos_y + 3 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 450, pos_y + 3, pos_x + 450 + 3, pos_y + 3 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 480, pos_y + 2, pos_x + 480 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 488, pos_y + 2, pos_x + 488 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 506, pos_y + 3, pos_x + 506 + 4, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 518, pos_y + 5, pos_x + 518 + 2, pos_y + 5 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 480, pos_y + 2, pos_x + 480 + 1, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 488, pos_y + 2, pos_x + 488 + 3, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 506, pos_y + 3, pos_x + 506 + 4, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 518, pos_y + 5, pos_x + 518 + 2, pos_y + 5 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 540, pos_y + 1, pos_x + 540 + 1, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 548, pos_y + 2, pos_x + 548 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 540, pos_y + 1, pos_x + 540 + 1, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 548, pos_y + 2, pos_x + 548 + 3, pos_y + 2 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 564, pos_y + 2, pos_x + 564 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 580, pos_y + 3, pos_x + 580 + 1, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 586, pos_y + 1, pos_x + 586 + 5, pos_y + 1 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 604, pos_y + 4, pos_x + 604 + 1, pos_y + 5 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 564, pos_y + 2, pos_x + 564 + 3, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 580, pos_y + 3, pos_x + 580 + 1, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 586, pos_y + 1, pos_x + 586 + 5, pos_y + 1 + stonesHeight);
+    Rectangle(hdc, pos_x + 604, pos_y + 4, pos_x + 604 + 1, pos_y + 5 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 618, pos_y + 4, pos_x + 618 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 626, pos_y + 2, pos_x + 626 + 4, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 632, pos_y + 4, pos_x + 632 + 2, pos_y + 4 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 618, pos_y + 4, pos_x + 618 + 3, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 626, pos_y + 2, pos_x + 626 + 4, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 632, pos_y + 4, pos_x + 632 + 2, pos_y + 4 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 646, pos_y + 2, pos_x + 646 + 4, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 652, pos_y + 4, pos_x + 652 + 2, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 658, pos_y + 1, pos_x + 658 + 1, pos_y + 2 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 646, pos_y + 2, pos_x + 646 + 4, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 652, pos_y + 4, pos_x + 652 + 2, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 658, pos_y + 1, pos_x + 658 + 1, pos_y + 2 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 678, pos_y + 2, pos_x + 678 + 3, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 686, pos_y + 4, pos_x + 686 + 3, pos_y + 4 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 678, pos_y + 2, pos_x + 678 + 3, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 686, pos_y + 4, pos_x + 686 + 3, pos_y + 4 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 700, pos_y + 1, pos_x + 700 + 4, pos_y + 1 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 710, pos_y + 2, pos_x + 710 + 2, pos_y + 2 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 720, pos_y + 3, pos_x + 720 + 1, pos_y + 4 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 700, pos_y + 1, pos_x + 700 + 4, pos_y + 1 + stonesHeight);
+    Rectangle(hdc, pos_x + 710, pos_y + 2, pos_x + 710 + 2, pos_y + 2 + stonesHeight);
+    Rectangle(hdc, pos_x + 720, pos_y + 3, pos_x + 720 + 1, pos_y + 4 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 740, pos_y + 3, pos_x + 740 + 3, pos_y + 3 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 754, pos_y + 1, pos_x + 754 + 2, pos_y + 1 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 764, pos_y + 3, pos_x + 764 + 3, pos_y + 3 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 740, pos_y + 3, pos_x + 740 + 3, pos_y + 3 + stonesHeight);
+    Rectangle(hdc, pos_x + 754, pos_y + 1, pos_x + 754 + 2, pos_y + 1 + stonesHeight);
+    Rectangle(hdc, pos_x + 764, pos_y + 3, pos_x + 764 + 3, pos_y + 3 + stonesHeight);
     
-    Rectangle(hdc, pos_x + 782, pos_y + 4, pos_x + 782 + 4, pos_y + 4 + stonesHeight * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 790, pos_y + 2, pos_x + 790 + 1, pos_y + 3 + stonesHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 782, pos_y + 4, pos_x + 782 + 4, pos_y + 4 + stonesHeight);
+    Rectangle(hdc, pos_x + 790, pos_y + 2, pos_x + 790 + 1, pos_y + 3 + stonesHeight);
+}
+
+void CRoadStones::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevRoadStonesRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevRoadStonesRect.left, prevRoadStonesRect.top, prevRoadStonesRect.right, prevRoadStonesRect.bottom);
 }
 
 //Перерисовка в новых координатах
@@ -651,8 +613,8 @@ void CRoadStones::Redraw()
     roadStonesRect.right = roadStonesRect.left + CConfig::rightBorder;
     roadStonesRect.bottom = roadStonesRect.top + maxStonesHeight * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevRoadStonesRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &roadStonesRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevRoadStonesRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &roadStonesRect, FALSE);
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -717,8 +679,6 @@ void CRoadBump::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-
     if (!IntersectRect(&intersectionRect, &paintArea, &bumpRect))
     {
         return;
@@ -736,6 +696,19 @@ void CRoadBump::Draw(HDC hdc, RECT& paintArea)
     }
 }
 
+void CRoadBump::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevBumpRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevBumpRect.left, prevBumpRect.top, prevBumpRect.right, prevBumpRect.bottom);
+}
+
 //Перерисовка в новых координатах
 void CRoadBump::Redraw()
 {
@@ -749,8 +722,8 @@ void CRoadBump::Redraw()
     bumpRect.right = bumpRect.left + width;
     bumpRect.bottom = bumpRect.top + height * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevBumpRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &bumpRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevBumpRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &bumpRect, FALSE);
 }
 
 void CRoadBump::TestActivate()
@@ -825,10 +798,7 @@ void CRoadBump::DrawBump(HDC hdc, RECT& paintArea, float offset_x)
     Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
     Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
 }
-
-
 // -----------------------------------------------------------------------------------
-
 
 
 // ----------------------------- Класс Облако на заднем плане ------------------------
@@ -890,6 +860,19 @@ void CCloud::Draw(HDC hdc, RECT& paintArea)
     Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
 }
 
+void CCloud::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevCloudRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevCloudRect.left, prevCloudRect.top, prevCloudRect.right, prevCloudRect.bottom);
+}
+
 //Перерисовка персонажа в новых координатах
 void CCloud::Redraw()
 {
@@ -903,8 +886,8 @@ void CCloud::Redraw()
     cloudRect.right = cloudRect.left + width * CConfig::SizeScale;
     cloudRect.bottom = cloudRect.top + height * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevCloudRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &cloudRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevCloudRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &cloudRect, FALSE);
 }
 
 //Делаем объект активным и помещаем в заданные координаты
@@ -939,7 +922,6 @@ void CCloud::Move(float maxSpeed)
 
     if (static_cast<int>(pos_X) + cloudsSpeed + width * CConfig::SizeScale <= CConfig::leftBorder)
         active = false;
-        //pos_X = startPos_X;
 
     Redraw();
 }

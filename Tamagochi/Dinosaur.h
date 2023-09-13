@@ -3,7 +3,6 @@
 #include "Config.h"
 #include <cmath>
 
-//TO DO: Возможно объединить эти состояния в одно перечисление
 //Перечисление состояний тела Дино (стоя или в присяде)
 enum class EDinosaurLevelState: unsigned char
 {
@@ -32,6 +31,7 @@ enum class EDinosaurMovingState: unsigned char
     Stop,
     MovingRight,
     MovingLeft,
+    Jumping
 };
 
 // ----------------------------- Класс персонажа Dino (главный персонаж)
@@ -41,6 +41,7 @@ public:
     CDinosaur();
 
     void Draw(HDC hdc, RECT& paintArea);
+    void Clear(HDC hdc, RECT& paintArea);
     void Redraw();
     void MoveLegsRight(HDC hdc);
     void MoveLegsLeft(HDC hdc);
@@ -65,7 +66,7 @@ public:
     static constexpr int MaxJumpHeight = 80; //last 70
 
     static constexpr float MaxSpeed_X = 10.0f;
-    static constexpr float MaxSpeed_Y = 20.0f; //last 18.0f
+    static constexpr float MaxSpeed_Y = 25.0f; //last 18.0f
 
     int height;
     int width;

@@ -17,8 +17,6 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 {
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    //TO DO: Возможно придётся добавить очистку фона вручную, а не значению TRUE в InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-
     if (!IntersectRect(&intersectionRect, &paintArea, &dinoRect))
     {
         return;
@@ -52,6 +50,11 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 
             if (pos_Y + height == OnGroundLegsPos_Y)
                 MoveLegsLeft(hdc);
+            //Столкновение Драко с препятствием и анимация глаз
+            if (collision == true)
+            {
+                DrawLeftEye(hdc);
+            }
         }
     }
     break;
@@ -81,6 +84,11 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 
             if (pos_Y + height == OnGroundLegsPos_Y)
                 MoveLegsLeft(hdc);
+            //Столкновение Драко с препятствием и анимация глаз
+            if (collision == true)
+            {
+                DrawLeftEye(hdc);
+            }
         }
     }
     break;
@@ -92,6 +100,19 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 }
 // -----------------------------------------------------------------------------------
 
+void CDinosaur::Clear(HDC hdc, RECT& paintArea)
+{
+    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevDinoRect))
+    {
+        return;
+    }
+
+    CConfig::backgroundColor.SelectColor(hdc);
+    Rectangle(hdc, prevDinoRect.left, prevDinoRect.top, prevDinoRect.right, prevDinoRect.bottom);
+}
+
 // ------------ Перерисовка персонажа в новых координатах
 void CDinosaur::Redraw()
 {
@@ -102,8 +123,8 @@ void CDinosaur::Redraw()
     dinoRect.right = dinoRect.left + width * CConfig::SizeScale;
     dinoRect.bottom = dinoRect.top + height * CConfig::SizeScale;
 
-    InvalidateRect(CConfig::Hwnd, &prevDinoRect, TRUE);
-    InvalidateRect(CConfig::Hwnd, &dinoRect, TRUE);
+    InvalidateRect(CConfig::Hwnd, &prevDinoRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &dinoRect, FALSE);
 }
 // -----------------------------------------------------------------------------------
 
@@ -299,7 +320,7 @@ void CDinosaur::DrawRightEye(HDC hdc)
         pos_x += (CrawlingWidth - StandingWidth) * CConfig::SizeScale;
 
     //Зрачок при столкновении
-    Rectangle(hdc, pos_x + 28 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 29 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 28 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 30 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -311,8 +332,11 @@ void CDinosaur::DrawLeftEye(HDC hdc)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
+    if (DinosaurBodyState == EDinosaurBodyState::Crawling)
+        pos_x += (CrawlingWidth - StandingWidth) * CConfig::SizeScale;
+
     //Зрачок при столкновении
-    Rectangle(hdc, pos_x + (width - 28) * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + (width - 29) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (width - 28) * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + (width - 30) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -438,7 +462,7 @@ void CDinosaur::DrawRightHead(HDC hdc)
     Rectangle(hdc, pos_x + 42 * CConfig::SizeScale, pos_y, pos_x + 44 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale);
 
     //Глаз
-    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 30 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 31 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -465,7 +489,7 @@ void CDinosaur::DrawLeftHead(HDC hdc)
     Rectangle(hdc, pos_x + (width - 42) * CConfig::SizeScale, pos_y, pos_x + (width - 44) * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale);
 
     //Глаз
-    Rectangle(hdc, pos_x + (width - 27) * CConfig::SizeScale, pos_y + (2 * CConfig::SizeScale), pos_x + (width - 30) * CConfig::SizeScale, pos_y + (5 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 27) * CConfig::SizeScale, pos_y + (2 * CConfig::SizeScale), pos_x + (width - 31) * CConfig::SizeScale, pos_y + (6 * CConfig::SizeScale));
 }
 // -----------------------------------------------------------------------------------
 
@@ -614,10 +638,12 @@ void CDinosaur::SetBodyState(EDinosaurBodyState newState)
 void CDinosaur::CorrectVerticalEdgePosition()
 {
     if (static_cast<int>(pos_Y) + height >= OnGroundLegsPos_Y) //Двигаемся вниз до тех пор, пока Дино не достигнет земли
+    {
         pos_Y = static_cast<float>(OnGroundLegsPos_Y - height);
+        DinosaurMovingState = EDinosaurMovingState::Stop;
+    }
 
-    //TO DO: В зависимости от масштаба scale обнуление происходит по-разному, нужно будет исправить
-    if (static_cast<int>(pos_Y) + height <= StandingPos_Y - MaxJumpHeight * CConfig::SizeScale) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
+    if (static_cast<int>(pos_Y) <= StandingPos_Y - MaxJumpHeight * CConfig::SizeScale) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
         verticalSpeed = 0.0f; //При достижении максимальной высоты перемещение приравниваем к 0 
 }
 
@@ -653,7 +679,7 @@ void CDinosaur::CorrectHorizontalEdgePosition()
     if (static_cast<int>(pos_X) + width * CConfig::SizeScale >= CConfig::rightBorder)
         pos_X = static_cast<float>(CConfig::rightBorder - width * CConfig::SizeScale);
 
-    if (static_cast<int>(pos_X) <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) < CConfig::leftBorder)
         pos_X = static_cast<float>(CConfig::leftBorder);
 }
 
@@ -665,16 +691,6 @@ void CDinosaur::MoveHorizontal(float maxSpeed)
 
     //Смещение на небольшие шажки 
     float nextStep = horizontalSpeed / maxSpeed * CConfig::minShift;
-    //float restDistance = maxSpeed;
-
-    //while (restDistance > 0.0f)
-    //{
-    //    //Сдвиг на небольшой шаг
-    //    float nextStep = horizontalSpeed / maxSpeed * CConfig::minShift; //Вычисляем минимальный шаг для перемещения Дино (Делим скорость Дино на максимальную скорость в игреЕсли они равны, то смещаем на минимальный шаг. Если есть большая скорость, то будем смещать на меньший шаг. Но в итоге количество сдвигов будет тем же. (Синхронизация объектов)
-    //    pos_X += nextStep;
-
-    //    restDistance -= CConfig::minShift;
-    //}
 
     pos_X += nextStep;
 
@@ -701,16 +717,22 @@ void CDinosaur::CheckHorizontalDirection(bool leftDirection, bool keyPressed) //
 
     if (leftKeyDown == true) //Обработка нажатия левой клавиши
     {
-        DinosaurDirectionState = EDinosaurDirectionState::Left; //TO DO SetState
-        DinosaurMovingState = EDinosaurMovingState::MovingLeft;
-        horizontalSpeed = -MaxSpeed_X * CConfig::FSizeScale;
+        DinosaurDirectionState = EDinosaurDirectionState::Left;
+        if (DinosaurMovingState != EDinosaurMovingState::Jumping)
+        {
+            DinosaurMovingState = EDinosaurMovingState::MovingLeft;
+            horizontalSpeed = -MaxSpeed_X * CConfig::FSizeScale;
+        }
     }
 
     if (rightKeyDown == true) //Обработка нажатия левой клавиши
     {
         DinosaurDirectionState = EDinosaurDirectionState::Right;
-        DinosaurMovingState = EDinosaurMovingState::MovingRight;
-        horizontalSpeed = MaxSpeed_X * CConfig::FSizeScale;
+        if (DinosaurMovingState != EDinosaurMovingState::Jumping)
+        {
+            DinosaurMovingState = EDinosaurMovingState::MovingRight;
+            horizontalSpeed = MaxSpeed_X * CConfig::FSizeScale;
+        }
     }
 }
 // -----------------------------------------------------------------------------------
@@ -722,13 +744,14 @@ void CDinosaur::Jump()
     {
         pos_Y -= 1.0f;
         verticalSpeed = -MaxSpeed_Y;
+        DinosaurMovingState = EDinosaurMovingState::Jumping;
 
-        Beep(300, 50); //TO DO: Перенести обработку звука в отдельный поток, чтобы не вызывало задержку
+        //Beep(300, 50); //TO DO: Перенести обработку звука в отдельный поток, чтобы не вызывало задержку
     }
 }
 // -----------------------------------------------------------------------------------
 
-// ------------ Прыжок (начало прыжка, подъём Дино от земли, дальше работает метод MoveHorizontal)  (обрабатывает нажатие пробела)
+// ------------ Модель Динозавра поделена на 3 прямоугольника, с которыми проверяем столкновения других объектов
 void CDinosaur::SetDinoCollisionRects()
 {
     int pos_x = static_cast<int>(pos_X);

@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Config.h"
-//TO DO: Написать класс, который будет содержать в себе все элементы заднего фона и прокручиваться с течением времени
 
 // ----------------------------- Класс задний фон --------------------------------------
 class CBackgroundObjects
 {
 public:
-    virtual void Move(float maxSpeed) = 0; //TO DO: !!!Сделать один метод с параметрами X, Y и startXpos для обнуления положения объектов!!!
+    virtual void Move(float maxSpeed) = 0;
     virtual void Activate() = 0; //Активирует объект для отображения на экране и анимации после того, как он был неактивен
     virtual void Draw(HDC hdc, RECT& paintArea) = 0;
     virtual void Redraw() = 0;
+    virtual void Clear(HDC hdc, RECT& paintArea) = 0;
 
     static float speed; //Скорость прокрутки объектов заднего плана
 };
@@ -21,11 +21,12 @@ public:
 class CCollisionObjects : public CBackgroundObjects
 {
 public:
-    //virtual bool CheckHit(float dinoPos_x, float dinopos_Y, int dinoHeight, int dinoWidth) = 0;
     virtual bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) = 0;
     virtual bool CheckActive() = 0;
+    virtual float GetPos_X() = 0;
 
     static constexpr unsigned int maxCollisionObjectsActive = 2; //Максимальное количество активных объектов (на экране)
+    static constexpr float minDistanceBetweenCollisionObjects = 200.0f;
     static unsigned int CollisionObjectsActiveCount; //Текущее количество активных объектов (на экране)
 };
 // -----------------------------------------------------------------------------------
@@ -39,9 +40,11 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Move(float maxSpeed) override;
+    void Clear(HDC hdc, RECT& paintArea) override;
 
     bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
+    float GetPos_X() override;
 
     void Activate() override;
 
@@ -56,9 +59,8 @@ public:
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
     
 private:
-    void DrawBird(HDC hdc);
-    void DrawUpWing(HDC hdc);
-    void DrawDownWing(HDC hdc);
+    void DrawUpWingBird(HDC hdc);
+    void DrawDownWingBird(HDC hdc);
     void MoveWings(HDC hdc);
 
     static constexpr int upWingHeight = 23;
@@ -90,9 +92,11 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Activate() override;
     void Redraw() override;
+    void Clear(HDC hdc, RECT& paintArea) override;
 
     bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
+    float GetPos_X() override;
 
     void TestActivate(float pos_x, float pos_y);
 
@@ -125,6 +129,7 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Clear(HDC hdc, RECT& paintArea) override;
 
     static constexpr float pos_X = 0.0f;
     static constexpr float pos_Y = 186.0f;
@@ -149,6 +154,7 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Clear(HDC hdc, RECT& paintArea) override;
 
     void FirstActivate();
 
@@ -181,6 +187,7 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Clear(HDC hdc, RECT& paintArea) override;
 
     void TestActivate();
 
@@ -216,6 +223,7 @@ public:
 
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
+    void Clear(HDC hdc, RECT& paintArea) override;
     
     void FirstActivate();
 
