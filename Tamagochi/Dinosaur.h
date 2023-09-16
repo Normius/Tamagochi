@@ -31,7 +31,6 @@ enum class EDinosaurMovingState: unsigned char
     Stop,
     MovingRight,
     MovingLeft,
-    Jumping
 };
 
 // ----------------------------- Класс персонажа Dino (главный персонаж)
@@ -45,7 +44,8 @@ public:
     void Redraw();
     void MoveLegsRight(HDC hdc);
     void MoveLegsLeft(HDC hdc);
-    void SetBodyState(EDinosaurBodyState state);
+    void SetBodyState(EDinosaurBodyState newstate);
+    void SetLevelState(EDinosaurLevelState newstate);
     void CorrectVerticalEdgePosition();
     void MoveVertical(float maxSpeed);
     void CorrectHorizontalEdgePosition();
@@ -66,10 +66,14 @@ public:
     static constexpr int MaxJumpHeight = 80; //last 70
 
     static constexpr float MaxSpeed_X = 10.0f;
-    static constexpr float MaxSpeed_Y = 25.0f; //last 18.0f
+    static constexpr float MaxSpeed_Y = 30.0f; //last 18.0f
 
     int height;
     int width;
+
+    //unsigned int lastLegsChangeTimer;
+    //unsigned int newChangeLegsDelay;
+    //bool firstStep;
 
     float pos_X;
     float pos_Y;
@@ -78,11 +82,9 @@ public:
 
     bool collision;
     bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
-
+        
     EDinosaurDirectionState DinosaurDirectionState;
     EDinosaurMovingState DinosaurMovingState;
-
-    //RECT dinoCollisionRect_1, dinoCollisionRect_2, dinoCollisionRect_3;
 
     static constexpr unsigned int collisionRectsAmount = 3;
     
@@ -101,8 +103,6 @@ private:
     void DrawLeftEye(HDC hdc);
     void DrawRightStanding(HDC hdc);
     void DrawLeftStanding(HDC hdc);
-    void DrawRightHead(HDC hdc);
-    void DrawLeftHead(HDC hdc);
     void DrawRightCrawling(HDC hdc);
     void DrawLeftCrawling(HDC hdc);
 

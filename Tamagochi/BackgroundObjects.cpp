@@ -2,7 +2,7 @@
 
 // ----------------------------- Класс задний фон ------------------------------------
 
-float CBackgroundObjects::speed = 5.0f;
+float CBackgroundObjects::speed = 6.0f;
 // -----------------------------------------------------------------------------------
 
 // ----------------------------- Класс объекты столкновений ------------------------------------
@@ -14,82 +14,194 @@ unsigned int CCollisionObjects::CollisionObjectsActiveCount = 0;
 
 //Конструктор
 CBird::CBird()
-    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), birdRect{}, prevBirdRect{}, currentBirdRgn{ 0 }
+    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), birdRect{}, prevBirdRect{}, currentBirdRgn{ 0 }, bodyBirdPoints{ 0 }, wingsPoints{ 0 }, birdWithWingsPoints{ 0 }
+    //lastWingChangeTimer(0), newChangeWingDelay(CConfig::FPS / 20)
 {
 }
 
-//Отрисовка верхнего крыла
-void CBird::DrawUpWingBird(HDC hdc)
+//Отрисовка тела
+void CBird::DrawBodyBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    const POINT upWingbirdPoints[upWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale}, {pos_x + 15 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale},
-                                          {pos_x + 15 * CConfig::SizeScale, pos_y}, {pos_x + 16 * CConfig::SizeScale, pos_y}, {pos_x + 29 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale},
-                                          {pos_x + 33 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 18 * CConfig::SizeScale},
-                                          {pos_x + 38 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale}, {pos_x + 43 * CConfig::SizeScale, pos_y + 21 * CConfig::SizeScale},{pos_x + 43 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 22 * CConfig::SizeScale},
-                                          {pos_x + 12 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x, pos_y + 15 * CConfig::SizeScale}, {pos_x, pos_y + 14 * CConfig::SizeScale}, {pos_x + 1 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale}, {pos_x + 8 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale},
-                                          {pos_x + 10 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale} };
+    bodyBirdPoints[0] = { pos_x + 12, pos_y + 13 };
+    bodyBirdPoints[1] = { pos_x + 30, pos_y + 13 };
+    bodyBirdPoints[2] = { pos_x + 33, pos_y + 17 };
+    bodyBirdPoints[3] = { pos_x + 45, pos_y + 17 };
+    bodyBirdPoints[4] = { pos_x + 45, pos_y + 18 };
+    bodyBirdPoints[5] = { pos_x + 38, pos_y + 18 };
+    bodyBirdPoints[6] = { pos_x + 38, pos_y + 21 };
+    bodyBirdPoints[7] = { pos_x + 43, pos_y + 21 };
+    bodyBirdPoints[8] = { pos_x + 43, pos_y + 22 };
+    bodyBirdPoints[9] = { pos_x + 17, pos_y + 22 };
+    bodyBirdPoints[10] = { pos_x + 12, pos_y + 15 };
+    bodyBirdPoints[11] = { pos_x + 0, pos_y + 15 };
+    bodyBirdPoints[12] = { pos_x + 0, pos_y + 14 };
+    bodyBirdPoints[13] = { pos_x + 2, pos_y + 14 };
+    bodyBirdPoints[14] = { pos_x + 8, pos_y + 7 };
+    bodyBirdPoints[15] = { pos_x + 10, pos_y + 7 };
 
-    Polygon(hdc, upWingbirdPoints, upWingPointsAmount);
+    Polygon(hdc, bodyBirdPoints, bodyBirdPointsAmount);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
     Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-
-    currentBirdRgn = CreatePolygonRgn(upWingbirdPoints, upWingPointsAmount, 2);
 }
 
-//Отрисовка нижнего крыла
-void CBird::DrawDownWingBird(HDC hdc)
+
+//void CBird::ClearUpWing(HDC hdc)
+//{
+//    CConfig::backgroundColor.SelectColor(hdc);
+//
+//    int pos_x = static_cast<int>(pos_X);
+//    int pos_y = static_cast<int>(pos_Y);
+//
+//    pos_y -= 7;
+//
+//    wingsPoints[1] = { pos_x + 17, pos_y + 3 };
+//    wingsPoints[2] = { pos_x + 15, pos_y + 3 };
+//    wingsPoints[3] = { pos_x + 15, pos_y + 0 };
+//    wingsPoints[0] = { pos_x + 17, pos_y + 12 };
+//    wingsPoints[4] = { pos_x + 16, pos_y + 0 };
+//    wingsPoints[5] = { pos_x + 29, pos_y + 12 };
+//    wingsPoints[6] = { pos_x + 30, pos_y + 12 };
+//
+//    Polygon(hdc, wingsPoints, wingsPointsAmount);
+//}
+
+//void CBird::ClearDownWing(HDC hdc)
+//{
+//    CConfig::backgroundColor.SelectColor(hdc);
+//
+//    int pos_x = static_cast<int>(pos_X);
+//    int pos_y = static_cast<int>(pos_Y);
+//
+//    pos_y += 7;
+//
+//    wingsPoints[0] = { pos_x + 24, pos_y + 16 };
+//    wingsPoints[1] = { pos_x + 24, pos_y + 17 };
+//    wingsPoints[2] = { pos_x + 19, pos_y + 23 };
+//    wingsPoints[3] = { pos_x + 18, pos_y + 23 };
+//    wingsPoints[4] = { pos_x + 18, pos_y + 26 };
+//    wingsPoints[5] = { pos_x + 17, pos_y + 26 };
+//    wingsPoints[6] = { pos_x + 17, pos_y + 16 };
+//
+//    Polygon(hdc, wingsPoints, wingsPointsAmount);
+//}
+
+//Отрисовка верхнего крыла
+void CBird::DrawUpWingBird(HDC hdc)
 {
+    //ClearDownWing(hdc);
+
     CConfig::mainBrightColor.SelectColor(hdc);
 
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    const POINT downWingbirdPoints[downWingPointsAmount]{ {pos_x + 12 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 30 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale}, {pos_x + 33 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale}, {pos_x + 45 * CConfig::SizeScale, pos_y + 10 * CConfig::SizeScale},
-                                          {pos_x + 45 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale}, {pos_x + 38 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale}, {pos_x + 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale},
-                                          {pos_x + 43 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x + 24 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale}, {pos_x + 24 * CConfig::SizeScale, pos_y + 17 * CConfig::SizeScale}, {pos_x + 19 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale},
-                                          {pos_x + 18 * CConfig::SizeScale, pos_y + 23 * CConfig::SizeScale}, {pos_x + 18 * CConfig::SizeScale, pos_y + 26 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 26 * CConfig::SizeScale}, {pos_x + 17 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale},
-                                          {pos_x + 12 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale}, {pos_x, pos_y + 8 * CConfig::SizeScale}, {pos_x, pos_y + 7 * CConfig::SizeScale}, {pos_x + 1 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale}, {pos_x + 8 * CConfig::SizeScale, pos_y},
-                                          {pos_x + 10 * CConfig::SizeScale, pos_y} };
+    wingsPoints[0] = { pos_x + 17, pos_y + 12 };
+    wingsPoints[1] = { pos_x + 17, pos_y + 3 };
+    wingsPoints[2] = { pos_x + 15, pos_y + 3 };
+    wingsPoints[3] = { pos_x + 15, pos_y + 0 };
+    wingsPoints[4] = { pos_x + 16, pos_y + 0 };
+    wingsPoints[5] = { pos_x + 29, pos_y + 12 };
+    wingsPoints[6] = { pos_x + 30, pos_y + 12 };
 
-    Polygon(hdc, downWingbirdPoints, downWingPointsAmount);
+    //const POINT upWingPoints[wingsPointsAmount]{ {pos_x + 17, pos_y + 12}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},{pos_x + 15, pos_y + 0}, {pos_x + 16, pos_y + 0}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 12} };
 
-    //Фоновые пропуски
-    CConfig::backgroundColor.SelectColor(hdc);
+    Polygon(hdc, wingsPoints, wingsPointsAmount);
 
-    //Глаз
-    Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    //Регион для проверки столкновений
+    //TO DO: !!!
+    birdWithWingsPoints[0] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[1] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[2] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[3] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[4] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[5] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[6] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[7] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[8] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[9] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[10] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[11] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[12] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[13] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[14] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[15] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[16] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[17] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[18] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[19] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[20] = { pos_x + 12, pos_y + 13 };
+    birdWithWingsPoints[21] = { pos_x + 12, pos_y + 13 };
 
-    currentBirdRgn = CreatePolygonRgn(downWingbirdPoints, downWingPointsAmount, 2);
+    const POINT birdWithWingsPoints[birdWithWingsPointsAmount]{ {pos_x + 12, pos_y + 13}, {pos_x + 17, pos_y + 13}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},{pos_x + 15, pos_y + 0}, {pos_x + 16, pos_y + 0}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 13},
+                         {pos_x + 33, pos_y + 17}, {pos_x + 45, pos_y + 17}, {pos_x + 45, pos_y + 18}, {pos_x + 38, pos_y + 18},{pos_x + 38, pos_y + 21}, {pos_x + 43, pos_y + 21},{pos_x + 43, pos_y + 22},
+                         {pos_x + 17, pos_y + 22}, {pos_x + 12, pos_y + 15}, {pos_x + 0, pos_y + 15}, {pos_x + 0, pos_y + 14}, {pos_x + 1, pos_y + 14}, {pos_x + 8, pos_y + 7}, {pos_x + 10, pos_y + 7} };
+
+    currentBirdRgn = CreatePolygonRgn(birdWithWingsPoints, birdWithWingsPointsAmount, 2);
+}
+
+//Отрисовка нижнего крыла
+void CBird::DrawDownWingBird(HDC hdc)
+{
+    //ClearUpWing(hdc);
+
+    CConfig::mainBrightColor.SelectColor(hdc);
+
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y) + 7;
+
+    //TO DO: Заменить на доступ к элементам массива через индекс [] и замену
+
+    const POINT downWingPoints[wingsPointsAmount]{ {pos_x + 24, pos_y + 16}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23},{pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 16} };
+
+    Polygon(hdc, downWingPoints, wingsPointsAmount);
+
+    //Регион для проверки столкновений
+
+    const POINT downWingBirdPoints[birdWithWingsPointsAmount]{ {pos_x + 12, pos_y + 6}, {pos_x + 30, pos_y + 6}, {pos_x + 33, pos_y + 10}, {pos_x + 45, pos_y + 10},{pos_x + 45, pos_y + 11}, {pos_x + 38, pos_y + 11}, {pos_x + 38, pos_y + 14}, {pos_x + 43, pos_y + 14},
+                    {pos_x + 43, pos_y + 15}, {pos_x + 24, pos_y + 15}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23},{pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 15},
+                    {pos_x + 12, pos_y + 8}, {pos_x + 0, pos_y + 8}, {pos_x + 0, pos_y + 7}, {pos_x + 1, pos_y + 7}, {pos_x + 8, pos_y + 0}, {pos_x + 10, pos_y + 0} };
+
+    currentBirdRgn = CreatePolygonRgn(downWingBirdPoints, birdWithWingsPointsAmount, 2);
 }
 
 //Анимация крыльев
 void CBird::MoveWings(HDC hdc)
-{
+{        
+    //if (lastWingChangeTimer + newChangeWingDelay <= CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
+    //{
+    //    lastWingChangeTimer = CConfig::currentFrameValue + newChangeWingDelay;
+
+    //    if (upWing == true)
+    //    {
+    //        DrawUpWingBird(hdc);
+    //        upWing = false;
+    //    }
+
+    //    else
+    //    {
+    //        DrawDownWingBird(hdc);
+    //        upWing = true;
+    //    }
+    //}
+
     if (static_cast<int>(CConfig::slowCurrentFrameValue) % 2 == 0)
     {
-        if (upWing == false)
-            pos_Y -= 7.0f;
-
-        upWing = true;
         DrawUpWingBird(hdc);
-        height = upWingHeight;
+        upWing = false;
     }
     else
     {
-        if (upWing == true)
-            pos_Y += 7.0f;
-
-        upWing = false;
         DrawDownWingBird(hdc);
-        height = downWingHeight;
+        upWing = true;
     }
 }
 
@@ -103,6 +215,7 @@ void CBird::Draw(HDC hdc, RECT& paintArea)
         return;
     }
 
+    DrawBodyBird(hdc);
     MoveWings(hdc);
 }
 
@@ -133,6 +246,7 @@ void CBird::Redraw()
     birdRect.right = birdRect.left + width * CConfig::SizeScale;
     birdRect.bottom = birdRect.top + height * CConfig::SizeScale;
 
+    //TO DO Попробовать InvalidateRgn
     InvalidateRect(CConfig::Hwnd, &prevBirdRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &birdRect, FALSE);
 }
@@ -172,6 +286,9 @@ float CBird::GetPos_X()
 void CBird::Activate()
 {
     if (CCollisionObjects::CollisionObjectsActiveCount >= CCollisionObjects::maxCollisionObjectsActive)
+        return;
+
+    if (CConfig::currentFrameValue < CConfig::FPS * 10)
         return;
 
     active = true;
@@ -243,47 +360,7 @@ void CCactus::Draw(HDC hdc, RECT& paintArea)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Ствол кактуса
-    //Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 48 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 10 * CConfig::SizeScale, pos_y, pos_x + 12 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
-
-    ////Левая ветка кактуса
-    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 15 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 * CConfig::SizeScale);
-
-    ////Правая ветка кактуса
-    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
-
-    //Левая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
-
-    //Правая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
-
-    //Левая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 8 * CConfig::SizeScale, pos_y + 31 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x, pos_y + 15 - 6 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 13 - 6 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 15 - 6 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 29 - 6 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 30 - 6 * CConfig::SizeScale);
-
-    //Правая ветка кактуса вариант 2
-    //Rectangle(hdc, pos_x + 14 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 19 * CConfig::SizeScale, pos_y + 29 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 19 * CConfig::SizeScale, pos_y + 27 * CConfig::SizeScale, pos_x + 21 * CConfig::SizeScale, pos_y + 28 * CConfig::SizeScale);
-
-    const POINT cactusPoints[]{ {pos_x + 10, pos_y}, {pos_x + 11, pos_y}, {pos_x + 13, pos_y + 2}, {pos_x + 13, pos_y + 27},
+    const POINT cactusPoints[cactusPointsAmount]{ {pos_x + 10, pos_y}, {pos_x + 11, pos_y}, {pos_x + 13, pos_y + 2}, {pos_x + 13, pos_y + 27},
                                 {pos_x + 19, pos_y + 27}, {pos_x + 19, pos_y + 13}, {pos_x + 20, pos_y + 11}, {pos_x + 21, pos_y + 13},
                                 {pos_x + 21, pos_y + 26}, {pos_x + 18, pos_y + 28}, {pos_x + 13, pos_y + 28}, {pos_x + 13, pos_y + 47},
                                 {pos_x + 8, pos_y + 47}, {pos_x + 8, pos_y + 30}, {pos_x + 3, pos_y + 30}, {pos_x, pos_y + 28},

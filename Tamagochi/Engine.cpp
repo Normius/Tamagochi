@@ -4,7 +4,7 @@
 
 // ------------ Конструктор
 CEngine::CEngine()
-    :TimerId(WM_USER + 1), GameState(EGameState::RunLevel), CollisionObjects{ 0 }, lastCloudTimerDisappear(0), newCloudTimerDelay(CConfig::FPS * 4),
+    :TimerId(WM_USER + 1), GameState(EGameState::StartRunLevel), CollisionObjects{ 0 }, lastCloudTimerDisappear(0), newCloudTimerDelay(CConfig::FPS * 4),
     lastCollisionObjectTimerDisappear(0), newCollisionObjectTimerDelay(CConfig::FPS * 2), lastRoadBumpTimerDisappear(0), newRoadBumpTimerDelay(CConfig::FPS * 2), 
     currentMaxObjectsSpeed(0.0f), objectRestDistance(0.0f)
 {
@@ -76,10 +76,10 @@ void CEngine::InitEngine(HWND hwnd)
 
     if (GameState == EGameState::FreeMovingLevel)
     {
-        Bird.TestActivate(400.0f, Bird.startPos_Y);
+        Bird.TestActivate(600.0f, Bird.startPos_Y);
         Bird.Redraw();
 
-        Cactuses[0].TestActivate(600.0f, CCactus::startPos_Y);
+        Cactuses[0].TestActivate(400.0f, CCactus::startPos_Y);
         Cactuses[0].Redraw();
     }
 }
@@ -88,27 +88,6 @@ void CEngine::InitEngine(HWND hwnd)
 // ------------ Отрисовка кадра
 void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
 {
-    /*if (GameState != EGameState::LoseRunLevel)
-    {
-        for (int i = 0; i < CConfig::CConfig::MaxClouds; ++i)
-        {
-            Clouds[i].Clear(hdc, paintArea);
-        }
-
-        RoadLine.Clear(hdc, paintArea);
-        RoadStones[0].Clear(hdc, paintArea);
-        RoadStones[1].Clear(hdc, paintArea);
-        RoadBumps[0].Clear(hdc, paintArea);
-        RoadBumps[1].Clear(hdc, paintArea);
-
-        for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
-        {
-            CollisionObjects[i]->Clear(hdc, paintArea);
-        }
-
-        Dinosaur.Clear(hdc, paintArea);
-    }*/
-
     for (int i = 0; i < CConfig::CConfig::MaxClouds; ++i)
     {
         Clouds[i].Clear(hdc, paintArea);
@@ -159,39 +138,44 @@ int CEngine::OnKey(EKeyType keyType, bool keyPressed) //keyPressed == true (на
     {
     case EKeyType::LeftKey:
         if (GameState == EGameState::FreeMovingLevel || GameState == EGameState::RunLevel)
-        {
             Dinosaur.CheckHorizontalDirection(true, keyPressed);
-        }
+
         break;
 
     case EKeyType::RightKey:
         if (GameState == EGameState::FreeMovingLevel || GameState == EGameState::RunLevel)
-        {
             Dinosaur.CheckHorizontalDirection(false, keyPressed);
-        }
+
         break;
 
     case EKeyType::DownKey:
         if (GameState == EGameState::FreeMovingLevel || GameState == EGameState::RunLevel)
-        {
             Dinosaur.SetBodyState(EDinosaurBodyState::Crawling);
-            break;
-        }
+
+        break;
 
     case EKeyType::UpKey:
         if (GameState == EGameState::FreeMovingLevel || GameState == EGameState::RunLevel)
-        {
             Dinosaur.SetBodyState(EDinosaurBodyState::Standing);
-            break;
-        }
+
+        break;
 
     case EKeyType::SpaceKey:
+
+        if (GameState == EGameState::StartRunLevel)
+        {
+            GameState = EGameState::RunLevel;
+            Dinosaur.SetLevelState(EDinosaurLevelState::RunLevel);
+        }
+
         if (GameState == EGameState::FreeMovingLevel || GameState == EGameState::RunLevel)
         {
             if (keyPressed)
                 Dinosaur.Jump();
-            break;
+            
         }
+
+        break;
     }
 
     return 0;
@@ -225,6 +209,20 @@ bool CEngine::CheckCollisionObjectsDistance()
     return reachedMinDistance;
 }
 
+void CEngine::CheckCollisions()
+{
+    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+    {
+            if (CollisionObjects[i]->CheckHit(Dinosaur.dinoCollisionRects, Dinosaur.collisionRectsAmount) == true)
+            {
+                GameState = EGameState::LoseRunLevel;
+                CBackgroundObjects::speed = 0.0f;
+                Dinosaur.collision = true;
+                return;
+            }
+    }
+}
+
 // ------------ Метод для обработки действий по таймеру
 int CEngine::OnTimer()
 {
@@ -240,7 +238,7 @@ int CEngine::OnTimer()
 
     //--------------------------------------------------- Активация движущихся объектов ------------------------------------------------
     //Активируем по таймеру неровности на дороге
-    if (lastRoadBumpTimerDisappear + newRoadBumpTimerDelay == CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
+    if (lastRoadBumpTimerDisappear + newRoadBumpTimerDelay <= CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
     {
         newRoadBumpTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(1, 4); //Случайное время до появления нового облака
         lastRoadBumpTimerDisappear = CConfig::currentFrameValue + newRoadBumpTimerDelay; //Обновляем время последнего исчезновения облака
@@ -253,7 +251,7 @@ int CEngine::OnTimer()
     }
 
     //Активируем облака по таймеру
-    if (lastCloudTimerDisappear + newCloudTimerDelay == CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
+    if (lastCloudTimerDisappear + newCloudTimerDelay <= CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
     {
         newCloudTimerDelay = CConfig::FPS / 2 * CConfig::GetRandom(2, 4); //Случайное время до появления нового облака
         lastCloudTimerDisappear = CConfig::currentFrameValue + newCloudTimerDelay; //Обновляем время последнего исчезновения облака
@@ -275,7 +273,7 @@ int CEngine::OnTimer()
         RoadStones[0].Activate();
 
     //Активируем по таймеру случайный объект столкновения
-    if (lastCollisionObjectTimerDisappear + newCollisionObjectTimerDelay == CConfig::currentFrameValue)
+    if (lastCollisionObjectTimerDisappear + newCollisionObjectTimerDelay <= CConfig::currentFrameValue)
     {
         newCollisionObjectTimerDelay = CConfig::FPS / 4 * CConfig::GetRandom(1, 4);
         lastCollisionObjectTimerDisappear = CConfig::currentFrameValue + newCollisionObjectTimerDelay;
@@ -308,25 +306,6 @@ int CEngine::OnTimer()
 
     //--------------------------------------------------- Передвижение движущихся объектов ------------------------------------------------
     
-    if (GameState == EGameState::RunLevel)
-    {
-        //Двигаем неровности на дороге
-        for (int i = 0; i < CConfig::MaxRoadBumps; i++)
-        {
-            RoadBumps[i].Move(CBackgroundObjects::speed);
-        } 
-
-        //Двигаем камни (штрихи) на дороге
-        RoadStones[0].Move(CBackgroundObjects::speed);
-        RoadStones[1].Move(CBackgroundObjects::speed);
-
-        //Двигаем облака
-        for (int i = 0; i < CConfig::MaxClouds; i++)
-        {
-            Clouds[i].Move(Clouds[i].cloudsSpeed);
-        }
-    }
-
     //Двигаем объектов столкновения на небольшие шажки (вытащили из метода Move)
     currentMaxObjectsSpeed = GetMaxSpeed(); //Получаем текущую максимальную скорость среди всех объектов
     objectRestDistance += currentMaxObjectsSpeed; //Максимальное расстояние, на которое необходимо сдвинуть объекты в течение текущего кадра
@@ -339,52 +318,91 @@ int CEngine::OnTimer()
         Dinosaur.MoveVertical(currentMaxObjectsSpeed);
         Dinosaur.SetDinoCollisionRects();
 
-        for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+        CheckCollisions(); //Проверяем столкновения после сдвига Динозавра
+
+        /*if (Dinosaur.collision == true)
+            break;*/
+
+        if (Dinosaur.collision == true)
         {
-            if (CollisionObjects[i] != 0)
+            Dinosaur.Redraw();
+            return 0;
+        }
+
+        if (GameState == EGameState::RunLevel)
+        {
+            for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
             {
-                if (CollisionObjects[i]->CheckHit(Dinosaur.dinoCollisionRects, Dinosaur.collisionRectsAmount) == true)
-                {
-                     GameState = EGameState::LoseRunLevel;
-                    CBackgroundObjects::speed = 0.0f;
-                    Dinosaur.collision = true;
-                    Beep(600, 25);
-                    break;
-                }
+                CollisionObjects[i]->Move(currentMaxObjectsSpeed);
+            }
+        }
+
+        //TO DO: Не передвигать объекты после столкновения!!!
+        CheckCollisions(); //Проверяем столкновения после сдвига птиц и кактусов
+
+        if (Dinosaur.collision == true)
+        {
+            for (int i = 0; i <= CConfig::MaxCollisionObjects - 1; ++i)
+            {
+                if (CollisionObjects[i] != 0)
+                    CollisionObjects[i]->Redraw();
             }
 
-            if (GameState == EGameState::RunLevel)
-                CollisionObjects[i]->Move(currentMaxObjectsSpeed);
+            Dinosaur.Redraw();
+
+            return 0;
+            
         }
-        if (Dinosaur.collision == true)
-            break;
+        
+        /*if (Dinosaur.collision == true)
+            break;*/
 
         objectRestDistance -= CConfig::minShift; //Вычитаем минимальный шаг. Таким образом Дино и объекты столкновения проходят одинаковое количество шагов (но разных по длине +-CConfig::minShift)
     }
     //---------------------------------------------------------------------------------------------------
 
+
     Dinosaur.Redraw();
 
     //Перерисовка (Redraw) объектов столкновения (вытащили из метода Move)
-    if (GameState == EGameState::RunLevel)
+    for (int i = 0; i <= CConfig::MaxCollisionObjects - 1; ++i)
     {
-        for (int i = 0; i <= CConfig::MaxCollisionObjects - 1; ++i)
-        {
-            if (CollisionObjects[i] != 0)
-                CollisionObjects[i]->Redraw();
-        }
+        if (CollisionObjects[i] != 0)
+            CollisionObjects[i]->Redraw();
     }
 
+
+
+    //Передвижение и перерисовка объектов заднего плана
+    if (GameState == EGameState::RunLevel)
+    {
+        //Двигаем неровности на дороге
+        for (int i = 0; i < CConfig::MaxRoadBumps; i++)
+        {
+            RoadBumps[i].Move(CBackgroundObjects::speed);
+        }
+
+        //Двигаем камни (штрихи) на дороге
+        RoadStones[0].Move(CBackgroundObjects::speed);
+        RoadStones[1].Move(CBackgroundObjects::speed);
+
+        //Двигаем облака
+        for (int i = 0; i < CConfig::MaxClouds; i++)
+        {
+            Clouds[i].Move(Clouds[i].cloudsSpeed);
+        }
+    }
+    //---------------------------------------------------------------------------------------------------
 
     if (GameState == EGameState::RunLevel)
         CBackgroundObjects::speed += CConfig::backgroundAcceleration;
 
     //TO DO: !!!Вынести в метод Динозавра, связанный с падением
     //Увеличиваем сдвиг при падении, то есть ускоряемся при движении вниз (значение подобрано вручную)
-    if (GameState == EGameState::RunLevel)
+    if (GameState == EGameState::RunLevel || GameState == EGameState::FreeMovingLevel)
     {
         if (static_cast<int>(Dinosaur.pos_Y) + Dinosaur.height != Dinosaur.OnGroundLegsPos_Y) //Если Дино на земле, ничего не делаем
-            Dinosaur.verticalSpeed += 4.8f;
+            Dinosaur.verticalSpeed += 7.15f;
     }
 
     return 0;

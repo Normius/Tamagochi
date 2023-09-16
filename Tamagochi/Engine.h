@@ -39,17 +39,18 @@ public:
     int OnTimer();
     float GetMaxSpeed();
     bool CheckCollisionObjectsDistance();
+    void CheckCollisions();
 
     const int TimerId; //ID таймера для работы ф-ции таймера в Main
 
-    int lastCloudTimerDisappear;
-    int newCloudTimerDelay;
+    unsigned int lastCloudTimerDisappear;
+    unsigned int newCloudTimerDelay;
 
-    int lastCollisionObjectTimerDisappear;
-    int newCollisionObjectTimerDelay;
+    unsigned int lastCollisionObjectTimerDisappear;
+    unsigned int newCollisionObjectTimerDelay;
 
-    int lastRoadBumpTimerDisappear;
-    int newRoadBumpTimerDelay;
+    unsigned int lastRoadBumpTimerDisappear;
+    unsigned int newRoadBumpTimerDelay;
 
     float currentMaxObjectsSpeed;
     float objectRestDistance;

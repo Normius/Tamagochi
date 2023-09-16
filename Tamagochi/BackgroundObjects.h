@@ -51,26 +51,38 @@ public:
     void TestActivate(float pos_x, float pos_y);
 
     static constexpr float startPos_X = 800.0f;
-    static constexpr float startPos_Y = 130.0f;
+    static constexpr float startPos_Y = 150.0f;
 
     float pos_X;
     float pos_Y;
 
+    //unsigned int lastWingChangeTimer;
+    //unsigned int newChangeWingDelay;
+
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
     
 private:
+    void DrawBodyBird(HDC hdc);
+    void ClearUpWing(HDC hdc);
+    void ClearDownWing(HDC hdc);
     void DrawUpWingBird(HDC hdc);
     void DrawDownWingBird(HDC hdc);
     void MoveWings(HDC hdc);
 
-    static constexpr int upWingHeight = 23;
+    static constexpr int upWingHeight = 23 + 12;
     static constexpr int downWingHeight = 27;
     static constexpr int width = 46;
 
-    static constexpr unsigned int upWingPointsAmount = 22;
-    static constexpr unsigned int downWingPointsAmount = 22;
+    static constexpr unsigned int bodyBirdPointsAmount = 16;
+    static constexpr unsigned int wingsPointsAmount = 7;
+    static constexpr unsigned int birdWithWingsPointsAmount = bodyBirdPointsAmount + wingsPointsAmount - 1;
+
+    POINT bodyBirdPoints[bodyBirdPointsAmount];
+    POINT wingsPoints[wingsPointsAmount];
+    POINT birdWithWingsPoints[birdWithWingsPointsAmount];
 
     HRGN currentBirdRgn;
+    HRGN prevBirdRgn;
 
     int height;
 
@@ -111,7 +123,10 @@ public:
 private:
     static constexpr int height = 48;
     static constexpr int width = 22;
+
+    
     static constexpr unsigned int cactusPointsAmount = 22;
+    static POINT cactusPoints[cactusPointsAmount];
 
     HRGN currentCactusRgn;
 
@@ -132,7 +147,7 @@ public:
     void Clear(HDC hdc, RECT& paintArea) override;
 
     static constexpr float pos_X = 0.0f;
-    static constexpr float pos_Y = 186.0f;
+    static constexpr float pos_Y = 186.0f; //186
 
     static constexpr int lineHeight = 1; //высота линии дороги
     static constexpr int lineWidth = CConfig::rightBorder; //ширина линии дороги (не домножаем на SizeScale, так как рисуется на ширину всего экрана)
