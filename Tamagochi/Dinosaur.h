@@ -42,6 +42,7 @@ public:
     void Draw(HDC hdc, RECT& paintArea);
     void Clear(HDC hdc, RECT& paintArea);
     void Redraw();
+    void UpdateRgnPoints();
     void MoveLegsRight(HDC hdc);
     void MoveLegsLeft(HDC hdc);
     void SetBodyState(EDinosaurBodyState newstate);
@@ -55,7 +56,6 @@ public:
     void DrawRightEye(HDC hdc);
     void SetDinoCollisionRects();
 
-    static int count;
     static constexpr int StandingHeight = 44;
     static constexpr int CrawlingHeight = 26;
     static constexpr int StandingWidth = 44;
@@ -80,6 +80,11 @@ public:
     float horizontalSpeed;
     float verticalSpeed;
 
+    int currentRgnPos_X;
+    int currentRgnPos_Y;
+    int prevRgnPos_X;
+    int prevRgnPos_Y;
+    
     bool collision;
     bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
         
@@ -106,9 +111,24 @@ private:
     void DrawRightCrawling(HDC hdc);
     void DrawLeftCrawling(HDC hdc);
 
+    static constexpr unsigned int dinosaurBodyPointsAmount = 26; //Количество точек без ног, только тело для отрисовки тела (ноги рисуются прямоугольниками)
+    static constexpr unsigned int dinosaurWithLegsPointsAmount = 29; //Количество точек вместе с ногами (последние точки) для установки региона перерисовки
+
+    POINT currentDinosaurPoints[dinosaurWithLegsPointsAmount];
+    POINT prevDinosaurPoints[dinosaurWithLegsPointsAmount];
+
     EDinosaurBodyState DinosaurBodyState;
     EDinosaurLevelState DinosaurLevelState;
 
-    RECT dinoRect, prevDinoRect;
+    /*HRGN currentPolyRgn;
+    HRGN prevPolyRgn;
+
+    HRGN prevRectRgn;
+    HRGN currentRectRgn;*/
+
+    RECT currentRect;
+    RECT prevRect;
+
+    /*RECT dinoRect, prevDinoRect;*/
 };
 // -----------------------------------------------------------------------------------

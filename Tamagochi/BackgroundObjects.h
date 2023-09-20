@@ -24,6 +24,7 @@ public:
     virtual bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) = 0;
     virtual bool CheckActive() = 0;
     virtual float GetPos_X() = 0;
+    //virtual void Deactivate() = 0; //Активирует объект для отображения на экране и анимации после того, как он был неактивен
 
     static constexpr unsigned int maxCollisionObjectsActive = 2; //Максимальное количество активных объектов (на экране)
     static constexpr float minDistanceBetweenCollisionObjects = 200.0f;
@@ -41,12 +42,15 @@ public:
     void Redraw() override;
     void Move(float maxSpeed) override;
     void Clear(HDC hdc, RECT& paintArea) override;
+    void UpdateDrawRgnPoints();
+    void UpdateCollisionRgnPoints();
 
     bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
     float GetPos_X() override;
 
     void Activate() override;
+    //void Deactivate() override;
 
     void TestActivate(float pos_x, float pos_y);
 
@@ -56,6 +60,12 @@ public:
     float pos_X;
     float pos_Y;
 
+    int currentRgnPos_X;
+    int currentRgnPos_Y;
+
+    int prevRgnPos_X;
+    int prevRgnPos_Y;
+
     //unsigned int lastWingChangeTimer;
     //unsigned int newChangeWingDelay;
 
@@ -63,33 +73,35 @@ public:
     
 private:
     void DrawBodyBird(HDC hdc);
-    void ClearUpWing(HDC hdc);
-    void ClearDownWing(HDC hdc);
     void DrawUpWingBird(HDC hdc);
     void DrawDownWingBird(HDC hdc);
     void MoveWings(HDC hdc);
+    void ChangeWings(bool upwing);
 
-    static constexpr int upWingHeight = 23 + 12;
+    static constexpr int upWingHeight = 23; //23+12
     static constexpr int downWingHeight = 27;
     static constexpr int width = 46;
 
-    static constexpr unsigned int bodyBirdPointsAmount = 16;
-    static constexpr unsigned int wingsPointsAmount = 7;
-    static constexpr unsigned int birdWithWingsPointsAmount = bodyBirdPointsAmount + wingsPointsAmount - 1;
+    //static constexpr unsigned int bodyBirdPointsAmount = 16;
+    //static constexpr unsigned int wingsPointsAmount = 7;
+    static constexpr unsigned int birdWithWingsPointsAmount = 22;
 
-    POINT bodyBirdPoints[bodyBirdPointsAmount];
-    POINT wingsPoints[wingsPointsAmount];
-    POINT birdWithWingsPoints[birdWithWingsPointsAmount];
+    POINT currentBirdPoints[birdWithWingsPointsAmount];
+    POINT prevBirdPoints[birdWithWingsPointsAmount];
 
-    HRGN currentBirdRgn;
-    HRGN prevBirdRgn;
+    HRGN currentPolyRgn;
+    HRGN prevPolyRgn;
+    HRGN collisionRegion;
+
+    HRGN currentRectRgn;
+    HRGN prevRectRgn;
 
     int height;
 
     bool upWing;
 
-    RECT birdRect;
-    RECT prevBirdRect;
+    //RECT birdRect;
+    //RECT prevBirdRect;
 };
 // -----------------------------------------------------------------------------------
 
@@ -103,8 +115,11 @@ public:
     void Move(float maxSpeed) override;
     void Draw(HDC hdc, RECT& paintArea) override;
     void Activate() override;
+    //void Deactivate() override;
     void Redraw() override;
     void Clear(HDC hdc, RECT& paintArea) override;
+    void UpdateDrawRgnPoints();
+    void UpdateCollisionRgnPoints();
 
     bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) override;
     bool CheckActive() override;
@@ -118,6 +133,12 @@ public:
     float pos_X;
     float pos_Y;
 
+    int prevRgnPos_X;
+    int prevRgnPos_Y;
+
+    int currentRgnPos_X;
+    int currentRgnPos_Y;
+
     bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
 
 private:
@@ -126,12 +147,16 @@ private:
 
     
     static constexpr unsigned int cactusPointsAmount = 22;
-    static POINT cactusPoints[cactusPointsAmount];
+    POINT currentCactusPoints[cactusPointsAmount];
+    POINT prevCactusPoints[cactusPointsAmount];
+    //POINT collisionCactusPoints[cactusPointsAmount];
 
-    HRGN currentCactusRgn;
+    HRGN currentPolyRgn;
+    HRGN prevPolyRgn;
+    //HRGN collisionPolyRgn;
 
-    RECT cactusRect;
-    RECT prevCactusRect;
+    HRGN prevRectRgn;
+    HRGN currentRectRgn;
 };
 // -----------------------------------------------------------------------------------
 
@@ -174,7 +199,7 @@ public:
     void FirstActivate();
 
     static constexpr float startPos_X = 10.0f;
-    static constexpr float startPos_Y = 188.0f;
+    static constexpr float startPos_Y = 188.0f; //188
     static constexpr float restartPos_X = 800.0f;
     
     static constexpr int stonesHeight = 1; //высота камня дороги

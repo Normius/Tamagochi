@@ -2,7 +2,7 @@
 
 // ----------------------------- Класс задний фон ------------------------------------
 
-float CBackgroundObjects::speed = 6.0f;
+float CBackgroundObjects::speed = 5.0f; //5
 // -----------------------------------------------------------------------------------
 
 // ----------------------------- Класс объекты столкновений ------------------------------------
@@ -14,222 +14,239 @@ unsigned int CCollisionObjects::CollisionObjectsActiveCount = 0;
 
 //Конструктор
 CBird::CBird()
-    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), birdRect{}, prevBirdRect{}, currentBirdRgn{ 0 }, bodyBirdPoints{ 0 }, wingsPoints{ 0 }, birdWithWingsPoints{ 0 }
-    //lastWingChangeTimer(0), newChangeWingDelay(CConfig::FPS / 20)
+    :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), currentBirdPoints{ 0 }, prevBirdPoints{ 0 }, currentPolyRgn{ 0 }, prevPolyRgn{ 0 }, currentRgnPos_X(0), currentRgnPos_Y(0), 
+    currentRectRgn{ 0 }, prevRectRgn{ 0 }
 {
 }
 
 //Отрисовка тела
 void CBird::DrawBodyBird(HDC hdc)
 {
+    //CConfig::mainBrightColor.SelectColor(hdc);
+
+    //int pos_x = static_cast<int>(pos_X);
+    //int pos_y = static_cast<int>(pos_Y);
+
+    //currentBirdPoints[0] = { pos_x + 12, pos_y + 13 };
+    //currentBirdPoints[1] = { pos_x + 30, pos_y + 13 };
+    //currentBirdPoints[2] = { pos_x + 33, pos_y + 17 };
+    //currentBirdPoints[3] = { pos_x + 45, pos_y + 17 };
+    //currentBirdPoints[4] = { pos_x + 45, pos_y + 18 };
+    //currentBirdPoints[5] = { pos_x + 38, pos_y + 18 };
+    //currentBirdPoints[6] = { pos_x + 38, pos_y + 21 };
+    //currentBirdPoints[7] = { pos_x + 43, pos_y + 21 };
+    //currentBirdPoints[8] = { pos_x + 43, pos_y + 22 };
+    //currentBirdPoints[9] = { pos_x + 17, pos_y + 22 };
+    //currentBirdPoints[10] = { pos_x + 12, pos_y + 15 };
+    //currentBirdPoints[11] = { pos_x + 0, pos_y + 15 };
+    //currentBirdPoints[12] = { pos_x + 0, pos_y + 14 };
+    //currentBirdPoints[13] = { pos_x + 2, pos_y + 14 };
+    //currentBirdPoints[14] = { pos_x + 8, pos_y + 7 };
+    //currentBirdPoints[bodyBirdPointsAmount - 1] = { pos_x + 10, pos_y + 7 };
+
+    //Polygon(hdc, currentBirdPoints, bodyBirdPointsAmount);
+
+    ////Фоновые пропуски
+    //CConfig::backgroundColor.SelectColor(hdc);
+
+    ////Глаз
+    //Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
+}
+
+//Отрисовка верхнего крыла
+void CBird::DrawUpWingBird(HDC hdc)
+{
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    bodyBirdPoints[0] = { pos_x + 12, pos_y + 13 };
-    bodyBirdPoints[1] = { pos_x + 30, pos_y + 13 };
-    bodyBirdPoints[2] = { pos_x + 33, pos_y + 17 };
-    bodyBirdPoints[3] = { pos_x + 45, pos_y + 17 };
-    bodyBirdPoints[4] = { pos_x + 45, pos_y + 18 };
-    bodyBirdPoints[5] = { pos_x + 38, pos_y + 18 };
-    bodyBirdPoints[6] = { pos_x + 38, pos_y + 21 };
-    bodyBirdPoints[7] = { pos_x + 43, pos_y + 21 };
-    bodyBirdPoints[8] = { pos_x + 43, pos_y + 22 };
-    bodyBirdPoints[9] = { pos_x + 17, pos_y + 22 };
-    bodyBirdPoints[10] = { pos_x + 12, pos_y + 15 };
-    bodyBirdPoints[11] = { pos_x + 0, pos_y + 15 };
-    bodyBirdPoints[12] = { pos_x + 0, pos_y + 14 };
-    bodyBirdPoints[13] = { pos_x + 2, pos_y + 14 };
-    bodyBirdPoints[14] = { pos_x + 8, pos_y + 7 };
-    bodyBirdPoints[15] = { pos_x + 10, pos_y + 7 };
-
-    Polygon(hdc, bodyBirdPoints, bodyBirdPointsAmount);
+    Polygon(hdc, currentBirdPoints, birdWithWingsPointsAmount);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-}
-
-
-//void CBird::ClearUpWing(HDC hdc)
-//{
-//    CConfig::backgroundColor.SelectColor(hdc);
-//
-//    int pos_x = static_cast<int>(pos_X);
-//    int pos_y = static_cast<int>(pos_Y);
-//
-//    pos_y -= 7;
-//
-//    wingsPoints[1] = { pos_x + 17, pos_y + 3 };
-//    wingsPoints[2] = { pos_x + 15, pos_y + 3 };
-//    wingsPoints[3] = { pos_x + 15, pos_y + 0 };
-//    wingsPoints[0] = { pos_x + 17, pos_y + 12 };
-//    wingsPoints[4] = { pos_x + 16, pos_y + 0 };
-//    wingsPoints[5] = { pos_x + 29, pos_y + 12 };
-//    wingsPoints[6] = { pos_x + 30, pos_y + 12 };
-//
-//    Polygon(hdc, wingsPoints, wingsPointsAmount);
-//}
-
-//void CBird::ClearDownWing(HDC hdc)
-//{
-//    CConfig::backgroundColor.SelectColor(hdc);
-//
-//    int pos_x = static_cast<int>(pos_X);
-//    int pos_y = static_cast<int>(pos_Y);
-//
-//    pos_y += 7;
-//
-//    wingsPoints[0] = { pos_x + 24, pos_y + 16 };
-//    wingsPoints[1] = { pos_x + 24, pos_y + 17 };
-//    wingsPoints[2] = { pos_x + 19, pos_y + 23 };
-//    wingsPoints[3] = { pos_x + 18, pos_y + 23 };
-//    wingsPoints[4] = { pos_x + 18, pos_y + 26 };
-//    wingsPoints[5] = { pos_x + 17, pos_y + 26 };
-//    wingsPoints[6] = { pos_x + 17, pos_y + 16 };
-//
-//    Polygon(hdc, wingsPoints, wingsPointsAmount);
-//}
-
-//Отрисовка верхнего крыла
-void CBird::DrawUpWingBird(HDC hdc)
-{
-    //ClearDownWing(hdc);
-
-    CConfig::mainBrightColor.SelectColor(hdc);
-
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    wingsPoints[0] = { pos_x + 17, pos_y + 12 };
-    wingsPoints[1] = { pos_x + 17, pos_y + 3 };
-    wingsPoints[2] = { pos_x + 15, pos_y + 3 };
-    wingsPoints[3] = { pos_x + 15, pos_y + 0 };
-    wingsPoints[4] = { pos_x + 16, pos_y + 0 };
-    wingsPoints[5] = { pos_x + 29, pos_y + 12 };
-    wingsPoints[6] = { pos_x + 30, pos_y + 12 };
-
-    //const POINT upWingPoints[wingsPointsAmount]{ {pos_x + 17, pos_y + 12}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},{pos_x + 15, pos_y + 0}, {pos_x + 16, pos_y + 0}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 12} };
-
-    Polygon(hdc, wingsPoints, wingsPointsAmount);
-
-    //Регион для проверки столкновений
-    //TO DO: !!!
-    birdWithWingsPoints[0] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[1] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[2] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[3] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[4] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[5] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[6] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[7] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[8] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[9] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[10] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[11] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[12] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[13] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[14] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[15] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[16] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[17] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[18] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[19] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[20] = { pos_x + 12, pos_y + 13 };
-    birdWithWingsPoints[21] = { pos_x + 12, pos_y + 13 };
-
-    const POINT birdWithWingsPoints[birdWithWingsPointsAmount]{ {pos_x + 12, pos_y + 13}, {pos_x + 17, pos_y + 13}, {pos_x + 17, pos_y + 3}, {pos_x + 15, pos_y + 3},{pos_x + 15, pos_y + 0}, {pos_x + 16, pos_y + 0}, {pos_x + 29, pos_y + 12}, {pos_x + 30, pos_y + 13},
-                         {pos_x + 33, pos_y + 17}, {pos_x + 45, pos_y + 17}, {pos_x + 45, pos_y + 18}, {pos_x + 38, pos_y + 18},{pos_x + 38, pos_y + 21}, {pos_x + 43, pos_y + 21},{pos_x + 43, pos_y + 22},
-                         {pos_x + 17, pos_y + 22}, {pos_x + 12, pos_y + 15}, {pos_x + 0, pos_y + 15}, {pos_x + 0, pos_y + 14}, {pos_x + 1, pos_y + 14}, {pos_x + 8, pos_y + 7}, {pos_x + 10, pos_y + 7} };
-
-    currentBirdRgn = CreatePolygonRgn(birdWithWingsPoints, birdWithWingsPointsAmount, 2);
+    Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 11 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 12 * CConfig::SizeScale);
 }
 
 //Отрисовка нижнего крыла
 void CBird::DrawDownWingBird(HDC hdc)
 {
-    //ClearUpWing(hdc);
-
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y) + 7;
+    Polygon(hdc, currentBirdPoints, birdWithWingsPointsAmount);
 
-    //TO DO: Заменить на доступ к элементам массива через индекс [] и замену
+    //Фоновые пропуски
+    CConfig::backgroundColor.SelectColor(hdc);
 
-    const POINT downWingPoints[wingsPointsAmount]{ {pos_x + 24, pos_y + 16}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23},{pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 16} };
-
-    Polygon(hdc, downWingPoints, wingsPointsAmount);
-
-    //Регион для проверки столкновений
-
-    const POINT downWingBirdPoints[birdWithWingsPointsAmount]{ {pos_x + 12, pos_y + 6}, {pos_x + 30, pos_y + 6}, {pos_x + 33, pos_y + 10}, {pos_x + 45, pos_y + 10},{pos_x + 45, pos_y + 11}, {pos_x + 38, pos_y + 11}, {pos_x + 38, pos_y + 14}, {pos_x + 43, pos_y + 14},
-                    {pos_x + 43, pos_y + 15}, {pos_x + 24, pos_y + 15}, {pos_x + 24, pos_y + 17}, {pos_x + 19, pos_y + 23},{pos_x + 18, pos_y + 23}, {pos_x + 18, pos_y + 26}, {pos_x + 17, pos_y + 26}, {pos_x + 17, pos_y + 15},
-                    {pos_x + 12, pos_y + 8}, {pos_x + 0, pos_y + 8}, {pos_x + 0, pos_y + 7}, {pos_x + 1, pos_y + 7}, {pos_x + 8, pos_y + 0}, {pos_x + 10, pos_y + 0} };
-
-    currentBirdRgn = CreatePolygonRgn(downWingBirdPoints, birdWithWingsPointsAmount, 2);
+    //Глаз
+    Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 4 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 5 * CConfig::SizeScale);
 }
 
 //Анимация крыльев
 void CBird::MoveWings(HDC hdc)
 {        
-    //if (lastWingChangeTimer + newChangeWingDelay <= CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
-    //{
-    //    lastWingChangeTimer = CConfig::currentFrameValue + newChangeWingDelay;
-
-    //    if (upWing == true)
-    //    {
-    //        DrawUpWingBird(hdc);
-    //        upWing = false;
-    //    }
-
-    //    else
-    //    {
-    //        DrawDownWingBird(hdc);
-    //        upWing = true;
-    //    }
-    //}
-
-    if (static_cast<int>(CConfig::slowCurrentFrameValue) % 2 == 0)
+    if (upWing == true)
     {
         DrawUpWingBird(hdc);
-        upWing = false;
     }
     else
     {
         DrawDownWingBird(hdc);
-        upWing = true;
     }
 }
 
 //Отрисовка птицы полностью
 void CBird::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    if (!IntersectRect(&intersectionRect, &paintArea, &birdRect))
+    if ( !RectInRegion(currentPolyRgn, &paintArea) )
     {
         return;
     }
 
-    DrawBodyBird(hdc);
     MoveWings(hdc);
 }
 
 void CBird::Clear(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    if (!IntersectRect(&intersectionRect, &paintArea, &prevBirdRect))
+    if ( !RectInRegion(prevPolyRgn, &paintArea) )
     {
         return;
     }
 
     CConfig::backgroundColor.SelectColor(hdc);
-    Rectangle(hdc, prevBirdRect.left, prevBirdRect.top, prevBirdRect.right, prevBirdRect.bottom);
+    Polygon(hdc, prevBirdPoints, birdWithWingsPointsAmount);
+}
+
+void CBird::ChangeWings(bool upwing)
+{
+    if (upWing == upwing)
+        return;
+
+    if (upwing == true)
+    {
+        pos_Y -= 7.0f;
+        height = upWingHeight;
+    }
+    else
+    {
+        pos_Y += 7.0f;
+        height = downWingHeight;
+    }
+
+    upWing = upwing;
+}
+
+void CBird::UpdateCollisionRgnPoints()
+{
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
+    //Используем набор предыдущих точек и предыдущего региона, чтобы не использовать дополнительный регион.
+    //Они обновятся значениями текущего региона и его точек в методе Draw() для вызова перерисовки
+
+    if (upWing == true)
+    {
+        prevBirdPoints[0] = { pos_x + 12, pos_y + 13 };
+        prevBirdPoints[1] = { pos_x + 17, pos_y + 13 };
+        prevBirdPoints[2] = { pos_x + 17, pos_y + 3 };
+        prevBirdPoints[3] = { pos_x + 15, pos_y + 3 };
+        prevBirdPoints[4] = { pos_x + 15, pos_y + 0 };
+        prevBirdPoints[5] = { pos_x + 16, pos_y + 0 };
+        prevBirdPoints[6] = { pos_x + 29, pos_y + 12 };
+        prevBirdPoints[7] = { pos_x + 30, pos_y + 13 };
+        prevBirdPoints[8] = { pos_x + 33, pos_y + 17 };
+        prevBirdPoints[9] = { pos_x + 45, pos_y + 17 };
+        prevBirdPoints[10] = { pos_x + 45, pos_y + 18 };
+        prevBirdPoints[11] = { pos_x + 38, pos_y + 18 };
+        prevBirdPoints[12] = { pos_x + 38, pos_y + 21 };
+        prevBirdPoints[13] = { pos_x + 43, pos_y + 21 };
+        prevBirdPoints[14] = { pos_x + 43, pos_y + 22 };
+        prevBirdPoints[15] = { pos_x + 17, pos_y + 22 };
+        prevBirdPoints[16] = { pos_x + 12, pos_y + 15 };
+        prevBirdPoints[17] = { pos_x + 0, pos_y + 15 };
+        prevBirdPoints[18] = { pos_x + 0, pos_y + 14 };
+        prevBirdPoints[19] = { pos_x + 1, pos_y + 14 };
+        prevBirdPoints[20] = { pos_x + 8, pos_y + 7 };
+        prevBirdPoints[21] = { pos_x + 10, pos_y + 7 };
+    }
+    else
+    {
+        prevBirdPoints[0] = { pos_x + 12, pos_y + 6 };
+        prevBirdPoints[1] = { pos_x + 30, pos_y + 6 };
+        prevBirdPoints[2] = { pos_x + 33, pos_y + 10 };
+        prevBirdPoints[3] = { pos_x + 45, pos_y + 10 };
+        prevBirdPoints[4] = { pos_x + 45, pos_y + 11 };
+        prevBirdPoints[5] = { pos_x + 38, pos_y + 11 };
+        prevBirdPoints[6] = { pos_x + 38, pos_y + 14 };
+        prevBirdPoints[7] = { pos_x + 43, pos_y + 14 };
+        prevBirdPoints[8] = { pos_x + 43, pos_y + 15 };
+        prevBirdPoints[9] = { pos_x + 24, pos_y + 15 };
+        prevBirdPoints[10] = { pos_x + 24, pos_y + 17 };
+        prevBirdPoints[11] = { pos_x + 19, pos_y + 23 };
+        prevBirdPoints[12] = { pos_x + 18, pos_y + 23 };
+        prevBirdPoints[13] = { pos_x + 18, pos_y + 26 };
+        prevBirdPoints[14] = { pos_x + 17, pos_y + 26 };
+        prevBirdPoints[15] = { pos_x + 17, pos_y + 15 };
+        prevBirdPoints[16] = { pos_x + 12, pos_y + 8 };
+        prevBirdPoints[17] = { pos_x + 0, pos_y + 8 };
+        prevBirdPoints[18] = { pos_x + 0, pos_y + 7 };
+        prevBirdPoints[19] = { pos_x + 1, pos_y + 7 };
+        prevBirdPoints[20] = { pos_x + 8, pos_y + 0 };
+        prevBirdPoints[21] = { pos_x + 10, pos_y + 0 };
+    }
+}
+
+void CBird::UpdateDrawRgnPoints()
+{
+    if (upWing == true)
+    {
+        currentBirdPoints[0] = { currentRgnPos_X + 12, currentRgnPos_Y + 13 };
+        currentBirdPoints[1] = { currentRgnPos_X + 17, currentRgnPos_Y + 13 };
+        currentBirdPoints[2] = { currentRgnPos_X + 17, currentRgnPos_Y + 3 };
+        currentBirdPoints[3] = { currentRgnPos_X + 15, currentRgnPos_Y + 3 };
+        currentBirdPoints[4] = { currentRgnPos_X + 15, currentRgnPos_Y + 0 };
+        currentBirdPoints[5] = { currentRgnPos_X + 16, currentRgnPos_Y + 0 };
+        currentBirdPoints[6] = { currentRgnPos_X + 29, currentRgnPos_Y + 12 };
+        currentBirdPoints[7] = { currentRgnPos_X + 30, currentRgnPos_Y + 13 };
+        currentBirdPoints[8] = { currentRgnPos_X + 33, currentRgnPos_Y + 17 };
+        currentBirdPoints[9] = { currentRgnPos_X + 45, currentRgnPos_Y + 17 };
+        currentBirdPoints[10] = { currentRgnPos_X + 45, currentRgnPos_Y + 18 };
+        currentBirdPoints[11] = { currentRgnPos_X + 38, currentRgnPos_Y + 18 };
+        currentBirdPoints[12] = { currentRgnPos_X + 38, currentRgnPos_Y + 21 };
+        currentBirdPoints[13] = { currentRgnPos_X + 43, currentRgnPos_Y + 21 };
+        currentBirdPoints[14] = { currentRgnPos_X + 43, currentRgnPos_Y + 22 };
+        currentBirdPoints[15] = { currentRgnPos_X + 17, currentRgnPos_Y + 22 };
+        currentBirdPoints[16] = { currentRgnPos_X + 12, currentRgnPos_Y + 15 };
+        currentBirdPoints[17] = { currentRgnPos_X + 0, currentRgnPos_Y + 15 };
+        currentBirdPoints[18] = { currentRgnPos_X + 0, currentRgnPos_Y + 14 };
+        currentBirdPoints[19] = { currentRgnPos_X + 1, currentRgnPos_Y + 14 };
+        currentBirdPoints[20] = { currentRgnPos_X + 8, currentRgnPos_Y + 7 };
+        currentBirdPoints[21] = { currentRgnPos_X + 10, currentRgnPos_Y + 7 };
+    }
+    else
+    {
+        currentBirdPoints[0] = { currentRgnPos_X + 12, currentRgnPos_Y + 6 };
+        currentBirdPoints[1] = { currentRgnPos_X + 30, currentRgnPos_Y + 6 };
+        currentBirdPoints[2] = { currentRgnPos_X + 33, currentRgnPos_Y + 10 };
+        currentBirdPoints[3] = { currentRgnPos_X + 45, currentRgnPos_Y + 10 };
+        currentBirdPoints[4] = { currentRgnPos_X + 45, currentRgnPos_Y + 11 };
+        currentBirdPoints[5] = { currentRgnPos_X + 38, currentRgnPos_Y + 11 };
+        currentBirdPoints[6] = { currentRgnPos_X + 38, currentRgnPos_Y + 14 };
+        currentBirdPoints[7] = { currentRgnPos_X + 43, currentRgnPos_Y + 14 };
+        currentBirdPoints[8] = { currentRgnPos_X + 43, currentRgnPos_Y + 15 };
+        currentBirdPoints[9] = { currentRgnPos_X + 24, currentRgnPos_Y + 15 };
+        currentBirdPoints[10] = { currentRgnPos_X + 24, currentRgnPos_Y + 17 };
+        currentBirdPoints[11] = { currentRgnPos_X + 19, currentRgnPos_Y + 23 };
+        currentBirdPoints[12] = { currentRgnPos_X + 18, currentRgnPos_Y + 23 };
+        currentBirdPoints[13] = { currentRgnPos_X + 18, currentRgnPos_Y + 26 };
+        currentBirdPoints[14] = { currentRgnPos_X + 17, currentRgnPos_Y + 26 };
+        currentBirdPoints[15] = { currentRgnPos_X + 17, currentRgnPos_Y + 15 };
+        currentBirdPoints[16] = { currentRgnPos_X + 12, currentRgnPos_Y + 8 };
+        currentBirdPoints[17] = { currentRgnPos_X + 0, currentRgnPos_Y + 8 };
+        currentBirdPoints[18] = { currentRgnPos_X + 0, currentRgnPos_Y + 7 };
+        currentBirdPoints[19] = { currentRgnPos_X + 1, currentRgnPos_Y + 7 };
+        currentBirdPoints[20] = { currentRgnPos_X + 8, currentRgnPos_Y + 0 };
+        currentBirdPoints[21] = { currentRgnPos_X + 10, currentRgnPos_Y + 0 };
+    }
 }
 
 //TO DO: Иногда часть птицы не стирается
@@ -239,16 +256,38 @@ void CBird::Redraw()
     if (active == false)
         return;
 
-    prevBirdRect = birdRect;
+    if (static_cast<int>(CConfig::slowCurrentFrameValue) % 2 == 0)
+    {
+        ChangeWings(true);
+    }
+    else
+    {
+        ChangeWings(false);
+    }
 
-    birdRect.left = static_cast<int>(pos_X);
-    birdRect.top = static_cast<int>(pos_Y);
-    birdRect.right = birdRect.left + width * CConfig::SizeScale;
-    birdRect.bottom = birdRect.top + height * CConfig::SizeScale;
+    for (int i = 0; i < birdWithWingsPointsAmount; ++i)
+    {
+        prevBirdPoints[i] = currentBirdPoints[i];
+    }
+        
+    prevRgnPos_X = currentRgnPos_X;
+    prevRgnPos_Y = currentRgnPos_Y;
 
-    //TO DO Попробовать InvalidateRgn
-    InvalidateRect(CConfig::Hwnd, &prevBirdRect, FALSE);
-    InvalidateRect(CConfig::Hwnd, &birdRect, FALSE);
+    currentRgnPos_X = static_cast<int>(pos_X);
+    currentRgnPos_Y = static_cast<int>(pos_Y);
+
+    prevPolyRgn = currentPolyRgn;
+
+    UpdateDrawRgnPoints();
+
+    currentPolyRgn = CreatePolygonRgn(currentBirdPoints, birdWithWingsPointsAmount, 2);
+
+    prevRectRgn = currentRectRgn;
+
+    currentRectRgn = CreateRectRgn(currentRgnPos_X, currentRgnPos_Y, currentRgnPos_X + width, currentRgnPos_Y + height);
+
+    InvalidateRgn(CConfig::Hwnd, prevRectRgn, FALSE);
+    InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);
 }
 
 //Проверка столкновения
@@ -257,13 +296,19 @@ bool CBird::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
     if (active == false)
         return false;
 
+    UpdateCollisionRgnPoints();
+
+    prevPolyRgn = CreatePolygonRgn(prevBirdPoints, birdWithWingsPointsAmount, 2);
+
     for (int i = 0; i < rectsAmount; ++i)
     {
-        if (RectInRegion(currentBirdRgn, &dinosaurCollisionRects[i]) != 0)
+        if (RectInRegion(prevPolyRgn, &dinosaurCollisionRects[i]) != 0)
         {
             return true;
         }
     }
+
+    DeleteObject(prevPolyRgn);
 
     return false;
 }
@@ -296,7 +341,7 @@ void CBird::Activate()
 
     int y = 100 + 10 * CConfig::GetRandom(0, 5); //Генерируем диапазон от 100 до 150: (100, 110) - безопасно стоя, (120, 130) - присесть или попробовать перепрыгнуть, (140-150) - только перепрыгивать
 
-    pos_X = startPos_X;
+    pos_X = startPos_X - width;;
     pos_Y = static_cast<float>(y);
 }
 
@@ -330,58 +375,105 @@ void CBird::Move(float maxSpeed)
     {
         active = false; //Если объект уходит за границу экрана, деактивируем его
         CCollisionObjects::CollisionObjectsActiveCount--;
+        DeleteObject(prevPolyRgn);
+        DeleteObject(currentPolyRgn);
+        DeleteObject(prevRectRgn);
+        DeleteObject(currentRectRgn);
         return;
     }
 }
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Кактуса (препятствие) -------------------------
+// -------------------------------------------------------------- Класс Кактуса (препятствие) ------------------------------------------------------------------------
 
 //Конструктор
 CCactus::CCactus()
-    :pos_X(startPos_X), pos_Y(startPos_Y), active(false), cactusRect{}, prevCactusRect{}, currentCactusRgn{0}
+    :pos_X(startPos_X), pos_Y(startPos_Y), active(false), currentCactusPoints{ 0 }, prevCactusPoints{ 0 }, currentPolyRgn{ 0 }, prevPolyRgn{ 0 }, prevRectRgn{ 0 }, currentRectRgn{ 0 }, prevRgnPos_X(0), prevRgnPos_Y(0), 
+    currentRgnPos_X(0), currentRgnPos_Y(0)
 {
-
 }
 
 //Отрисовка
 void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    if (!IntersectRect(&intersectionRect, &paintArea, &cactusRect))
+    if ( !RectInRegion(currentPolyRgn, &paintArea) )
     {
         return;
     }
 
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    const POINT cactusPoints[cactusPointsAmount]{ {pos_x + 10, pos_y}, {pos_x + 11, pos_y}, {pos_x + 13, pos_y + 2}, {pos_x + 13, pos_y + 27},
-                                {pos_x + 19, pos_y + 27}, {pos_x + 19, pos_y + 13}, {pos_x + 20, pos_y + 11}, {pos_x + 21, pos_y + 13},
-                                {pos_x + 21, pos_y + 26}, {pos_x + 18, pos_y + 28}, {pos_x + 13, pos_y + 28}, {pos_x + 13, pos_y + 47},
-                                {pos_x + 8, pos_y + 47}, {pos_x + 8, pos_y + 30}, {pos_x + 3, pos_y + 30}, {pos_x, pos_y + 28},
-                                {pos_x, pos_y + 15}, {pos_x + 1, pos_y + 13}, {pos_x + 2, pos_y + 15}, {pos_x + 2, pos_y + 29},
-                                {pos_x + 8, pos_y + 29}, {pos_x + 8, pos_y + 2} };
-
-    Polygon(hdc, cactusPoints, cactusPointsAmount);
-    currentCactusRgn = CreatePolygonRgn(cactusPoints, cactusPointsAmount, 2);
+    Polygon(hdc, currentCactusPoints, cactusPointsAmount);
 }
 
 void CCactus::Clear(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    if (!IntersectRect(&intersectionRect, &paintArea, &prevCactusRect))
+    if ( !RectInRegion(prevPolyRgn, &paintArea) )
     {
         return;
     }
 
     CConfig::backgroundColor.SelectColor(hdc);
-    Rectangle(hdc, prevCactusRect.left, prevCactusRect.top, prevCactusRect.right, prevCactusRect.bottom);
+
+    Polygon(hdc, prevCactusPoints, cactusPointsAmount);
+}
+
+void CCactus::UpdateCollisionRgnPoints()
+{
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
+    //Используем набор предыдущих точек и предыдущего региона, чтобы не использовать дополнительный регион.
+    //Они обновятся значениями текущего региона и его точек в методе Draw() для вызова перерисовки
+    prevCactusPoints[0] = { pos_x + 10, pos_y + 0 }; 
+    prevCactusPoints[1] = { pos_x + 11, pos_y + 0 };
+    prevCactusPoints[2] = { pos_x + 13, pos_y + 2 };
+    prevCactusPoints[3] = { pos_x + 13, pos_y + 27 };
+    prevCactusPoints[4] = { pos_x + 19, pos_y + 27 };
+    prevCactusPoints[5] = { pos_x + 19, pos_y + 13 };
+    prevCactusPoints[6] = { pos_x + 20, pos_y + 11 };
+    prevCactusPoints[7] = { pos_x + 21, pos_y + 13 };
+    prevCactusPoints[8] = { pos_x + 21, pos_y + 26 };
+    prevCactusPoints[9] = { pos_x + 18, pos_y + 28 };
+    prevCactusPoints[10] = { pos_x + 13, pos_y + 28 };
+    prevCactusPoints[11] = { pos_x + 13, pos_y + 47 };
+    prevCactusPoints[12] = { pos_x + 8, pos_y + 47 };
+    prevCactusPoints[13] = { pos_x + 8, pos_y + 30 };
+    prevCactusPoints[14] = { pos_x + 3, pos_y + 30 };
+    prevCactusPoints[15] = { pos_x + 0, pos_y + 28 };
+    prevCactusPoints[16] = { pos_x + 0, pos_y + 15 };
+    prevCactusPoints[17] = { pos_x + 1, pos_y + 13 };
+    prevCactusPoints[18] = { pos_x + 2, pos_y + 15 };
+    prevCactusPoints[19] = { pos_x + 2, pos_y + 29 };
+    prevCactusPoints[20] = { pos_x + 8, pos_y + 29 };
+    prevCactusPoints[21] = { pos_x + 8, pos_y + 2 };
+}
+
+void CCactus::UpdateDrawRgnPoints()
+{
+    currentCactusPoints[0] = { currentRgnPos_X + 10, currentRgnPos_Y + 0 };
+    currentCactusPoints[1] = { currentRgnPos_X + 11, currentRgnPos_Y + 0 };
+    currentCactusPoints[2] = { currentRgnPos_X + 13, currentRgnPos_Y + 2 };
+    currentCactusPoints[3] = { currentRgnPos_X + 13, currentRgnPos_Y + 27 };
+    currentCactusPoints[4] = { currentRgnPos_X + 19, currentRgnPos_Y + 27 };
+    currentCactusPoints[5] = { currentRgnPos_X + 19, currentRgnPos_Y + 13 };
+    currentCactusPoints[6] = { currentRgnPos_X + 20, currentRgnPos_Y + 11 };
+    currentCactusPoints[7] = { currentRgnPos_X + 21, currentRgnPos_Y + 13 };
+    currentCactusPoints[8] = { currentRgnPos_X + 21, currentRgnPos_Y + 26 };
+    currentCactusPoints[9] = { currentRgnPos_X + 18, currentRgnPos_Y + 28 };
+    currentCactusPoints[10] = { currentRgnPos_X + 13, currentRgnPos_Y + 28 };
+    currentCactusPoints[11] = { currentRgnPos_X + 13, currentRgnPos_Y + 47 };
+    currentCactusPoints[12] = { currentRgnPos_X + 8, currentRgnPos_Y + 47 };
+    currentCactusPoints[13] = { currentRgnPos_X + 8, currentRgnPos_Y + 30 };
+    currentCactusPoints[14] = { currentRgnPos_X + 3, currentRgnPos_Y + 30 };
+    currentCactusPoints[15] = { currentRgnPos_X + 0, currentRgnPos_Y + 28 };
+    currentCactusPoints[16] = { currentRgnPos_X + 0, currentRgnPos_Y + 15 };
+    currentCactusPoints[17] = { currentRgnPos_X + 1, currentRgnPos_Y + 13 };
+    currentCactusPoints[18] = { currentRgnPos_X + 2, currentRgnPos_Y + 15 };
+    currentCactusPoints[19] = { currentRgnPos_X + 2, currentRgnPos_Y + 29 };
+    currentCactusPoints[20] = { currentRgnPos_X + 8, currentRgnPos_Y + 29 };
+    currentCactusPoints[21] = { currentRgnPos_X + 8, currentRgnPos_Y + 2 };
 }
 
 //Перерисовка персонажа в новых координатах
@@ -390,15 +482,29 @@ void CCactus::Redraw()
     if (active == false)
         return;
 
-    prevCactusRect = cactusRect;
+    for (int i = 0; i < cactusPointsAmount; ++i)
+    {
+        prevCactusPoints[i] = currentCactusPoints[i];
+    }
 
-    cactusRect.left = static_cast<int>(pos_X);
-    cactusRect.top = static_cast<int>(pos_Y);
-    cactusRect.right = cactusRect.left + width * CConfig::SizeScale;
-    cactusRect.bottom = cactusRect.top + (height)*CConfig::SizeScale;
+    prevRgnPos_X = currentRgnPos_X;
+    prevRgnPos_Y = currentRgnPos_Y;
 
-    InvalidateRect(CConfig::Hwnd, &prevCactusRect, FALSE);
-    InvalidateRect(CConfig::Hwnd, &cactusRect, FALSE);
+    currentRgnPos_X = static_cast<int>(pos_X);
+    currentRgnPos_Y = static_cast<int>(pos_Y);
+
+    prevPolyRgn = currentPolyRgn;
+
+    UpdateDrawRgnPoints(); //Обновляем точки многоугольника по новым координатам и на основе них создаём регион
+
+    currentPolyRgn = CreatePolygonRgn(currentCactusPoints, cactusPointsAmount, 2);
+
+    //Создаём прямоугольные регионы для запроса на перерисовку этой области (многоугольные полигоны не работают, запрашивается меньшая область перерисовки, остаются "следы")
+    prevRectRgn = currentRectRgn;
+    currentRectRgn = CreateRectRgn(currentRgnPos_X, currentRgnPos_Y, currentRgnPos_X + width, currentRgnPos_Y + height);
+
+    InvalidateRgn(CConfig::Hwnd, prevRectRgn, FALSE);
+    InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);
 }
 
 //Проверка столкновения
@@ -407,13 +513,19 @@ bool CCactus::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
     if (active == false)
         return false;
 
+    UpdateCollisionRgnPoints();
+
+    prevPolyRgn = CreatePolygonRgn(prevCactusPoints, cactusPointsAmount, 2);
+
     for (int i = 0; i < rectsAmount; ++i)
     {
-        if (RectInRegion(currentCactusRgn, &dinosaurCollisionRects[i]) != 0)
+        if (RectInRegion(prevPolyRgn, &dinosaurCollisionRects[i]) != 0)
         {
             return true;
         }
     }
+
+    DeleteObject(prevPolyRgn);
 
     return false;
 }
@@ -441,7 +553,7 @@ void CCactus::Activate()
     active = true;
     CCollisionObjects::CollisionObjectsActiveCount++;
 
-    pos_X = startPos_X;
+    pos_X = startPos_X - width;
     pos_Y = static_cast<float>(startPos_Y);
 }
 
@@ -467,7 +579,7 @@ void CCactus::Move(float maxSpeed)
     if (CBackgroundObjects::speed == 0.0f)
         return;
 
-    float nextStep = CBackgroundObjects::speed / maxSpeed * CConfig::minShift;
+    float nextStep = CBackgroundObjects::speed / maxSpeed;
 
     pos_X -= nextStep;
 
@@ -475,6 +587,10 @@ void CCactus::Move(float maxSpeed)
     {
         active = false;
         CCollisionObjects::CollisionObjectsActiveCount--;
+        DeleteObject(prevPolyRgn);
+        DeleteObject(currentPolyRgn);
+        DeleteObject(prevRectRgn);
+        DeleteObject(currentRectRgn);
         return;
     }
 }
@@ -511,15 +627,6 @@ void CRoadLine::Draw(HDC hdc, RECT& paintArea)
 void CRoadLine::Clear(HDC hdc, RECT& paintArea)
 {
     return;
-    //RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
-
-    //if (!IntersectRect(&intersectionRect, &paintArea, &prevCactusRect))
-    //{
-    //    return;
-    //}
-
-    //CConfig::backgroundColor.SelectColor(hdc);
-    //Rectangle(hdc, prevCactusRect.left, prevCactusRect.top, prevCactusRect.right, prevCactusRect.bottom);
 }
 
 //Перерисовка в новых координатах

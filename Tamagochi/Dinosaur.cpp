@@ -1,13 +1,13 @@
 ﻿#include "Dinosaur.h"
 
 // ---------------------------- Класс персонажа Dino -------------------------------------------------------------
-int CDinosaur::count = 0;
+
 // ------------ Конструктор
 CDinosaur::CDinosaur()
     :DinosaurLevelState(EDinosaurLevelState::StartRunLevel), DinosaurBodyState(EDinosaurBodyState::Standing), DinosaurDirectionState(EDinosaurDirectionState::Right), DinosaurMovingState(EDinosaurMovingState::Stop),
      leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth), pos_X(CConfig::DinosaurConstPos_X), pos_Y(static_cast<float>(StandingPos_Y)), dinoCollisionRects{ 0 },
-     horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), dinoRect{ 0 }, prevDinoRect{ 0 } 
-    //lastLegsChangeTimer(0), newChangeLegsDelay(CConfig::FPS / 20), firstStep(true)
+    horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), currentDinosaurPoints{ 0 }, prevDinosaurPoints{ 0 }, currentRect{ 0 }, prevRect{ 0 }
+    //currentPolyRgn{ 0 }, prevPolyRgn { 0 }, prevRectRgn{ 0 }, currentRectRgn{ 0 }
 {
 }
 // -----------------------------------------------------------------------------------
@@ -15,9 +15,14 @@ CDinosaur::CDinosaur()
 // ------------ Отрисовка персонажа Dino (основной метод)
 void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 {
+    /*if (!RectInRegion(currentPolyRgn, &paintArea))
+    {
+        return;
+    }*/
+
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    if (!IntersectRect(&intersectionRect, &paintArea, &dinoRect))
+    if (!IntersectRect(&intersectionRect, &paintArea, &currentRect))
     {
         return;
     }
@@ -68,6 +73,7 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
         }
     }
     break;
+
     case EDinosaurBodyState::Crawling:
     {
         if (DinosaurDirectionState == EDinosaurDirectionState::Right)
@@ -114,35 +120,216 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
     default:
         break;
     }
-    CDinosaur::count++;
 }
 // -----------------------------------------------------------------------------------
 
 void CDinosaur::Clear(HDC hdc, RECT& paintArea)
 {
+    /*if ( !RectInRegion(prevPolyRgn, &paintArea) )
+    {
+        return;
+    }*/
+
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
-    if (!IntersectRect(&intersectionRect, &paintArea, &prevDinoRect))
+    if (!IntersectRect(&intersectionRect, &paintArea, &prevRect))
     {
         return;
     }
 
     CConfig::backgroundColor.SelectColor(hdc);
-    Rectangle(hdc, prevDinoRect.left, prevDinoRect.top, prevDinoRect.right, prevDinoRect.bottom);
+
+    Polygon(hdc, prevDinosaurPoints, dinosaurWithLegsPointsAmount);
+}
+
+void CDinosaur::UpdateRgnPoints()
+{
+    switch (DinosaurBodyState)
+    {
+    case EDinosaurBodyState::Standing:
+    {
+        if (DinosaurDirectionState == EDinosaurDirectionState::Right)
+        {
+            currentDinosaurPoints[0] = { currentRgnPos_X + 11, currentRgnPos_Y + 36 };
+            currentDinosaurPoints[1] = { currentRgnPos_X + 1, currentRgnPos_Y + 27 }; 
+            currentDinosaurPoints[2] = { currentRgnPos_X + 1, currentRgnPos_Y + 16 }; 
+            currentDinosaurPoints[3] = { currentRgnPos_X + 3, currentRgnPos_Y + 13 }; 
+            currentDinosaurPoints[4] = { currentRgnPos_X + 7, currentRgnPos_Y + 23 }; 
+            currentDinosaurPoints[5] = { currentRgnPos_X + 11, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[6] = { currentRgnPos_X + 20, currentRgnPos_Y + 15 };
+            currentDinosaurPoints[7] = { currentRgnPos_X + 23, currentRgnPos_Y + 15 };
+            currentDinosaurPoints[8] = { currentRgnPos_X + 23, currentRgnPos_Y + 1 }; 
+            currentDinosaurPoints[9] = { currentRgnPos_X + 25, currentRgnPos_Y + 0 }; 
+            currentDinosaurPoints[10] = { currentRgnPos_X + 41, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[11] = { currentRgnPos_X + 43, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[12] = { currentRgnPos_X + 43, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[13] = { currentRgnPos_X + 33, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[14] = { currentRgnPos_X + 33, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[15] = { currentRgnPos_X + 40, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[16] = { currentRgnPos_X + 40, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[17] = { currentRgnPos_X + 30, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[18] = { currentRgnPos_X + 30, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[19] = { currentRgnPos_X + 35, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[20] = { currentRgnPos_X + 35, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[21] = { currentRgnPos_X + 34, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[22] = { currentRgnPos_X + 34, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[23] = { currentRgnPos_X + 30, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[24] = { currentRgnPos_X + 30, currentRgnPos_Y + 30 };
+            currentDinosaurPoints[25] = { currentRgnPos_X + 24, currentRgnPos_Y + 36 };
+
+            currentDinosaurPoints[26] = { currentRgnPos_X + 28, currentRgnPos_Y + 36 };
+            currentDinosaurPoints[27] = { currentRgnPos_X + 28, currentRgnPos_Y + 43 };
+            currentDinosaurPoints[28] = { currentRgnPos_X + 11, currentRgnPos_Y + 43 };
+        }
+        else
+        {
+            currentDinosaurPoints[0] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 36 };
+            currentDinosaurPoints[1] = { currentRgnPos_X + width - 1, currentRgnPos_Y + 27 };
+            currentDinosaurPoints[2] = { currentRgnPos_X + width - 1, currentRgnPos_Y + 16 };
+            currentDinosaurPoints[3] = { currentRgnPos_X + width - 3, currentRgnPos_Y + 13 };
+            currentDinosaurPoints[4] = { currentRgnPos_X + width - 7, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[5] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[6] = { currentRgnPos_X + width - 20, currentRgnPos_Y + 15 };
+            currentDinosaurPoints[7] = { currentRgnPos_X + width - 23, currentRgnPos_Y + 15 };
+            currentDinosaurPoints[8] = { currentRgnPos_X + width - 23, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[9] = { currentRgnPos_X + width - 25, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[10] = { currentRgnPos_X + width - 41, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[11] = { currentRgnPos_X + width - 43, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[12] = { currentRgnPos_X + width - 43, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[13] = { currentRgnPos_X + width - 33, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[14] = { currentRgnPos_X + width - 33, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[15] = { currentRgnPos_X + width - 40, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[16] = { currentRgnPos_X + width - 40, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[17] = { currentRgnPos_X + width - 30, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[18] = { currentRgnPos_X + width - 30, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[19] = { currentRgnPos_X + width - 35, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[20] = { currentRgnPos_X + width - 35, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[21] = { currentRgnPos_X + width - 34, currentRgnPos_Y + 23 };
+            currentDinosaurPoints[22] = { currentRgnPos_X + width - 34, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[23] = { currentRgnPos_X + width - 30, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[24] = { currentRgnPos_X + width - 30, currentRgnPos_Y + 30 };
+            currentDinosaurPoints[25] = { currentRgnPos_X + width - 24, currentRgnPos_Y + 36 };
+
+            currentDinosaurPoints[26] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 36 };
+            currentDinosaurPoints[27] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 43 };
+            currentDinosaurPoints[28] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 43 };
+
+        }
+    }
+    break;
+
+    case EDinosaurBodyState::Crawling:
+    {
+        if (DinosaurDirectionState == EDinosaurDirectionState::Right)
+        {
+            currentDinosaurPoints[0] = { currentRgnPos_X + 11, currentRgnPos_Y + 17 };
+            currentDinosaurPoints[1] = { currentRgnPos_X + 1, currentRgnPos_Y + 5 };
+            currentDinosaurPoints[2] = { currentRgnPos_X + 1, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[3] = { currentRgnPos_X + 5, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[4] = { currentRgnPos_X + 13, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[5] = { currentRgnPos_X + 16, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[6] = { currentRgnPos_X + 33, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[7] = { currentRgnPos_X + 36, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[8] = { currentRgnPos_X + 39, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[9] = { currentRgnPos_X + 41, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[10] = { currentRgnPos_X + 57, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[11] = { currentRgnPos_X + 59, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[12] = { currentRgnPos_X + 59, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[13] = { currentRgnPos_X + 49, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[14] = { currentRgnPos_X + 49, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[15] = { currentRgnPos_X + 56, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[16] = { currentRgnPos_X + 56, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[17] = { currentRgnPos_X + 42, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[18] = { currentRgnPos_X + 39, currentRgnPos_Y + 13 };
+            currentDinosaurPoints[19] = { currentRgnPos_X + 36, currentRgnPos_Y + 13 };
+            currentDinosaurPoints[20] = { currentRgnPos_X + 33, currentRgnPos_Y + 16 };
+            currentDinosaurPoints[21] = { currentRgnPos_X + 33, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[22] = { currentRgnPos_X + 35, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[23] = { currentRgnPos_X + 35, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[24] = { currentRgnPos_X + 32, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[25] = { currentRgnPos_X + 32, currentRgnPos_Y + 17 };
+
+            currentDinosaurPoints[26] = { currentRgnPos_X + 28, currentRgnPos_Y + 17 };
+            currentDinosaurPoints[27] = { currentRgnPos_X + 28, currentRgnPos_Y + 25 };
+            currentDinosaurPoints[28] = { currentRgnPos_X + 11, currentRgnPos_Y + 25 };
+        }
+        else
+        {
+            currentDinosaurPoints[0] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 17 };
+            currentDinosaurPoints[1] = { currentRgnPos_X + width - 1, currentRgnPos_Y + 5 };
+            currentDinosaurPoints[2] = { currentRgnPos_X + width - 1, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[3] = { currentRgnPos_X + width - 5, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[4] = { currentRgnPos_X + width - 13, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[5] = { currentRgnPos_X + width - 16, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[6] = { currentRgnPos_X + width - 33, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[7] = { currentRgnPos_X + width - 36, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[8] = { currentRgnPos_X + width - 39, currentRgnPos_Y + 3 };
+            currentDinosaurPoints[9] = { currentRgnPos_X + width - 41, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[10] = { currentRgnPos_X + width - 57, currentRgnPos_Y + 0 };
+            currentDinosaurPoints[11] = { currentRgnPos_X + width - 59, currentRgnPos_Y + 1 };
+            currentDinosaurPoints[12] = { currentRgnPos_X + width - 59, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[13] = { currentRgnPos_X + width - 49, currentRgnPos_Y + 9 };
+            currentDinosaurPoints[14] = { currentRgnPos_X + width - 49, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[15] = { currentRgnPos_X + width - 56, currentRgnPos_Y + 12 };
+            currentDinosaurPoints[16] = { currentRgnPos_X + width - 56, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[17] = { currentRgnPos_X + width - 42, currentRgnPos_Y + 14 };
+            currentDinosaurPoints[18] = { currentRgnPos_X + width - 39, currentRgnPos_Y + 13 };
+            currentDinosaurPoints[19] = { currentRgnPos_X + width - 36, currentRgnPos_Y + 13 };
+            currentDinosaurPoints[20] = { currentRgnPos_X + width - 33, currentRgnPos_Y + 16 };
+            currentDinosaurPoints[21] = { currentRgnPos_X + width - 33, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[22] = { currentRgnPos_X + width - 35, currentRgnPos_Y + 20 };
+            currentDinosaurPoints[23] = { currentRgnPos_X + width - 35, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[24] = { currentRgnPos_X + width - 32, currentRgnPos_Y + 21 };
+            currentDinosaurPoints[25] = { currentRgnPos_X + width - 32, currentRgnPos_Y + 17 };
+
+            currentDinosaurPoints[26] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 17 };
+            currentDinosaurPoints[27] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 25 };
+            currentDinosaurPoints[28] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 25 };
+        }
+    }
+    break;
+
+    default:
+        break;
+    }
 }
 
 // ------------ Перерисовка персонажа в новых координатах
 void CDinosaur::Redraw()
 {
-    prevDinoRect = dinoRect;
+    for (int i = 0; i < dinosaurWithLegsPointsAmount; ++i)
+    {
+        prevDinosaurPoints[i] = currentDinosaurPoints[i];
+    }
 
-    dinoRect.left = static_cast<int>(pos_X);
-    dinoRect.top = static_cast<int>(pos_Y);
-    dinoRect.right = dinoRect.left + width * CConfig::SizeScale;
-    dinoRect.bottom = dinoRect.top + height * CConfig::SizeScale;
+    prevRgnPos_X = currentRgnPos_X;
+    prevRgnPos_Y = currentRgnPos_Y;
 
-    InvalidateRect(CConfig::Hwnd, &prevDinoRect, FALSE);
-    InvalidateRect(CConfig::Hwnd, &dinoRect, FALSE);
+    currentRgnPos_X = static_cast<int>(pos_X);
+    currentRgnPos_Y = static_cast<int>(pos_Y);
+
+    /*prevPolyRgn = currentPolyRgn;*/
+
+    UpdateRgnPoints();
+
+    /*currentPolyRgn = CreatePolygonRgn(currentDinosaurPoints, dinosaurWithLegsPointsAmount, 2);
+
+    prevRectRgn = currentRectRgn;
+
+    currentRectRgn = CreateRectRgn(currentRgnPos_X, currentRgnPos_Y, currentRgnPos_X + width, currentRgnPos_Y + height);
+
+    InvalidateRgn(CConfig::Hwnd, prevRectRgn, FALSE);
+    InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);*/
+
+    prevRect = currentRect;
+
+    currentRect.left = currentRgnPos_X;
+    currentRect.top = currentRgnPos_Y;
+    currentRect.right = currentRect.left + width * CConfig::SizeScale;
+    currentRect.bottom = currentRect.top + height * CConfig::SizeScale;
+
+    InvalidateRect(CConfig::Hwnd, &prevRect, FALSE);
+    InvalidateRect(CConfig::Hwnd, &currentRect, FALSE);
 }
 // -----------------------------------------------------------------------------------
 
@@ -158,39 +345,11 @@ void CDinosaur::ClearRightLegsBackground(HDC hdc)
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
         pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
 
-
-    ////Левая нога поднятая
-    //Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + 18 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-
-    ////Правая нога поднятая
-    //Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-
-    ////Левая нога
-    //Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 18 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-
-    ////Правая нога
-    //Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    //Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-
     //Левая нога
     Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
 
     //Правая нога
     Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-
-    //if (firstStep == true)
-    //{
-    //    //Правая нога
-    //    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 40 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    //}
-    //else
-    //{
-    //    //Левая нога
-    //    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 40 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    //}
 }
 // -----------------------------------------------------------------------------------
 
@@ -391,24 +550,13 @@ void CDinosaur::DrawRightStanding(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    const int dinosaurBodyPointAmount = 26;
-
-    const POINT dinosaurBodyPoints[dinosaurBodyPointAmount]{ {pos_x + 20, pos_y + 15}, {pos_x + 23, pos_y + 15}, {pos_x + 23, pos_y + 1}, {pos_x + 25, pos_y + 0}, {pos_x + 41, pos_y + 0}, {pos_x + 43, pos_y + 1}, 
-                                                             {pos_x + 43, pos_y + 9}, {pos_x + 33, pos_y + 9}, {pos_x + 33, pos_y + 12}, {pos_x + 40, pos_y + 12}, {pos_x + 40, pos_y + 14}, {pos_x + 30, pos_y + 14}, 
-                                                             {pos_x + 30, pos_y + 20}, {pos_x + 35, pos_y + 20}, {pos_x + 35, pos_y + 23}, {pos_x + 34, pos_y + 23}, {pos_x + 34, pos_y + 21}, {pos_x + 30, pos_y + 21},
-                                                             {pos_x + 30, pos_y + 30}, {pos_x + 25, pos_y + 35}, {pos_x + 10, pos_y + 35}, {pos_x + 1, pos_y + 27}, {pos_x + 1, pos_y + 16}, {pos_x + 3, pos_y + 13},
-                                                             {pos_x + 7, pos_y + 23}, {pos_x + 11, pos_y + 23} };
-
-    Polygon(hdc, dinosaurBodyPoints, dinosaurBodyPointAmount);
+    Polygon(hdc, currentDinosaurPoints, dinosaurBodyPointsAmount);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, pos_x + 27 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 31 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 27 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + 31 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -417,25 +565,12 @@ void CDinosaur::DrawLeftStanding(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    const int dinosaurBodyPointAmount = 26;
-
-    const POINT dinosaurBodyPoints[dinosaurBodyPointAmount]{ {pos_x + width - 20, pos_y + 15}, {pos_x + width - 23, pos_y + 15}, {pos_x + width - 23, pos_y + 1}, {pos_x + width - 25, pos_y + 0}, {pos_x + width - 41, pos_y + 0}, 
-                                                             {pos_x + width - 43, pos_y + 1}, {pos_x + width - 43, pos_y + 9}, {pos_x + width - 33, pos_y + 9}, {pos_x + width - 33, pos_y + 12}, {pos_x + width - 40, pos_y + 12}, 
-                                                             {pos_x + width - 40, pos_y + 14}, {pos_x + width - 30, pos_y + 14}, {pos_x + width - 30, pos_y + 20}, {pos_x + width - 35, pos_y + 20}, {pos_x + width - 35, pos_y + 23},
-                                                             {pos_x + width - 34, pos_y + 23}, {pos_x + width - 34, pos_y + 21}, {pos_x + width - 30, pos_y + 21}, {pos_x + width - 30, pos_y + 30}, {pos_x + width - 25, pos_y + 35}, 
-                                                             {pos_x + width - 10, pos_y + 35}, {pos_x + width - 1, pos_y + 27}, {pos_x + width - 1, pos_y + 16}, {pos_x + width - 3, pos_y + 13}, {pos_x + width - 7, pos_y + 23},
-                                                             {pos_x + width - 11, pos_y + 23} };
-
-
-    Polygon(hdc, dinosaurBodyPoints, dinosaurBodyPointAmount);
+    Polygon(hdc, currentDinosaurPoints, dinosaurBodyPointsAmount);
 
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, pos_x + (width - 27) * CConfig::SizeScale, pos_y + (2 * CConfig::SizeScale), pos_x + (width - 31) * CConfig::SizeScale, pos_y + (6 * CConfig::SizeScale));
+    Rectangle(hdc, currentRgnPos_X + (width - 27) * CConfig::SizeScale, currentRgnPos_Y + (2 * CConfig::SizeScale), currentRgnPos_X + (width - 31) * CConfig::SizeScale, currentRgnPos_Y + (6 * CConfig::SizeScale));
 }
 // -----------------------------------------------------------------------------------
 
@@ -443,26 +578,14 @@ void CDinosaur::DrawLeftStanding(HDC hdc)
 void CDinosaur::DrawRightCrawling(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
-
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    const int dinosaurBodyPointAmount = 26;
-
-    const POINT dinosaurBodyPoints[dinosaurBodyPointAmount]{ {pos_x + 1, pos_y + 0}, {pos_x + 5, pos_y + 3}, {pos_x + 13, pos_y + 3}, {pos_x + 16, pos_y + 1}, {pos_x + 33, pos_y + 1}, {pos_x + 36, pos_y + 3}, 
-                                                             {pos_x + 39, pos_y + 3}, {pos_x + 41, pos_y + 0}, {pos_x + 57, pos_y + 0}, {pos_x + 59, pos_y + 1}, {pos_x + 59, pos_y + 9}, {pos_x + 49, pos_y + 9}, 
-                                                             {pos_x + 49, pos_y + 12}, {pos_x + 56, pos_y + 12}, {pos_x + 56, pos_y + 14}, {pos_x + 42, pos_y + 14}, {pos_x + 39, pos_y + 13}, {pos_x + 36, pos_y + 13}, 
-                                                             {pos_x + 33, pos_y + 16}, {pos_x + 33, pos_y + 20}, {pos_x + 35, pos_y + 20}, {pos_x + 35, pos_y + 21}, {pos_x + 32, pos_y + 21}, {pos_x + 32, pos_y + 17}, 
-                                                             {pos_x + 10, pos_y + 17}, {pos_x + 1, pos_y + 5} };
-                                      
-
-    Polygon(hdc, dinosaurBodyPoints, dinosaurBodyPointAmount);
+                                  
+    Polygon(hdc, currentDinosaurPoints, dinosaurBodyPointsAmount);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, pos_x + 43 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 47 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 43 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + 47 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -471,25 +594,13 @@ void CDinosaur::DrawLeftCrawling(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    const int dinosaurBodyPointAmount = 26;
-
-    const POINT dinosaurBodyPoints[]{ {pos_x + width - 1, pos_y + 0}, {pos_x + width - 5, pos_y + 3}, {pos_x + width - 13, pos_y + 3}, {pos_x + width - 16, pos_y + 1}, {pos_x + width - 33, pos_y + 1}, 
-                                      {pos_x + width - 36, pos_y + 3}, {pos_x + width - 39, pos_y + 3}, {pos_x + width - 41, pos_y + 0}, {pos_x + width - 57, pos_y + 0}, {pos_x + width - 59, pos_y + 1},
-                                      {pos_x + width - 59, pos_y + 9}, {pos_x + width - 49, pos_y + 9}, {pos_x + width - 49, pos_y + 12}, {pos_x + width - 56, pos_y + 12}, {pos_x + width - 56, pos_y + 14},
-                                      {pos_x + width - 42, pos_y + 14}, {pos_x + width - 39, pos_y + 13}, {pos_x + width - 36, pos_y + 13}, {pos_x + width - 33, pos_y + 16}, {pos_x + width - 33, pos_y + 20},
-                                      {pos_x + width - 35, pos_y + 20}, {pos_x + width - 35, pos_y + 21}, {pos_x + width - 32, pos_y + 21}, {pos_x + width - 32, pos_y + 17}, {pos_x + width - 10, pos_y + 17},
-                                      {pos_x + width - 1, pos_y + 5} };
-
-    Polygon(hdc, dinosaurBodyPoints, dinosaurBodyPointAmount);
+    Polygon(hdc, currentDinosaurPoints, dinosaurBodyPointsAmount);
 
     //Фоновые пропуски
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, pos_x + width - 43 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + width - 47 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + width - 43 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + width - 47 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
 }
 // -----------------------------------------------------------------------------------
 
@@ -540,8 +651,8 @@ void CDinosaur::SetBodyState(EDinosaurBodyState newState)
         height = CrawlingHeight;
         width = CrawlingWidth;
         
-        CorrectHorizontalEdgePosition();
-        CorrectVerticalEdgePosition();
+        //CorrectHorizontalEdgePosition();
+        //CorrectVerticalEdgePosition();
     }
     else
     {
@@ -659,11 +770,10 @@ void CDinosaur::CheckHorizontalDirection(bool leftDirection, bool keyPressed) //
 // ------------ Прыжок (начало прыжка, подъём Дино от земли, дальше работает метод MoveHorizontal)  (обрабатывает нажатие пробела)
 void CDinosaur::Jump()
 {
-    if (pos_Y + height == OnGroundLegsPos_Y)
+    if (static_cast<int>(pos_Y) + height == OnGroundLegsPos_Y)
     {
         pos_Y -= 1.0f;
         verticalSpeed = -MaxSpeed_Y;
-        //DinosaurMovingState = EDinosaurMovingState::Jumping;
 
         //Beep(300, 50); //TO DO: Перенести обработку звука в отдельный поток, чтобы не вызывало задержку
     }
@@ -673,6 +783,7 @@ void CDinosaur::Jump()
 // ------------ Модель Динозавра поделена на 3 прямоугольника, с которыми проверяем столкновения других объектов
 void CDinosaur::SetDinoCollisionRects()
 {
+    //Если координаты не поменялись, ничего не делаем
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
