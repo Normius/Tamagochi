@@ -4,9 +4,10 @@
 
 // ------------ Конструктор
 CDinosaur::CDinosaur()
-    :DinosaurLevelState(EDinosaurLevelState::StartRunLevel), DinosaurBodyState(EDinosaurBodyState::Standing), DinosaurDirectionState(EDinosaurDirectionState::Right), DinosaurMovingState(EDinosaurMovingState::Stop),
-     leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth), pos_X(CConfig::DinosaurConstPos_X), pos_Y(static_cast<float>(StandingPos_Y)), dinoCollisionRects{ 0 },
-    horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), currentDinosaurPoints{ 0 }, prevDinosaurPoints{ 0 }, currentRect{ 0 }, prevRect{ 0 }
+    :DinosaurLevelState(EDinosaurLevelState::StartLevel), DinosaurBodyState(EDinosaurBodyState::Standing), DinosaurDirectionState(EDinosaurDirectionState::Right), DinosaurMovingState(EDinosaurMovingState::Stop),
+     leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth), pos_X(startPos_X), pos_Y(static_cast<float>(StandingPos_Y)), dinoCollisionRects{ 0 },
+     horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), currentDinosaurPoints{ 0 }, prevDinosaurPoints{ 0 }, currentRect{ 0 }, prevRect{ 0 }, onStartPlatform(false), OnGroundLegsPos_Y(StandingPos_Y + StandingHeight),
+     falling(false)
     //currentPolyRgn{ 0 }, prevPolyRgn { 0 }, prevRectRgn{ 0 }, currentRectRgn{ 0 }
 {
 }
@@ -15,11 +16,6 @@ CDinosaur::CDinosaur()
 // ------------ Отрисовка персонажа Dino (основной метод)
 void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 {
-    /*if (!RectInRegion(currentPolyRgn, &paintArea))
-    {
-        return;
-    }*/
-
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &currentRect))
@@ -125,11 +121,6 @@ void CDinosaur::Draw(HDC hdc, RECT& paintArea)
 
 void CDinosaur::Clear(HDC hdc, RECT& paintArea)
 {
-    /*if ( !RectInRegion(prevPolyRgn, &paintArea) )
-    {
-        return;
-    }*/
-
     RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &prevRect))
@@ -213,7 +204,6 @@ void CDinosaur::UpdateRgnPoints()
             currentDinosaurPoints[26] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 36 };
             currentDinosaurPoints[27] = { currentRgnPos_X + width - 28, currentRgnPos_Y + 43 };
             currentDinosaurPoints[28] = { currentRgnPos_X + width - 11, currentRgnPos_Y + 43 };
-
         }
     }
     break;
@@ -308,18 +298,7 @@ void CDinosaur::Redraw()
     currentRgnPos_X = static_cast<int>(pos_X);
     currentRgnPos_Y = static_cast<int>(pos_Y);
 
-    /*prevPolyRgn = currentPolyRgn;*/
-
     UpdateRgnPoints();
-
-    /*currentPolyRgn = CreatePolygonRgn(currentDinosaurPoints, dinosaurWithLegsPointsAmount, 2);
-
-    prevRectRgn = currentRectRgn;
-
-    currentRectRgn = CreateRectRgn(currentRgnPos_X, currentRgnPos_Y, currentRgnPos_X + width, currentRgnPos_Y + height);
-
-    InvalidateRgn(CConfig::Hwnd, prevRectRgn, FALSE);
-    InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);*/
 
     prevRect = currentRect;
 
@@ -650,9 +629,6 @@ void CDinosaur::SetBodyState(EDinosaurBodyState newState)
         DinosaurBodyState = EDinosaurBodyState::Crawling;
         height = CrawlingHeight;
         width = CrawlingWidth;
-        
-        //CorrectHorizontalEdgePosition();
-        //CorrectVerticalEdgePosition();
     }
     else
     {
@@ -672,18 +648,27 @@ void CDinosaur::SetLevelState(EDinosaurLevelState newstate)
         return;
 
     DinosaurLevelState = newstate;
-    DinosaurMovingState = EDinosaurMovingState::MovingRight;
+    //DinosaurMovingState = EDinosaurMovingState::MovingRight;
 }
 
 void CDinosaur::CorrectVerticalEdgePosition()
 {
-    if (static_cast<int>(pos_Y) + height >= OnGroundLegsPos_Y) //Двигаемся вниз до тех пор, пока Дино не достигнет земли
+    if (onStartPlatform == true)  //Прекращаем падать, если находимся на платформе
+        OnGroundLegsPos_Y = static_cast<int>(CStartPlatform::pos_Y); //Нормальная позиция ног Дино на платформе
+    else 
+        OnGroundLegsPos_Y = (StandingPos_Y + StandingHeight); //Нормальная позиция ног Дино на земле
+
+    if (static_cast<int>(pos_Y) + height >= OnGroundLegsPos_Y) //Двигаемся вниз до тех пор, пока Дино не достигнет земли (или платформы)
     {
         pos_Y = static_cast<float>(OnGroundLegsPos_Y - height);
+        falling = false;
     }
 
-    if (static_cast<int>(pos_Y) <= StandingPos_Y - MaxJumpHeight * CConfig::SizeScale) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
+    if (static_cast<int>(pos_Y) <= OnGroundLegsPos_Y - height - MaxJumpHeight * CConfig::SizeScale && falling == false) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
+    {
+        falling = true;
         verticalSpeed = 0.0f; //При достижении максимальной высоты перемещение приравниваем к 0 
+    }
 }
 
 // ------------ Перемещение по вертикали (падение вниз или движение вверх при прыжке) (работает по таймеру)
@@ -695,18 +680,16 @@ void CDinosaur::MoveVertical(float maxSpeed)
     float nextStep = verticalSpeed / maxSpeed * CConfig::minShift;
 
     pos_Y += nextStep;
-
-    CorrectVerticalEdgePosition();
 }
 // -----------------------------------------------------------------------------------
 
 // ------------  Горизонтальное движение по таймеру 
 void CDinosaur::CorrectHorizontalEdgePosition()
 {
-    if (static_cast<int>(pos_X) + width * CConfig::SizeScale >= CConfig::rightBorder)
+    if (static_cast<int>(pos_X) + width * CConfig::SizeScale >= CConfig::rightBorder) //Правая граница
         pos_X = static_cast<float>(CConfig::rightBorder - width * CConfig::SizeScale);
 
-    if (static_cast<int>(pos_X) < CConfig::leftBorder)
+    if (static_cast<int>(pos_X) < CConfig::leftBorder) //Левая граница
         pos_X = static_cast<float>(CConfig::leftBorder);
 }
 
@@ -720,8 +703,6 @@ void CDinosaur::MoveHorizontal(float maxSpeed)
     float nextStep = horizontalSpeed / maxSpeed * CConfig::minShift;
 
     pos_X += nextStep;
-
-    CorrectHorizontalEdgePosition();
 }
 
 // ------------ Выбор направления движения по горизонтали (обрабатывает нажатия и отжатие клавиш влево-вправо)
@@ -737,7 +718,7 @@ void CDinosaur::CheckHorizontalDirection(bool leftDirection, bool keyPressed) //
 
     if (leftKeyDown == false && rightKeyDown == false) //Если обе отжаты, останавливаемся
     {
-        if (DinosaurLevelState == EDinosaurLevelState::FreeMovingLevel)
+        if (DinosaurLevelState == EDinosaurLevelState::StartLevel || DinosaurLevelState == EDinosaurLevelState::TestLevel) //Останавка при отжатии нужуна только в состояниях, где мы можем двигаться клавишами. При RunLevel просто шевеляться ноги
         {
             DinosaurMovingState = EDinosaurMovingState::Stop;
             horizontalSpeed = 0.0f;
@@ -819,3 +800,72 @@ void CDinosaur::SetDinoCollisionRects()
     }
 }
 // -----------------------------------------------------------------------------------
+
+// ------------ Падение под действием "гравитации" (корректируем вертикальную позицию Дино каждый кадр (опускаем вниз))
+void CDinosaur::GravityFalling()
+{
+    if (DinosaurLevelState == EDinosaurLevelState::Teleporting)
+        return;
+        
+    verticalSpeed += 7.15f;
+}
+// -----------------------------------------------------------------------------------
+
+// ------------ Учитываем положение стартовой платформы
+void CDinosaur::CorrectPositionWithStartPlatform(const CStartPlatform& startPlatform)
+{
+    if (static_cast<int>(pos_X) + width > static_cast<int>(startPlatform.pos_X) && static_cast<int>(pos_X) < static_cast<int>(startPlatform.pos_X) + startPlatform.topWidth) //Проверка по Х координате для столкновения
+    {
+        if (onStartPlatform == false)
+        {
+            if (horizontalSpeed > 0) //Если движемся вправо (подходим слева), то упираемся в платформу
+                pos_X = startPlatform.pos_X - width;
+            else if (horizontalSpeed < 0) //Если движемся влево (подходим справа), то упираемся в платформу
+                pos_X = startPlatform.pos_X + static_cast<float>(startPlatform.topWidth);
+    
+            if (static_cast<int>(pos_Y) + height <= static_cast<int>(startPlatform.pos_Y)) //Проверка по Y координате (для возможности запрыгнуть/перепрыгнуть)
+                onStartPlatform = true;
+        }
+    }
+    else
+        onStartPlatform = false;
+}
+// -----------------------------------------------------------------------------------
+
+void CDinosaur::TeleportingFromStartPlatfrom() //TO DO:!!!
+{
+    
+
+    //if (DinosaurLevelState == EDinosaurLevelState::Teleporting)
+
+
+}
+
+// ------------ Рестарт уровня при проигрыше или со стартовой платформы
+void CDinosaur::RestartLevel()
+{
+    DinosaurLevelState = EDinosaurLevelState::RestartRunLevel;
+    horizontalSpeed = 0.0f;
+    verticalSpeed = 0.0f;
+    SetBodyState(EDinosaurBodyState::Standing);
+    DinosaurMovingState = EDinosaurMovingState::Stop;
+    DinosaurDirectionState = EDinosaurDirectionState::Right;
+    pos_X = startPos_X;
+    pos_Y = (static_cast<float>(StandingPos_Y));
+    collision = false;
+    
+    onStartPlatform = false;
+}
+// -----------------------------------------------------------------------------------
+
+// ------------ Проверка условий для возможности начать игру со стартовой платформы (нажать клавишу Е)
+bool CDinosaur::ReadyForStartPlatfrom(const CStartPlatform& startPlatform)
+{
+    bool ready = true;
+    ready = ready && ( static_cast<int>(pos_Y) + height == static_cast<int>(startPlatform.pos_Y) );
+    ready = ready && ( static_cast<int>(pos_X) > static_cast<int>(startPlatform.pos_X) + (startPlatform.topWidth - startPlatform.downWidth) / 2 );
+    ready = ready && ( static_cast<int>(pos_X) + width < static_cast<int>(startPlatform.pos_X) + startPlatform.downWidth );
+    ready = ready && DinosaurBodyState == EDinosaurBodyState::Standing;
+
+    return ready;
+}

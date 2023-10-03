@@ -22,20 +22,17 @@
     <Filter Include="Config">
       <UniqueIdentifier>{97c79c9c-148a-4605-99fc-abf4eec21604}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RoadLevel">
-      <UniqueIdentifier>{39c340ff-945f-4536-807d-d77a0e096bca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Cactus">
-      <UniqueIdentifier>{2125fad3-099b-4d0b-984e-f517f737b551}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Bird">
-      <UniqueIdentifier>{f97e27ab-1980-4534-90cd-0e57e784190c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Cloud">
-      <UniqueIdentifier>{8886f136-b642-468b-bf67-41d257236469}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dinosaur">
       <UniqueIdentifier>{9fec12cc-c92e-45dd-837b-4f5b8cdfb010}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StartPlatform">
+      <UniqueIdentifier>{6720f6a9-19cf-4e1a-bfe7-bb0d142b343e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BackgroundObjects">
+      <UniqueIdentifier>{c9ac7b75-1070-4833-83a1-c6c68b43b445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameInterface">
+      <UniqueIdentifier>{835a10bf-39fb-4acc-ad79-c312c8e74b5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,23 +51,20 @@
     <ClInclude Include="Engine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="RoadLevel.h">
-      <Filter>RoadLevel</Filter>
-    </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Config</Filter>
     </ClInclude>
-    <ClInclude Include="Bird.h">
-      <Filter>Bird</Filter>
-    </ClInclude>
-    <ClInclude Include="Cactus.h">
-      <Filter>Cactus</Filter>
-    </ClInclude>
-    <ClInclude Include="Cloud.h">
-      <Filter>Cloud</Filter>
-    </ClInclude>
     <ClInclude Include="Dinosaur.h">
       <Filter>Dinosaur</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundObjects.h">
+      <Filter>BackgroundObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="StartPlatform.h">
+      <Filter>StartPlatform</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInterface.h">
+      <Filter>GameInterface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -93,23 +87,20 @@
     <ClCompile Include="Engine.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="RoadLevel.cpp">
-      <Filter>RoadLevel</Filter>
-    </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Config</Filter>
     </ClCompile>
-    <ClCompile Include="Bird.cpp">
-      <Filter>Bird</Filter>
-    </ClCompile>
-    <ClCompile Include="Cactus.cpp">
-      <Filter>Cactus</Filter>
-    </ClCompile>
-    <ClCompile Include="Cloud.cpp">
-      <Filter>Cloud</Filter>
-    </ClCompile>
     <ClCompile Include="Dinosaur.cpp">
       <Filter>Dinosaur</Filter>
+    </ClCompile>
+    <ClCompile Include="StartPlatform.cpp">
+      <Filter>StartPlatform</Filter>
+    </ClCompile>
+    <ClCompile Include="BackgroundObjects.cpp">
+      <Filter>BackgroundObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInterface.cpp">
+      <Filter>GameInterface</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

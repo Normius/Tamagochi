@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include <Windows.h>
+#include <cmath>
 
 #include "BackgroundObjects.h"
 #include "Dinosaur.h"
-#include "Config.h"
+#include "GameInterface.h"
+
 
 //Перечисление типа клавиш, используемых в игре
 enum class EKeyType: unsigned char
@@ -13,18 +15,20 @@ enum class EKeyType: unsigned char
     RightKey,
     DownKey,
     UpKey,
-    SpaceKey
+    SpaceKey,
+    ActionKey_E
 };
 
 //Перечисление игровых состояний
 enum class EGameState: unsigned char
 {
-    StartRunLevel, //Состояние перед началом забега
+    StartLevel,
+    RestartRunLevel, //Состояние перед началом забега
     RunLevel, //Забег начался
     LoseRunLevel, //Проигрыш при столкновении с припятствием
-    FreeMovingLevel //Свободное передвижение влево и вправо
+    TestLevel, //Свободное передвижение влево и вправо
+    TeleportingDinosaur //Телепортация со стартовой платформы в начале игры
 };
-
 
 
 // ----------------------------- Класс Engine ----------------------------------------------
@@ -39,7 +43,17 @@ public:
     int OnTimer();
     float GetMaxSpeed();
     bool CheckCollisionObjectsDistance();
+    bool CheckRoadBumpsDistance();
     void CheckCollisions();
+    void FirstStartLevel();
+    void RestartLevel();
+
+    void MoveCollisionObjects();
+    void MoveBackgroundObjects();
+    void ActivateCollisionObjects();
+    void ActivateRoadBumps();
+    void ActivateClouds();
+    void ActivateRoadStones();
 
     const int TimerId; //ID таймера для работы ф-ции таймера в Main
 
@@ -55,6 +69,8 @@ public:
     float currentMaxObjectsSpeed;
     float objectRestDistance;
 
+    bool clearStartObjects;
+
     EGameState GameState;
 
 private:
@@ -68,8 +84,11 @@ private:
     CRoadStones RoadStones[CConfig::MaxRoadStones];
     CRoadBump RoadBumps[CConfig::MaxRoadBumps];
     CCloud Clouds[CConfig::MaxClouds]; //Массив облаков
-    
-    //CBackgroundObjects* BackgroundObjects[CConfig::MaxBackgroundObjects]; //Массив указателей на объекты заднего плана без столкновений(облака и дорога)
+
+    CStartPlatform StartPlatform; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
+    CScoreboard Scoreboard;
+    СControlTip ControlTip; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
+    CPopupTip PopupTip; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
     
 };
 // -----------------------------------------------------------------------------------

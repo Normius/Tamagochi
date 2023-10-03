@@ -7,8 +7,10 @@ class CColor
 {
 public:
 	CColor(unsigned char r, unsigned char g, unsigned char b);
+	CColor(unsigned char r, unsigned char g, unsigned char b, int penWidth);
 
 	void SelectColor(HDC hdc) const;
+	int GetRGBColor() const;
 
 	unsigned char R, G, B;
 	HPEN pen;
@@ -31,14 +33,14 @@ public:
 	static constexpr int SizeScale = 1; //Целочисленный масштаб (При изменении масштаба, изменить также дробный FSizeScale)
 	static constexpr float FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
 	static constexpr float minShift = 1.0f;
-	static constexpr float backgroundAcceleration = 0.05f;
-	static constexpr float DinosaurConstPos_X = 100.0f;
+	static constexpr float backgroundAcceleration = 0.03f;
 
 	static float slowCurrentFrameValue; //Текущее значение кадра от начала игры с замедлением в 2 раза (+1 каждые 2 кадра). Используется для замедления анимации крыльев птицы и шагов Дино
-
 	static unsigned int currentFrameValue; //Текущее значение кадра от начала игры
 
-	static const CColor backgroundColor, mainBrightColor, secondPaleColor;
+	static int score; //Количество очков в забеге
+
+	static const CColor backgroundColor, mainBrightColor, secondPaleColor, paleCloudColor;
 
 	static HWND Hwnd;
 

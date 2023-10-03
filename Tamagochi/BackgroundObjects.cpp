@@ -1,87 +1,55 @@
-#include "BackgroundObjects.h"
+п»ї#include "BackgroundObjects.h"
 
-// ----------------------------- Класс задний фон ------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ Р·Р°РґРЅРёР№ С„РѕРЅ ------------------------------------
 
-float CBackgroundObjects::speed = 5.0f; //5
+float CBackgroundObjects::speed = startSpeed;
 // -----------------------------------------------------------------------------------
 
-// ----------------------------- Класс объекты столкновений ------------------------------------
+
+// ----------------------------- РљР»Р°СЃСЃ РѕР±СЉРµРєС‚С‹ СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№ ------------------------------------
 
 unsigned int CCollisionObjects::CollisionObjectsActiveCount = 0;
 // -----------------------------------------------------------------------------------
 
-// ----------------------------- Класс птицы (противник) -----------------------------
 
-//Конструктор
+// ----------------------------- РљР»Р°СЃСЃ РїС‚РёС†С‹ (РїСЂРѕС‚РёРІРЅРёРє) -----------------------------
+
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CBird::CBird()
     :pos_X(startPos_X), pos_Y(startPos_Y), height(upWingHeight), upWing(true), active(false), currentBirdPoints{ 0 }, prevBirdPoints{ 0 }, currentPolyRgn{ 0 }, prevPolyRgn{ 0 }, currentRgnPos_X(0), currentRgnPos_Y(0), 
-    currentRectRgn{ 0 }, prevRectRgn{ 0 }
+    currentRectRgn{ 0 }, prevRectRgn{ 0 }, birdSpeed(0)
 {
 }
 
-//Отрисовка тела
-void CBird::DrawBodyBird(HDC hdc)
-{
-    //CConfig::mainBrightColor.SelectColor(hdc);
-
-    //int pos_x = static_cast<int>(pos_X);
-    //int pos_y = static_cast<int>(pos_Y);
-
-    //currentBirdPoints[0] = { pos_x + 12, pos_y + 13 };
-    //currentBirdPoints[1] = { pos_x + 30, pos_y + 13 };
-    //currentBirdPoints[2] = { pos_x + 33, pos_y + 17 };
-    //currentBirdPoints[3] = { pos_x + 45, pos_y + 17 };
-    //currentBirdPoints[4] = { pos_x + 45, pos_y + 18 };
-    //currentBirdPoints[5] = { pos_x + 38, pos_y + 18 };
-    //currentBirdPoints[6] = { pos_x + 38, pos_y + 21 };
-    //currentBirdPoints[7] = { pos_x + 43, pos_y + 21 };
-    //currentBirdPoints[8] = { pos_x + 43, pos_y + 22 };
-    //currentBirdPoints[9] = { pos_x + 17, pos_y + 22 };
-    //currentBirdPoints[10] = { pos_x + 12, pos_y + 15 };
-    //currentBirdPoints[11] = { pos_x + 0, pos_y + 15 };
-    //currentBirdPoints[12] = { pos_x + 0, pos_y + 14 };
-    //currentBirdPoints[13] = { pos_x + 2, pos_y + 14 };
-    //currentBirdPoints[14] = { pos_x + 8, pos_y + 7 };
-    //currentBirdPoints[bodyBirdPointsAmount - 1] = { pos_x + 10, pos_y + 7 };
-
-    //Polygon(hdc, currentBirdPoints, bodyBirdPointsAmount);
-
-    ////Фоновые пропуски
-    //CConfig::backgroundColor.SelectColor(hdc);
-
-    ////Глаз
-    //Rectangle(hdc, pos_x + 7 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale, pos_x + 9 * CConfig::SizeScale, pos_y + 12 * CConfig::SizeScale);
-}
-
-//Отрисовка верхнего крыла
+//РћС‚СЂРёСЃРѕРІРєР° РІРµСЂС…РЅРµРіРѕ РєСЂС‹Р»Р°
 void CBird::DrawUpWingBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
     Polygon(hdc, currentBirdPoints, birdWithWingsPointsAmount);
 
-    //Фоновые пропуски
+    //Р¤РѕРЅРѕРІС‹Рµ РїСЂРѕРїСѓСЃРєРё
     CConfig::backgroundColor.SelectColor(hdc);
 
-    //Глаз
+    //Р“Р»Р°Р·
     Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 11 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 12 * CConfig::SizeScale);
 }
 
-//Отрисовка нижнего крыла
+//РћС‚СЂРёСЃРѕРІРєР° РЅРёР¶РЅРµРіРѕ РєСЂС‹Р»Р°
 void CBird::DrawDownWingBird(HDC hdc)
 {
     CConfig::mainBrightColor.SelectColor(hdc);
 
     Polygon(hdc, currentBirdPoints, birdWithWingsPointsAmount);
 
-    //Фоновые пропуски
+    //Р¤РѕРЅРѕРІС‹Рµ РїСЂРѕРїСѓСЃРєРё
     CConfig::backgroundColor.SelectColor(hdc);
 
-    //Глаз
+    //Р“Р»Р°Р·
     Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 4 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 5 * CConfig::SizeScale);
 }
 
-//Анимация крыльев
+//РђРЅРёРјР°С†РёСЏ РєСЂС‹Р»СЊРµРІ
 void CBird::MoveWings(HDC hdc)
 {        
     if (upWing == true)
@@ -94,7 +62,7 @@ void CBird::MoveWings(HDC hdc)
     }
 }
 
-//Отрисовка птицы полностью
+//РћС‚СЂРёСЃРѕРІРєР° РїС‚РёС†С‹ РїРѕР»РЅРѕСЃС‚СЊСЋ
 void CBird::Draw(HDC hdc, RECT& paintArea)
 {
     if ( !RectInRegion(currentPolyRgn, &paintArea) )
@@ -140,8 +108,8 @@ void CBird::UpdateCollisionRgnPoints()
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Используем набор предыдущих точек и предыдущего региона, чтобы не использовать дополнительный регион.
-    //Они обновятся значениями текущего региона и его точек в методе Draw() для вызова перерисовки
+    //РСЃРїРѕР»СЊР·СѓРµРј РЅР°Р±РѕСЂ РїСЂРµРґС‹РґСѓС‰РёС… С‚РѕС‡РµРє Рё РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЂРµРіРёРѕРЅР°, С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ СЂРµРіРёРѕРЅ.
+    //РћРЅРё РѕР±РЅРѕРІСЏС‚СЃСЏ Р·РЅР°С‡РµРЅРёСЏРјРё С‚РµРєСѓС‰РµРіРѕ СЂРµРіРёРѕРЅР° Рё РµРіРѕ С‚РѕС‡РµРє РІ РјРµС‚РѕРґРµ Draw() РґР»СЏ РІС‹Р·РѕРІР° РїРµСЂРµСЂРёСЃРѕРІРєРё
 
     if (upWing == true)
     {
@@ -249,8 +217,7 @@ void CBird::UpdateDrawRgnPoints()
     }
 }
 
-//TO DO: Иногда часть птицы не стирается
-//Перерисовка персонажа в новых координатах
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РїРµСЂСЃРѕРЅР°Р¶Р° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CBird::Redraw()
 {
     if (active == false)
@@ -290,7 +257,7 @@ void CBird::Redraw()
     InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);
 }
 
-//Проверка столкновения
+//РџСЂРѕРІРµСЂРєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ
 bool CBird::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
@@ -313,13 +280,10 @@ bool CBird::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
     return false;
 }
 
-//Проверка активен ли объект (находится на экране)
+//РџСЂРѕРІРµСЂРєР° Р°РєС‚РёРІРµРЅ Р»Рё РѕР±СЉРµРєС‚ (РЅР°С…РѕРґРёС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ)
 bool CBird::CheckActive()
 {
-    if (active == true)
-        return true;
-    else
-        return false;
+    return active;
 }
 
 float CBird::GetPos_X()
@@ -327,7 +291,7 @@ float CBird::GetPos_X()
     return pos_X;
 }
 
-//Делаем объект активным и помещаем в заданные координаты
+//Р”РµР»Р°РµРј РѕР±СЉРµРєС‚ Р°РєС‚РёРІРЅС‹Рј Рё РїРѕРјРµС‰Р°РµРј РІ Р·Р°РґР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void CBird::Activate()
 {
     if (CCollisionObjects::CollisionObjectsActiveCount >= CCollisionObjects::maxCollisionObjectsActive)
@@ -339,13 +303,17 @@ void CBird::Activate()
     active = true;
     CCollisionObjects::CollisionObjectsActiveCount++;
 
-    int y = 100 + 10 * CConfig::GetRandom(0, 5); //Генерируем диапазон от 100 до 150: (100, 110) - безопасно стоя, (120, 130) - присесть или попробовать перепрыгнуть, (140-150) - только перепрыгивать
-
-    pos_X = startPos_X - width;;
-    pos_Y = static_cast<float>(y);
+    pos_X = startPos_X - width;
+    pos_Y = startPos_Y - 50.0f + 10.0f * static_cast<float>(CConfig::GetRandom(0, 5)); //Р“РµРЅРµСЂРёСЂСѓРµРј РґРёР°РїР°Р·РѕРЅ РѕС‚ 100 РґРѕ 150: (100, 110) - Р±РµР·РѕРїР°СЃРЅРѕ СЃС‚РѕСЏ, (120, 130) - РїСЂРёСЃРµСЃС‚СЊ РёР»Рё РїРѕРїСЂРѕР±РѕРІР°С‚СЊ РїРµСЂРµРїСЂС‹РіРЅСѓС‚СЊ, (140-150) - С‚РѕР»СЊРєРѕ РїРµСЂРµРїСЂС‹РіРёРІР°С‚СЊ
 }
 
-//Тестовая активация объекта
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CBird::Deactivate()
+{
+    pos_X = static_cast<float>(CConfig::leftBorder - birdSpeed - width);
+}
+
+//РўРµСЃС‚РѕРІР°СЏ Р°РєС‚РёРІР°С†РёСЏ РѕР±СЉРµРєС‚Р°
 void CBird::TestActivate(float pos_x, float pos_y)
 {
     if (CCollisionObjects::CollisionObjectsActiveCount >= CCollisionObjects::maxCollisionObjectsActive)
@@ -358,43 +326,37 @@ void CBird::TestActivate(float pos_x, float pos_y)
     pos_Y = pos_y;
 }
 
-//Смещение объекта со временем
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
 void CBird::Move(float maxSpeed)
 {
     if (active == false)
         return;
 
-    if (CBackgroundObjects::speed == 0.0f)
-        return;
-
-    float nextStep = CBackgroundObjects::speed / maxSpeed * CConfig::minShift;
+    birdSpeed = CBackgroundObjects::speed + 5.0f;
+    float nextStep = birdSpeed / maxSpeed * CConfig::minShift;
 
     pos_X -= nextStep;
 
-    if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width * CConfig::SizeScale <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + static_cast<int>(birdSpeed) + width <= CConfig::leftBorder)
     {
-        active = false; //Если объект уходит за границу экрана, деактивируем его
+        active = false; //Р•СЃР»Рё РѕР±СЉРµРєС‚ СѓС…РѕРґРёС‚ Р·Р° РіСЂР°РЅРёС†Сѓ СЌРєСЂР°РЅР°, РґРµР°РєС‚РёРІРёСЂСѓРµРј РµРіРѕ
         CCollisionObjects::CollisionObjectsActiveCount--;
-        DeleteObject(prevPolyRgn);
-        DeleteObject(currentPolyRgn);
-        DeleteObject(prevRectRgn);
-        DeleteObject(currentRectRgn);
         return;
     }
 }
 // -----------------------------------------------------------------------------------
 
 
-// -------------------------------------------------------------- Класс Кактуса (препятствие) ------------------------------------------------------------------------
+// -------------------------------------------------------------- РљР»Р°СЃСЃ РљР°РєС‚СѓСЃР° (РїСЂРµРїСЏС‚СЃС‚РІРёРµ) ------------------------------------------------------------------------
 
-//Конструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CCactus::CCactus()
     :pos_X(startPos_X), pos_Y(startPos_Y), active(false), currentCactusPoints{ 0 }, prevCactusPoints{ 0 }, currentPolyRgn{ 0 }, prevPolyRgn{ 0 }, prevRectRgn{ 0 }, currentRectRgn{ 0 }, prevRgnPos_X(0), prevRgnPos_Y(0), 
     currentRgnPos_X(0), currentRgnPos_Y(0)
 {
 }
 
-//Отрисовка
+//РћС‚СЂРёСЃРѕРІРєР°
 void CCactus::Draw(HDC hdc, RECT& paintArea)
 {
     if ( !RectInRegion(currentPolyRgn, &paintArea) )
@@ -424,8 +386,8 @@ void CCactus::UpdateCollisionRgnPoints()
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Используем набор предыдущих точек и предыдущего региона, чтобы не использовать дополнительный регион.
-    //Они обновятся значениями текущего региона и его точек в методе Draw() для вызова перерисовки
+    //РСЃРїРѕР»СЊР·СѓРµРј РЅР°Р±РѕСЂ РїСЂРµРґС‹РґСѓС‰РёС… С‚РѕС‡РµРє Рё РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЂРµРіРёРѕРЅР°, С‡С‚РѕР±С‹ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ СЂРµРіРёРѕРЅ.
+    //РћРЅРё РѕР±РЅРѕРІСЏС‚СЃСЏ Р·РЅР°С‡РµРЅРёСЏРјРё С‚РµРєСѓС‰РµРіРѕ СЂРµРіРёРѕРЅР° Рё РµРіРѕ С‚РѕС‡РµРє РІ РјРµС‚РѕРґРµ Draw() РґР»СЏ РІС‹Р·РѕРІР° РїРµСЂРµСЂРёСЃРѕРІРєРё
     prevCactusPoints[0] = { pos_x + 10, pos_y + 0 }; 
     prevCactusPoints[1] = { pos_x + 11, pos_y + 0 };
     prevCactusPoints[2] = { pos_x + 13, pos_y + 2 };
@@ -476,7 +438,7 @@ void CCactus::UpdateDrawRgnPoints()
     currentCactusPoints[21] = { currentRgnPos_X + 8, currentRgnPos_Y + 2 };
 }
 
-//Перерисовка персонажа в новых координатах
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РїРµСЂСЃРѕРЅР°Р¶Р° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CCactus::Redraw()
 {
     if (active == false)
@@ -495,11 +457,11 @@ void CCactus::Redraw()
 
     prevPolyRgn = currentPolyRgn;
 
-    UpdateDrawRgnPoints(); //Обновляем точки многоугольника по новым координатам и на основе них создаём регион
+    UpdateDrawRgnPoints(); //РћР±РЅРѕРІР»СЏРµРј С‚РѕС‡РєРё РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєР° РїРѕ РЅРѕРІС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°Рј Рё РЅР° РѕСЃРЅРѕРІРµ РЅРёС… СЃРѕР·РґР°С‘Рј СЂРµРіРёРѕРЅ
 
     currentPolyRgn = CreatePolygonRgn(currentCactusPoints, cactusPointsAmount, 2);
 
-    //Создаём прямоугольные регионы для запроса на перерисовку этой области (многоугольные полигоны не работают, запрашивается меньшая область перерисовки, остаются "следы")
+    //РЎРѕР·РґР°С‘Рј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Рµ СЂРµРіРёРѕРЅС‹ РґР»СЏ Р·Р°РїСЂРѕСЃР° РЅР° РїРµСЂРµСЂРёСЃРѕРІРєСѓ СЌС‚РѕР№ РѕР±Р»Р°СЃС‚Рё (РјРЅРѕРіРѕСѓРіРѕР»СЊРЅС‹Рµ РїРѕР»РёРіРѕРЅС‹ РЅРµ СЂР°Р±РѕС‚Р°СЋС‚, Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РјРµРЅСЊС€Р°СЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЂРёСЃРѕРІРєРё, РѕСЃС‚Р°СЋС‚СЃСЏ "СЃР»РµРґС‹")
     prevRectRgn = currentRectRgn;
     currentRectRgn = CreateRectRgn(currentRgnPos_X, currentRgnPos_Y, currentRgnPos_X + width, currentRgnPos_Y + height);
 
@@ -507,7 +469,7 @@ void CCactus::Redraw()
     InvalidateRgn(CConfig::Hwnd, currentRectRgn, FALSE);
 }
 
-//Проверка столкновения
+//РџСЂРѕРІРµСЂРєР° СЃС‚РѕР»РєРЅРѕРІРµРЅРёСЏ
 bool CCactus::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
 {
     if (active == false)
@@ -530,13 +492,10 @@ bool CCactus::CheckHit(RECT* dinosaurCollisionRects, int rectsAmount)
     return false;
 }
 
-//Проверка активен ли объект (находится на экране)
+//РџСЂРѕРІРµСЂРєР° Р°РєС‚РёРІРµРЅ Р»Рё РѕР±СЉРµРєС‚ (РЅР°С…РѕРґРёС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ)
 bool CCactus::CheckActive()
 {
-    if (active == true)
-        return true;
-    else
-        return false;
+    return active;
 }
 
 float CCactus::GetPos_X()
@@ -544,7 +503,7 @@ float CCactus::GetPos_X()
     return pos_X;
 }
 
-//Делаем объект активным и помещаем в заданные координаты
+//Р”РµР»Р°РµРј РѕР±СЉРµРєС‚ Р°РєС‚РёРІРЅС‹Рј Рё РїРѕРјРµС‰Р°РµРј РІ Р·Р°РґР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void CCactus::Activate()
 {
     if (CCollisionObjects::CollisionObjectsActiveCount >= maxCollisionObjectsActive)
@@ -557,7 +516,13 @@ void CCactus::Activate()
     pos_Y = static_cast<float>(startPos_Y);
 }
 
-//Тестовая активация объекта
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CCactus::Deactivate()
+{
+    pos_X = static_cast<float>(CConfig::leftBorder - CBackgroundObjects::speed - width);
+}
+
+//РўРµСЃС‚РѕРІР°СЏ Р°РєС‚РёРІР°С†РёСЏ РѕР±СЉРµРєС‚Р°
 void CCactus::TestActivate(float pos_x, float pos_y)
 {
     if (CCollisionObjects::CollisionObjectsActiveCount >= CCollisionObjects::maxCollisionObjectsActive)
@@ -570,7 +535,7 @@ void CCactus::TestActivate(float pos_x, float pos_y)
     pos_Y = pos_y;
 }
 
-//Смещение объекта со временем
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
 void CCactus::Move(float maxSpeed)
 {
     if (active == false)
@@ -583,32 +548,28 @@ void CCactus::Move(float maxSpeed)
 
     pos_X -= nextStep;
 
-    if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width * CConfig::SizeScale <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + static_cast<int>(CBackgroundObjects::speed) + width * CConfig::SizeScale <= CConfig::leftBorder)
     {
         active = false;
         CCollisionObjects::CollisionObjectsActiveCount--;
-        DeleteObject(prevPolyRgn);
-        DeleteObject(currentPolyRgn);
-        DeleteObject(prevRectRgn);
-        DeleteObject(currentRectRgn);
         return;
     }
 }
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс линия дороги (фоновый задний план) ------------------
+// ----------------------------- РљР»Р°СЃСЃ Р»РёРЅРёСЏ РґРѕСЂРѕРіРё (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ------------------
 
-//Конструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CRoadLine::CRoadLine()
     :active(false), roadLineRect{}, prevRoadLineRect{}
 {
 }
 
-//Отрисовка всего
+//РћС‚СЂРёСЃРѕРІРєР° РІСЃРµРіРѕ
 void CRoadLine::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &roadLineRect))
     {
@@ -620,7 +581,7 @@ void CRoadLine::Draw(HDC hdc, RECT& paintArea)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Контур дороги
+    //РљРѕРЅС‚СѓСЂ РґРѕСЂРѕРіРё
     Rectangle(hdc, pos_x, pos_y, pos_x + lineWidth, pos_y + lineHeight * CConfig::SizeScale);
 }
 
@@ -629,7 +590,7 @@ void CRoadLine::Clear(HDC hdc, RECT& paintArea)
     return;
 }
 
-//Перерисовка в новых координатах
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CRoadLine::Redraw()
 {
     if (active == false)
@@ -639,21 +600,27 @@ void CRoadLine::Redraw()
 
     roadLineRect.left = static_cast<int>(pos_X);
     roadLineRect.top = static_cast<int>(pos_Y);
-    roadLineRect.right = roadLineRect.left + lineWidth; //Не домножаем на SizeScale, так как рисуем на весь экран
+    roadLineRect.right = roadLineRect.left + lineWidth; //РќРµ РґРѕРјРЅРѕР¶Р°РµРј РЅР° SizeScale, С‚Р°Рє РєР°Рє СЂРёСЃСѓРµРј РЅР° РІРµСЃСЊ СЌРєСЂР°РЅ
     roadLineRect.bottom = roadLineRect.top + lineHeight  * CConfig::SizeScale;
 
     InvalidateRect(CConfig::Hwnd, &prevRoadLineRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &roadLineRect, FALSE);
 }
 
-//Делаем объект активным и помещаем в заданные координаты
+//Р”РµР»Р°РµРј РѕР±СЉРµРєС‚ Р°РєС‚РёРІРЅС‹Рј Рё РїРѕРјРµС‰Р°РµРј РІ Р·Р°РґР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void CRoadLine::Activate()
 {
     active = true;
 }
 
-//Смещение объекта со временем
-void CRoadLine::Move(float maxSpeed) //В отличие от других объектов, не смещаем линию дороги, а только перерисовываем на том же месте
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CRoadLine::Deactivate()
+{
+    return; //РќРµ РЅСѓР¶РЅРѕ РЅРёС‡РµРіРѕ РґРµР»Р°С‚СЊ, РѕР±СЉРµРєС‚ РЅРµ РґРІРёР¶РµС‚СЃСЏ
+}
+
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
+void CRoadLine::Move(float maxSpeed) //Р’ РѕС‚Р»РёС‡РёРµ РѕС‚ РґСЂСѓРіРёС… РѕР±СЉРµРєС‚РѕРІ, РЅРµ СЃРјРµС‰Р°РµРј Р»РёРЅРёСЋ РґРѕСЂРѕРіРё, Р° С‚РѕР»СЊРєРѕ РїРµСЂРµСЂРёСЃРѕРІС‹РІР°РµРј РЅР° С‚РѕРј Р¶Рµ РјРµСЃС‚Рµ
 {
     if (active == false)
         return;
@@ -661,23 +628,23 @@ void CRoadLine::Move(float maxSpeed) //В отличие от других объектов, не смещаем 
     if (CBackgroundObjects::speed == 0.0f)
         return;
 
-    Redraw();
+    Redraw(); 
 }
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс камней (штрихов) на дороге (фоновый задний план) ------------------
+// ----------------------------- РљР»Р°СЃСЃ РєР°РјРЅРµР№ (С€С‚СЂРёС…РѕРІ) РЅР° РґРѕСЂРѕРіРµ (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ------------------
 
-//Конструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CRoadStones::CRoadStones()
     :pos_X(startPos_X), pos_Y(startPos_Y), active(false), roadStonesRect{}, prevRoadStonesRect{}
 {
 }
 
-//Отрисовка всего
+//РћС‚СЂРёСЃРѕРІРєР° РІСЃРµРіРѕ
 void CRoadStones::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &roadStonesRect))
     {
@@ -690,7 +657,7 @@ void CRoadStones::Draw(HDC hdc, RECT& paintArea)
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Контур дороги
+    //РљРѕРЅС‚СѓСЂ РґРѕСЂРѕРіРё
     Rectangle(hdc, pos_x, pos_y + 6, pos_x + 4, pos_y + 6 + stonesHeight);
     Rectangle(hdc, pos_x + 7, pos_y + 3, pos_x + 7 + 5, pos_y + 3 + stonesHeight);
     Rectangle(hdc, pos_x + 15, pos_y + 6, pos_x + 15 + 2, pos_y + 6 + stonesHeight);
@@ -773,7 +740,7 @@ void CRoadStones::Draw(HDC hdc, RECT& paintArea)
 
 void CRoadStones::Clear(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &prevRoadStonesRect))
     {
@@ -784,7 +751,7 @@ void CRoadStones::Clear(HDC hdc, RECT& paintArea)
     Rectangle(hdc, prevRoadStonesRect.left, prevRoadStonesRect.top, prevRoadStonesRect.right, prevRoadStonesRect.bottom);
 }
 
-//Перерисовка в новых координатах
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CRoadStones::Redraw()
 {
     if (active == false)
@@ -801,12 +768,18 @@ void CRoadStones::Redraw()
     InvalidateRect(CConfig::Hwnd, &roadStonesRect, FALSE);
 }
 
-//Делаем объект активным и помещаем в заданные координаты
+//Р”РµР»Р°РµРј РѕР±СЉРµРєС‚ Р°РєС‚РёРІРЅС‹Рј Рё РїРѕРјРµС‰Р°РµРј РІ Р·Р°РґР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void CRoadStones::Activate()
 {
     active = true;
 
     pos_X = restartPos_X;
+}
+
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CRoadStones::Deactivate()
+{
+    pos_X = static_cast<float>(CConfig::leftBorder - stonesWidth - CBackgroundObjects::speed);
 }
 
 void CRoadStones::FirstActivate()
@@ -816,7 +789,7 @@ void CRoadStones::FirstActivate()
     pos_X = 0.0f;
 }
 
-//Смещение объекта со временем
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
 void CRoadStones::Move(float maxSpeed)
 {
     if (active == false)
@@ -825,22 +798,9 @@ void CRoadStones::Move(float maxSpeed)
     if (speed == 0.0f)
         return;
 
-    //pos_X -= CBackgroundObjects::speed;
-
-    //Смещение на небольшие шажки 
-    //float restDistance = CBackgroundObjects::speed;
-
-    //while (restDistance > 0.0f)
-    //{
-    //    //Сдвиг на минимальный шаг (1 pxl)
-    //    pos_X -= CConfig::minShift;
-
-    //    restDistance -= CConfig::minShift;
-    //}
-
     pos_X -= CBackgroundObjects::speed;
 
-    if (static_cast<int>(pos_X) + 700 + stonesWidth + speed <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + stonesWidth + CBackgroundObjects::speed <= CConfig::leftBorder)
     {
         active = false;
     }
@@ -850,18 +810,18 @@ void CRoadStones::Move(float maxSpeed)
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс ямы на дороге (фоновый задний план) ------------------
+// ----------------------------- РљР»Р°СЃСЃ СЏРјС‹ РЅР° РґРѕСЂРѕРіРµ (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ------------------
 
-//Конструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CRoadBump::CRoadBump()
     :pos_X(restartPos_X), firstBumpType(true), active(false), bumpRect{}, prevBumpRect{}
 {
 }
 
-//Отрисовка всего
+//РћС‚СЂРёСЃРѕРІРєР° РІСЃРµРіРѕ
 void CRoadBump::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &bumpRect))
     {
@@ -882,7 +842,7 @@ void CRoadBump::Draw(HDC hdc, RECT& paintArea)
 
 void CRoadBump::Clear(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &prevBumpRect))
     {
@@ -893,7 +853,7 @@ void CRoadBump::Clear(HDC hdc, RECT& paintArea)
     Rectangle(hdc, prevBumpRect.left, prevBumpRect.top, prevBumpRect.right, prevBumpRect.bottom);
 }
 
-//Перерисовка в новых координатах
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CRoadBump::Redraw()
 {
     if (active == false)
@@ -921,10 +881,16 @@ void CRoadBump::Activate()
 {
     active = true;
 
-    pos_X = restartPos_X;
+    pos_X = restartPos_X - width;
 }
 
-//Смещение объекта со временем
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CRoadBump::Deactivate()
+{
+    pos_X = static_cast<float>(CConfig::leftBorder - CBackgroundObjects::speed - width);
+}
+
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
 void CRoadBump::Move(float maxSpeed)
 {
     if (active == false)
@@ -941,14 +907,14 @@ void CRoadBump::Move(float maxSpeed)
     Redraw();
 }
 
-//Отрисовка ямы
+//РћС‚СЂРёСЃРѕРІРєР° СЏРјС‹
 void CRoadBump::DrawPit(HDC hdc, RECT& paintArea, float offset_x)
 {
     int pos_x = static_cast<int>(pos_X  + offset_x);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Яма
-    //Рисуем пропуски фоновые
+    //РЇРјР°
+    //Р РёСЃСѓРµРј РїСЂРѕРїСѓСЃРєРё С„РѕРЅРѕРІС‹Рµ
     CConfig::backgroundColor.SelectColor(hdc);
 
     Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
@@ -962,18 +928,18 @@ void CRoadBump::DrawPit(HDC hdc, RECT& paintArea, float offset_x)
     Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
 }
 
-//Отрисовка кочки
+//РћС‚СЂРёСЃРѕРІРєР° РєРѕС‡РєРё
 void CRoadBump::DrawBump(HDC hdc, RECT& paintArea, float offset_x)
 {
     int pos_x = static_cast<int>(pos_X + offset_x);
     int pos_y = static_cast<int>(pos_Y);
 
-    //Рисуем пропуски фоновые
+    //Р РёСЃСѓРµРј РїСЂРѕРїСѓСЃРєРё С„РѕРЅРѕРІС‹Рµ
     CConfig::backgroundColor.SelectColor(hdc);
 
     Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
 
-    //Кочка
+    //РљРѕС‡РєР°
     CConfig::mainBrightColor.SelectColor(hdc);
 
     Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
@@ -985,68 +951,33 @@ void CRoadBump::DrawBump(HDC hdc, RECT& paintArea, float offset_x)
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Облако на заднем плане ------------------------
-
+// ----------------------------- РљР»Р°СЃСЃ РћР±Р»Р°РєРѕ РЅР° Р·Р°РґРЅРµРј РїР»Р°РЅРµ ------------------------
 const float CCloud::cloudsSpeed = CBackgroundObjects::speed;
 
-//Конструктор
+//РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 CCloud::CCloud()
-    :pos_X(800.0f), pos_Y(startPos_Y), active(false), cloudRect{}, prevCloudRect{}
+    :pos_X(restartPos_X), pos_Y(startPos_Y), active(false), cloudRect{}, prevCloudRect{}, cloudPoints{ 0 }
 {
 }
 
-//Отрисовка основная
+//РћС‚СЂРёСЃРѕРІРєР° РѕСЃРЅРѕРІРЅР°СЏ
 void CCloud::Draw(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &cloudRect))
     {
         return;
     }
 
-    int pos_x = static_cast<int>(pos_X);
-    int pos_y = static_cast<int>(pos_Y);
-
-    CConfig::secondPaleColor.SelectColor(hdc);
-
-    //Тело
-    Rectangle(hdc, pos_x, pos_y, pos_x + 58 * CConfig::SizeScale, pos_y + 16 * CConfig::SizeScale);
-
-    //Фоновые пропуски
-    CConfig::backgroundColor.SelectColor(hdc);
-
-    //Верхние края
-    Rectangle(hdc, pos_x, pos_y, pos_x + 6 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 6 * CConfig::SizeScale, pos_y, pos_x + 16 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 16 * CConfig::SizeScale, pos_y, pos_x + 20 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 20 * CConfig::SizeScale, pos_y, pos_x + 23 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y, pos_x + 25 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
-
-    Rectangle(hdc, pos_x + 38 * CConfig::SizeScale, pos_y, pos_x + 40 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 40 * CConfig::SizeScale, pos_y, pos_x + 43 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 43 * CConfig::SizeScale, pos_y, pos_x + 47 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 47 * CConfig::SizeScale, pos_y, pos_x + 49 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 49 * CConfig::SizeScale, pos_y, pos_x + 52 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 51 * CConfig::SizeScale, pos_y, pos_x + 55 * CConfig::SizeScale, pos_y + 11 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 55 * CConfig::SizeScale, pos_y, pos_x + 58 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale);
-
-    //Внутри облака
-    Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 13 * CConfig::SizeScale, pos_x + 54 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 8 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale, pos_x + 49 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 42 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + 46 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 39 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale, pos_x + 42 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 35 * CConfig::SizeScale, pos_y + 8 * CConfig::SizeScale, pos_x + 39 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 28 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 35 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 35 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 37 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale, pos_x + 23 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 23 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+    CConfig::paleCloudColor.SelectColor(hdc);
+    
+    Polyline(hdc, cloudPoints, pointsAmount);
 }
 
 void CCloud::Clear(HDC hdc, RECT& paintArea)
 {
-    RECT intersectionRect; //Нужен для ф-ции проверки пересечения прямоугольников, в него сохраняется область пересечения или 0
+    RECT intersectionRect; //РќСѓР¶РµРЅ РґР»СЏ С„-С†РёРё РїСЂРѕРІРµСЂРєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ, РІ РЅРµРіРѕ СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РѕР±Р»Р°СЃС‚СЊ РїРµСЂРµСЃРµС‡РµРЅРёСЏ РёР»Рё 0
 
     if (!IntersectRect(&intersectionRect, &paintArea, &prevCloudRect))
     {
@@ -1057,7 +988,37 @@ void CCloud::Clear(HDC hdc, RECT& paintArea)
     Rectangle(hdc, prevCloudRect.left, prevCloudRect.top, prevCloudRect.right, prevCloudRect.bottom);
 }
 
-//Перерисовка персонажа в новых координатах
+void CCloud::UpdateDrawRgnPoints()
+{
+
+    int pos_x = static_cast<int>(pos_X);
+    int pos_y = static_cast<int>(pos_Y);
+
+    cloudPoints[0] = { pos_x + 40, pos_y + 5 };
+    cloudPoints[1] = { pos_x + 50, pos_y + 8 };
+    cloudPoints[2] = { pos_x + 50, pos_y + 11 };
+    cloudPoints[3] = { pos_x + 54, pos_y + 11 };
+    cloudPoints[4] = { pos_x + 54, pos_y + 13 };
+    cloudPoints[5] = { pos_x + 57, pos_y + 14 };
+    cloudPoints[6] = { pos_x + 1, pos_y + 14 };
+    cloudPoints[7] = { pos_x + 1, pos_y + 11 };
+    cloudPoints[8] = { pos_x + 6, pos_y + 11 };
+    cloudPoints[9] = { pos_x + 6, pos_y + 7 };
+    cloudPoints[10] = { pos_x + 16, pos_y + 7 };
+    cloudPoints[11] = { pos_x + 16, pos_y + 6 };
+    cloudPoints[12] = { pos_x + 20, pos_y + 6 };
+    cloudPoints[13] = { pos_x + 20, pos_y + 4 };
+    cloudPoints[14] = { pos_x + 23, pos_y + 4 };
+    cloudPoints[15] = { pos_x + 23, pos_y + 3 };
+    cloudPoints[16] = { pos_x + 25, pos_y + 3 };
+    cloudPoints[17] = { pos_x + 25, pos_y + 1 };
+    cloudPoints[18] = { pos_x + 37, pos_y + 1 };
+    cloudPoints[19] = { pos_x + 39, pos_y + 2 };
+    cloudPoints[20] = { pos_x + 39, pos_y + 6 };
+    cloudPoints[21] = { pos_x + 35, pos_y + 6 };
+}
+
+//РџРµСЂРµСЂРёСЃРѕРІРєР° РїРµСЂСЃРѕРЅР°Р¶Р° РІ РЅРѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 void CCloud::Redraw()
 {
     if (active == false)
@@ -1070,30 +1031,36 @@ void CCloud::Redraw()
     cloudRect.right = cloudRect.left + width * CConfig::SizeScale;
     cloudRect.bottom = cloudRect.top + height * CConfig::SizeScale;
 
+    UpdateDrawRgnPoints();
+
     InvalidateRect(CConfig::Hwnd, &prevCloudRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &cloudRect, FALSE);
 }
 
-//Делаем объект активным и помещаем в заданные координаты
+//Р”РµР»Р°РµРј РѕР±СЉРµРєС‚ Р°РєС‚РёРІРЅС‹Рј Рё РїРѕРјРµС‰Р°РµРј РІ Р·Р°РґР°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
 void CCloud::Activate()
 {
     active = true;
 
-    int y = CConfig::GetRandom(20, 120);
-
     pos_X = restartPos_X;
-    pos_Y = static_cast<float>(y);
+    pos_Y = startPos_Y + static_cast<float>(CConfig::GetRandom(20, 120));
+}
+
+//РџРµСЂРµРјРµС‰Р°РµРј РѕР±СЉРµРєС‚ РІ РїРѕР·РёС†РёСЋ Р·Р° РєСЂР°Р№ СЌРєСЂР°РЅР°, РіРґРµ РѕРЅ РґРµР°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ
+void CCloud::Deactivate()
+{
+    pos_X = static_cast<float>(CConfig::leftBorder - cloudsSpeed - width);
 }
 
 void CCloud::FirstActivate()
 {
     active = true;
 
-    pos_X = static_cast<float>(CConfig::GetRandom(100, 700));
-    pos_Y = static_cast<float>(CConfig::GetRandom(20, 130));
+    pos_X = static_cast<float>(CConfig::GetRandom(50, 730));
+    pos_Y = startPos_Y + static_cast<float>(CConfig::GetRandom(20, 120));
 }
 
-//Смещение объекта со временем
+//РЎРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚Р° СЃРѕ РІСЂРµРјРµРЅРµРј
 void CCloud::Move(float maxSpeed)
 {
     if (active == false)

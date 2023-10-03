@@ -113,10 +113,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	windowRect.right = 800;
 	windowRect.bottom = 600;
 
-	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, TRUE);
+	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW - WS_THICKFRAME, TRUE); //Добавили дополнительное вычитание WS_THICKFRAME, чтобы запретить изменение размеров окна
 
 	//  ------------------------------------------- Создание окна -------------------------------------------
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, 0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr);
+	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW - WS_THICKFRAME, 0, 0, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, nullptr, nullptr, hInstance, nullptr); 
 
 	if (hWnd == 0)
 	{
@@ -215,24 +215,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
-	case WM_KEYDOWN: //Обработка нажатия клавиш
+	case WM_KEYDOWN: //Обработка нажатия клавиш (W - 0x57, A - 0x41, S - 0x53, D - 0x44, E - 0x45)
 	{
 		switch (wParam)
 		{
+		case 0x41:
 		case VK_LEFT:
 			return Engine.OnKey(EKeyType::LeftKey, true);
 
+		case 0x44:
 		case VK_RIGHT:
 			return Engine.OnKey(EKeyType::RightKey, true);
 
+		case 0x53:
 		case VK_DOWN:
 			return Engine.OnKey(EKeyType::DownKey, true);
 
+		case 0x57:
 		case VK_UP:
 			return Engine.OnKey(EKeyType::UpKey, true);
 
 		case VK_SPACE:
 			return Engine.OnKey(EKeyType::SpaceKey, true);
+
+		case 0x45:
+			return Engine.OnKey(EKeyType::ActionKey_E, true);
 		}
 		break;
 	}
@@ -241,24 +248,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (wParam)
 		{
+		case 0x41:
 		case VK_LEFT:
 			return Engine.OnKey(EKeyType::LeftKey, false);
 
+		case 0x44:
 		case VK_RIGHT:
 			return Engine.OnKey(EKeyType::RightKey, false);
 
+		case 0x53:
 		case VK_DOWN:
 			return Engine.OnKey(EKeyType::DownKey, false);
 
+		case 0x57:
 		case VK_UP:
 			return Engine.OnKey(EKeyType::UpKey, false);
 
 		case VK_SPACE:
 			return Engine.OnKey(EKeyType::SpaceKey, false);
+
+		case 0x45:
+			return Engine.OnKey(EKeyType::ActionKey_E, false);
 		}
 		break;
 	}
-
 
 	case WM_TIMER:
 	{

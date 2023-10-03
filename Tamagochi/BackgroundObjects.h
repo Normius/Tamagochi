@@ -1,38 +1,39 @@
-#pragma once
+п»ї#pragma once
 
 #include "Config.h"
 
-// ----------------------------- Класс задний фон --------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ Р·Р°РґРЅРёР№ С„РѕРЅ --------------------------------------
 class CBackgroundObjects
 {
 public:
     virtual void Move(float maxSpeed) = 0;
-    virtual void Activate() = 0; //Активирует объект для отображения на экране и анимации после того, как он был неактивен
+    virtual void Activate() = 0; //РђРєС‚РёРІРёСЂСѓРµС‚ РѕР±СЉРµРєС‚ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅР° СЌРєСЂР°РЅРµ Рё Р°РЅРёРјР°С†РёРё РїРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє РѕРЅ Р±С‹Р» РЅРµР°РєС‚РёРІРµРЅ
+    virtual void Deactivate() = 0;
     virtual void Draw(HDC hdc, RECT& paintArea) = 0;
     virtual void Redraw() = 0;
     virtual void Clear(HDC hdc, RECT& paintArea) = 0;
 
-    static float speed; //Скорость прокрутки объектов заднего плана
+    static float speed; //РЎРєРѕСЂРѕСЃС‚СЊ РїСЂРѕРєСЂСѓС‚РєРё РѕР±СЉРµРєС‚РѕРІ Р·Р°РґРЅРµРіРѕ РїР»Р°РЅР°
+    static constexpr float startSpeed = 10.0f;
 };
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс проверки столкновений --------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РїСЂРѕРІРµСЂРєРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёР№ --------------------------------------
 class CCollisionObjects : public CBackgroundObjects
 {
 public:
     virtual bool CheckHit(RECT* dinosaurCollisionRects, int rectsAmount) = 0;
     virtual bool CheckActive() = 0;
     virtual float GetPos_X() = 0;
-    //virtual void Deactivate() = 0; //Активирует объект для отображения на экране и анимации после того, как он был неактивен
 
-    static constexpr unsigned int maxCollisionObjectsActive = 2; //Максимальное количество активных объектов (на экране)
-    static constexpr float minDistanceBetweenCollisionObjects = 200.0f;
-    static unsigned int CollisionObjectsActiveCount; //Текущее количество активных объектов (на экране)
+    static constexpr unsigned int maxCollisionObjectsActive = 2; //РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РєС‚РёРІРЅС‹С… РѕР±СЉРµРєС‚РѕРІ (РЅР° СЌРєСЂР°РЅРµ)
+    static constexpr float minDistanceBetweenCollisionObjects = 300.0f;
+    static unsigned int CollisionObjectsActiveCount; //РўРµРєСѓС‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РєС‚РёРІРЅС‹С… РѕР±СЉРµРєС‚РѕРІ (РЅР° СЌРєСЂР°РЅРµ)
 };
 // -----------------------------------------------------------------------------------
 
-// ----------------------------- Класс Птица (препятствие, противник) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РџС‚РёС†Р° (РїСЂРµРїСЏС‚СЃС‚РІРёРµ, РїСЂРѕС‚РёРІРЅРёРє) ----------------------------------------------
 class CBird : public CCollisionObjects
 {
 public:
@@ -50,15 +51,16 @@ public:
     float GetPos_X() override;
 
     void Activate() override;
-    //void Deactivate() override;
+    void Deactivate() override;
 
     void TestActivate(float pos_x, float pos_y);
 
     static constexpr float startPos_X = 800.0f;
-    static constexpr float startPos_Y = 150.0f;
+    static constexpr float startPos_Y = 350.0f;
 
     float pos_X;
     float pos_Y;
+    float birdSpeed;
 
     int currentRgnPos_X;
     int currentRgnPos_Y;
@@ -66,24 +68,18 @@ public:
     int prevRgnPos_X;
     int prevRgnPos_Y;
 
-    //unsigned int lastWingChangeTimer;
-    //unsigned int newChangeWingDelay;
-
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
     
 private:
-    void DrawBodyBird(HDC hdc);
     void DrawUpWingBird(HDC hdc);
     void DrawDownWingBird(HDC hdc);
     void MoveWings(HDC hdc);
     void ChangeWings(bool upwing);
 
-    static constexpr int upWingHeight = 23; //23+12
+    static constexpr int upWingHeight = 23;
     static constexpr int downWingHeight = 27;
     static constexpr int width = 46;
 
-    //static constexpr unsigned int bodyBirdPointsAmount = 16;
-    //static constexpr unsigned int wingsPointsAmount = 7;
     static constexpr unsigned int birdWithWingsPointsAmount = 22;
 
     POINT currentBirdPoints[birdWithWingsPointsAmount];
@@ -91,7 +87,6 @@ private:
 
     HRGN currentPolyRgn;
     HRGN prevPolyRgn;
-    HRGN collisionRegion;
 
     HRGN currentRectRgn;
     HRGN prevRectRgn;
@@ -99,14 +94,11 @@ private:
     int height;
 
     bool upWing;
-
-    //RECT birdRect;
-    //RECT prevBirdRect;
 };
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Кактус (препятствие, противник) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РљР°РєС‚СѓСЃ (РїСЂРµРїСЏС‚СЃС‚РІРёРµ, РїСЂРѕС‚РёРІРЅРёРє) ----------------------------------------------
 class CCactus : public CCollisionObjects
 {
 public:
@@ -115,7 +107,7 @@ public:
     void Move(float maxSpeed) override;
     void Draw(HDC hdc, RECT& paintArea) override;
     void Activate() override;
-    //void Deactivate() override;
+    void Deactivate() override;
     void Redraw() override;
     void Clear(HDC hdc, RECT& paintArea) override;
     void UpdateDrawRgnPoints();
@@ -128,7 +120,7 @@ public:
     void TestActivate(float pos_x, float pos_y);
 
     static constexpr float startPos_X = 800.0f;
-    static constexpr float startPos_Y = 150.0f;
+    static constexpr float startPos_Y = 350.0f; //150
 
     float pos_X;
     float pos_Y;
@@ -139,28 +131,25 @@ public:
     int currentRgnPos_X;
     int currentRgnPos_Y;
 
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
 
 private:
     static constexpr int height = 48;
     static constexpr int width = 22;
-
-    
     static constexpr unsigned int cactusPointsAmount = 22;
+
     POINT currentCactusPoints[cactusPointsAmount];
     POINT prevCactusPoints[cactusPointsAmount];
-    //POINT collisionCactusPoints[cactusPointsAmount];
 
     HRGN currentPolyRgn;
     HRGN prevPolyRgn;
-    //HRGN collisionPolyRgn;
 
     HRGN prevRectRgn;
     HRGN currentRectRgn;
 };
 // -----------------------------------------------------------------------------------
 
-// ----------------------------- Класс дорога (фоновый задний план) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РґРѕСЂРѕРіР° (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ----------------------------------------------
 class CRoadLine:public CBackgroundObjects
 {
 public:
@@ -169,15 +158,16 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Deactivate() override;
     void Clear(HDC hdc, RECT& paintArea) override;
 
     static constexpr float pos_X = 0.0f;
-    static constexpr float pos_Y = 186.0f; //186
+    static constexpr float pos_Y = 386.0f; //186
 
-    static constexpr int lineHeight = 1; //высота линии дороги
-    static constexpr int lineWidth = CConfig::rightBorder; //ширина линии дороги (не домножаем на SizeScale, так как рисуется на ширину всего экрана)
+    static constexpr int lineHeight = 1; //РІС‹СЃРѕС‚Р° Р»РёРЅРёРё РґРѕСЂРѕРіРё
+    static constexpr int lineWidth = CConfig::rightBorder; //С€РёСЂРёРЅР° Р»РёРЅРёРё РґРѕСЂРѕРіРё (РЅРµ РґРѕРјРЅРѕР¶Р°РµРј РЅР° SizeScale, С‚Р°Рє РєР°Рє СЂРёСЃСѓРµС‚СЃСЏ РЅР° С€РёСЂРёРЅСѓ РІСЃРµРіРѕ СЌРєСЂР°РЅР°)
 
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
 
 private:
     RECT roadLineRect;
@@ -185,7 +175,7 @@ private:
 };
 // -----------------------------------------------------------------------------------
 
-// ----------------------------- Класс камней (штрихов) на дороге (фоновый задний план) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РєР°РјРЅРµР№ (С€С‚СЂРёС…РѕРІ) РЅР° РґРѕСЂРѕРіРµ (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ----------------------------------------------
 class CRoadStones:public CBackgroundObjects
 {
 public:
@@ -194,22 +184,23 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Deactivate() override;
     void Clear(HDC hdc, RECT& paintArea) override;
 
     void FirstActivate();
 
     static constexpr float startPos_X = 10.0f;
-    static constexpr float startPos_Y = 188.0f; //188
+    static constexpr float startPos_Y = 388.0f; //188
     static constexpr float restartPos_X = 800.0f;
     
-    static constexpr int stonesHeight = 1; //высота камня дороги
+    static constexpr int stonesHeight = 1; //РІС‹СЃРѕС‚Р° РєР°РјРЅСЏ РґРѕСЂРѕРіРё
     static constexpr int maxStonesHeight = 7;
-    static constexpr int stonesWidth = 10; //ширина камня дороги
+    static constexpr int stonesWidth = 791; //С€РёСЂРёРЅР° РІСЃРµС… РєР°РјРЅРµР№ РЅР° РґРѕСЂРѕРіРµ
 
     float pos_X;
     float pos_Y;
 
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
 
 private:
     RECT roadStonesRect;
@@ -218,7 +209,7 @@ private:
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс ямы на дороге (фоновый задний план) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ СЏРјС‹ РЅР° РґРѕСЂРѕРіРµ (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ----------------------------------------------
 class CRoadBump : public CBackgroundObjects
 {
 public:
@@ -227,24 +218,25 @@ public:
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Activate() override;
+    void Deactivate() override;
     void Clear(HDC hdc, RECT& paintArea) override;
 
     void TestActivate();
 
-    static constexpr float pos_Y = 183.0f;
+    static constexpr float pos_Y = 383.0f; //183
     static constexpr float restartPos_X = 800.0f;
 
     float pos_X;
 
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
-    bool firstBumpType; //Определяет тип неровности на дороге (true - 2 кочки, false - кочка и яма)
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
+    bool firstBumpType; //РћРїСЂРµРґРµР»СЏРµС‚ С‚РёРї РЅРµСЂРѕРІРЅРѕСЃС‚Рё РЅР° РґРѕСЂРѕРіРµ (true - 2 РєРѕС‡РєРё, false - РєРѕС‡РєР° Рё СЏРјР°)
     
 private:
     void DrawPit(HDC hdc, RECT& paintArea, float offset_x);
     void DrawBump(HDC hdc, RECT& paintArea, float offset_x);
 
-    static constexpr int height = 7; //высота ямы и глубина кочки
-    static constexpr int width = 44; //ширина ямы и кочки
+    static constexpr int height = 7; //РІС‹СЃРѕС‚Р° СЏРјС‹ Рё РіР»СѓР±РёРЅР° РєРѕС‡РєРё
+    static constexpr int width = 44; //С€РёСЂРёРЅР° СЏРјС‹ Рё РєРѕС‡РєРё
 
     RECT bumpRect;
     RECT prevBumpRect;
@@ -252,7 +244,7 @@ private:
 // -----------------------------------------------------------------------------------
 
 
-// ----------------------------- Класс Облако (фоновый задний план) ----------------------------------------------
+// ----------------------------- РљР»Р°СЃСЃ РћР±Р»Р°РєРѕ (С„РѕРЅРѕРІС‹Р№ Р·Р°РґРЅРёР№ РїР»Р°РЅ) ----------------------------------------------
 class CCloud : public CBackgroundObjects
 {
 public:
@@ -260,23 +252,28 @@ public:
 
     void Move(float maxSpeed) override;
     void Activate() override;
+    void Deactivate() override;
 
     void Draw(HDC hdc, RECT& paintArea) override;
     void Redraw() override;
     void Clear(HDC hdc, RECT& paintArea) override;
+    void UpdateDrawRgnPoints();
     
     void FirstActivate();
 
     static constexpr float restartPos_X = 800.0f;
-    static constexpr float startPos_Y = 0.0f;
+    static constexpr float startPos_Y = 200.0f; //0
 
     static constexpr int width = 58;
     static constexpr int height = 16;
 
+    static constexpr int pointsAmount = 22;
+    POINT cloudPoints[pointsAmount];
+
     float pos_X;
     float pos_Y;
 
-    bool active; //true - отображается на экране и двигается/ false - деактивирован, ушёл за рамку экрана и ждёт активации
+    bool active; //true - РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ Рё РґРІРёРіР°РµС‚СЃСЏ/ false - РґРµР°РєС‚РёРІРёСЂРѕРІР°РЅ, СѓС€С‘Р» Р·Р° СЂР°РјРєСѓ СЌРєСЂР°РЅР° Рё Р¶РґС‘С‚ Р°РєС‚РёРІР°С†РёРё
 
     static const float cloudsSpeed;
 private:

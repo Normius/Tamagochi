@@ -1,15 +1,17 @@
 ﻿#pragma once
 
 #include "Config.h"
-#include <cmath>
+#include "StartPlatform.h"
 
 //Перечисление состояний тела Дино (стоя или в присяде)
 enum class EDinosaurLevelState: unsigned char
 {
-    StartRunLevel, //Состояние перед началом забега
+    StartLevel,
+    RestartRunLevel, //Состояние перед началом забега
     RunLevel, //Забег начался
     LoseRunLevel, //Проигрыш при столкновении с припятствием
-    FreeMovingLevel //Свободное передвижение влево и вправо
+    TestLevel, //Свободное передвижение влево и вправо
+    Teleporting
 };
 
 enum class EDinosaurBodyState: unsigned char
@@ -30,7 +32,7 @@ enum class EDinosaurMovingState: unsigned char
 {
     Stop,
     MovingRight,
-    MovingLeft,
+    MovingLeft
 };
 
 // ----------------------------- Класс персонажа Dino (главный персонаж)
@@ -55,14 +57,21 @@ public:
     void Jump();
     void DrawRightEye(HDC hdc);
     void SetDinoCollisionRects();
+    void GravityFalling();
+    void CorrectPositionWithStartPlatform(const CStartPlatform& startPlatform);
+    void RestartLevel();
+    bool ReadyForStartPlatfrom(const CStartPlatform& startPlatform);
+    void TeleportingFromStartPlatfrom();
 
     static constexpr int StandingHeight = 44;
     static constexpr int CrawlingHeight = 26;
     static constexpr int StandingWidth = 44;
     static constexpr int CrawlingWidth = 60;
-    static constexpr int StandingPos_Y = 150; //(Стартовая позиция по Y)
+
+    static constexpr float startPos_X = 100.0f; //Стартовая позиция по X
+    static constexpr int StandingPos_Y = 350; //(Стартовая позиция по Y) /150
+
     static constexpr int CrawlingPos_Y = StandingPos_Y + (StandingHeight - CrawlingHeight); //(Стартовая позиция по Y)
-    static constexpr int OnGroundLegsPos_Y = (StandingPos_Y + StandingHeight); //Позиция ног на земле (раньше было 150 - верх)
     static constexpr int MaxJumpHeight = 80; //last 70
 
     static constexpr float MaxSpeed_X = 10.0f;
@@ -70,10 +79,7 @@ public:
 
     int height;
     int width;
-
-    //unsigned int lastLegsChangeTimer;
-    //unsigned int newChangeLegsDelay;
-    //bool firstStep;
+    int OnGroundLegsPos_Y; //Позиция ног на земле
 
     float pos_X;
     float pos_Y;
@@ -87,6 +93,8 @@ public:
     
     bool collision;
     bool leftKeyDown, rightKeyDown; //состояния клавиш влево и вправо (== true - нажаты, == false - не нажаты)
+    bool onStartPlatform;
+    bool falling; //Нужна для того, чтобы персонаж падал на землю при прыжке с платформы
         
     EDinosaurDirectionState DinosaurDirectionState;
     EDinosaurMovingState DinosaurMovingState;
@@ -120,15 +128,7 @@ private:
     EDinosaurBodyState DinosaurBodyState;
     EDinosaurLevelState DinosaurLevelState;
 
-    /*HRGN currentPolyRgn;
-    HRGN prevPolyRgn;
-
-    HRGN prevRectRgn;
-    HRGN currentRectRgn;*/
-
     RECT currentRect;
     RECT prevRect;
-
-    /*RECT dinoRect, prevDinoRect;*/
 };
 // -----------------------------------------------------------------------------------
