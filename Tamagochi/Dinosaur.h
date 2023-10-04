@@ -61,7 +61,6 @@ public:
     void CorrectPositionWithStartPlatform(const CStartPlatform& startPlatform);
     void RestartLevel();
     bool ReadyForStartPlatfrom(const CStartPlatform& startPlatform);
-    void TeleportingFromStartPlatfrom();
 
     static constexpr int StandingHeight = 44;
     static constexpr int CrawlingHeight = 26;
@@ -69,13 +68,13 @@ public:
     static constexpr int CrawlingWidth = 60;
 
     static constexpr float startPos_X = 100.0f; //Стартовая позиция по X
-    static constexpr int StandingPos_Y = 350; //(Стартовая позиция по Y) /150
+    static constexpr int StandingPos_Y = 350; //(Стартовая позиция по Y
 
     static constexpr int CrawlingPos_Y = StandingPos_Y + (StandingHeight - CrawlingHeight); //(Стартовая позиция по Y)
-    static constexpr int MaxJumpHeight = 80; //last 70
+    static constexpr int MaxJumpHeight = 80;
 
     static constexpr float MaxSpeed_X = 10.0f;
-    static constexpr float MaxSpeed_Y = 30.0f; //last 18.0f
+    static constexpr float MaxSpeed_Y = 30.0f;
 
     int height;
     int width;

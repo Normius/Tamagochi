@@ -4,9 +4,9 @@
 
 // ------------ Конструктор
 CEngine::CEngine()
-    :TimerId(WM_USER + 1), GameState(EGameState::StartLevel), CollisionObjects{ nullptr }, lastCloudTimerDisappear(CConfig::currentFrameValue), newCloudTimerDelay(CConfig::FPS * 4),
+    :TimerId(WM_USER + 1), GameState(EGameState::StartLevel), lastCloudTimerDisappear(CConfig::currentFrameValue), newCloudTimerDelay(CConfig::FPS * 4),
     lastCollisionObjectTimerDisappear(CConfig::currentFrameValue), newCollisionObjectTimerDelay(CConfig::FPS * 4), lastRoadBumpTimerDisappear(CConfig::currentFrameValue), newRoadBumpTimerDelay(CConfig::FPS * 4),
-    currentMaxObjectsSpeed(0.0f), objectRestDistance(0.0f), clearStartObjects(false)
+    currentMaxObjectsSpeed(0.0f), objectRestDistance(0.0f), clearStartObjects(false), Cactuses(CConfig::MaxCactuses), RoadStones(CConfig::MaxRoadStones), RoadBumps(CConfig::MaxRoadBumps), Clouds(CConfig::MaxClouds)
 {
 }
 // -----------------------------------------------------------------------------------
@@ -26,9 +26,20 @@ void CEngine::InitEngine(HWND hwnd)
     RoadBumps[0].firstBumpType = true; //Неровность на дороге из 2 кочек
     RoadBumps[1].firstBumpType = false; //Неровность на дороге из кочки и ямы
 
-    CollisionObjects[0] = &Cactuses[0];
-    CollisionObjects[1] = &Cactuses[1];
-    CollisionObjects[2] = &Bird;
+    //Создаём вектор указателей на базовый класс для кактусов и птицы
+    CollisionObjects.push_back(&Cactuses[0]);
+    CollisionObjects.push_back(&Cactuses[1]);
+    CollisionObjects.push_back(&Bird);
+
+    BackgroundObjects.push_back(&Clouds[0]);
+    BackgroundObjects.push_back(&Clouds[1]);
+    BackgroundObjects.push_back(&Clouds[2]);
+    BackgroundObjects.push_back(&Clouds[3]);
+    BackgroundObjects.push_back(&RoadLine);
+    BackgroundObjects.push_back(&RoadBumps[0]);
+    BackgroundObjects.push_back(&RoadBumps[1]);
+    BackgroundObjects.push_back(&RoadStones[0]);
+    BackgroundObjects.push_back(&RoadStones[1]);
 
     int startCloudsCount = CConfig::GetRandom(1, 4); //Задаём стартовое количество облаков
 
@@ -36,21 +47,18 @@ void CEngine::InitEngine(HWND hwnd)
     for (int i = 0; i < startCloudsCount; ++i)
     {
         Clouds[i].FirstActivate();
-    }
-
-    for (int i = 0; i < startCloudsCount; ++i)
-    {
-        if (Clouds[i].active == true)
-            Clouds[i].Redraw();
+        Clouds[i].Redraw();
     }
 
     Dinosaur.Redraw();
     
     RoadLine.Activate();
-    RoadStones[0].FirstActivate();
     RoadLine.Redraw();
+
+    RoadStones[0].FirstActivate();
     RoadStones[0].Redraw();
 
+    //Тестовая часть
     if (GameState == EGameState::TestLevel)
     {
         Bird.TestActivate(400.0f, 125.0f);
@@ -72,43 +80,26 @@ void CEngine::InitEngine(HWND hwnd)
 void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
 {
     //Очистка объектов игры
-    for (int i = 0; i < CConfig::CConfig::MaxClouds; ++i)
-    {
-        Clouds[i].Clear(hdc, paintArea);
-    }
+    for (auto* backgroundObject : BackgroundObjects)
+        backgroundObject->Clear(hdc, paintArea);
 
-    RoadLine.Clear(hdc, paintArea);
-    RoadStones[0].Clear(hdc, paintArea);
-    RoadStones[1].Clear(hdc, paintArea);
-    RoadBumps[0].Clear(hdc, paintArea);
-    RoadBumps[1].Clear(hdc, paintArea);
-
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
-    {
-        CollisionObjects[i]->Clear(hdc, paintArea);
-    }
+    for (auto* collisionObject : CollisionObjects)
+        collisionObject->Clear(hdc, paintArea);
 
     Dinosaur.Clear(hdc, paintArea);
 
     Scoreboard.Clear(hdc, paintArea);
 
     //Отрисовка объектов игры
-
-    for (int i = 0; i < CConfig::CConfig::MaxClouds; ++i)
-    {
-        Clouds[i].Draw(hdc, paintArea);
-    }
-
-    RoadStones[0].Draw(hdc, paintArea);
-    RoadStones[1].Draw(hdc, paintArea);
-
-    RoadLine.Draw(hdc, paintArea);
-
-    RoadBumps[0].Draw(hdc, paintArea);
-    RoadBumps[1].Draw(hdc, paintArea);
+    for (auto* backgroundObject : BackgroundObjects)
+        backgroundObject->Draw(hdc, paintArea);
 
     Dinosaur.Draw(hdc, paintArea);
 
+    for (auto* collisionObject : CollisionObjects)
+        collisionObject->Draw(hdc, paintArea);
+
+    //Очистка стартовых объектов игры
     if (GameState == EGameState::RestartRunLevel && clearStartObjects == true) //Очистку стартовой платформы нужно проводить после перерисовки Дино, чтобы он переместился в начало уровня, а затем очистилась платформа
     {
         PopupTip.Clear(hdc, paintArea);
@@ -124,19 +115,13 @@ void CEngine::DrawFrame(HDC hdc, RECT& paintArea)
         RoadBumps[1].Draw(hdc, paintArea);
     }
 
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+    if (GameState == EGameState::StartLevel || GameState == EGameState::TeleportingDinosaur) //Рисуем стартовую платформу и подсказку по управлению только на стартовом уровне и во время телепортации
     {
-        CollisionObjects[i]->Draw(hdc, paintArea);
-    }
-
-    if (GameState == EGameState::StartLevel || GameState == EGameState::TeleportingDinosaur)
-    {
-        
         StartPlatform.Draw(hdc, paintArea);
         ControlTip.Draw(hdc, paintArea);
     }
 
-    if ( (GameState == EGameState::StartLevel && Dinosaur.ReadyForStartPlatfrom(StartPlatform) == true) || GameState == EGameState::LoseRunLevel)
+    if ( (GameState == EGameState::StartLevel && Dinosaur.ReadyForStartPlatfrom(StartPlatform) == true) || GameState == EGameState::LoseRunLevel) //Всплывающую подсказку рисуем только на стартовом уровне, когда находимся в нужном месте
         PopupTip.Draw(hdc, paintArea);
     else if (GameState == EGameState::StartLevel && Dinosaur.ReadyForStartPlatfrom(StartPlatform) == false)
         PopupTip.Clear(hdc, paintArea);
@@ -223,16 +208,16 @@ float CEngine::GetMaxSpeed()
 // -----------------------------------------------------------------------------------
 
 
-// ------------ Проверяем расстояние между объектами столкновения, чтобы они не шли подряд
+// ------------ Проверяем расстояние между объектами столкновения, чтобы они не шли подряд и можно было перепрыгнуть
 bool CEngine::CheckCollisionObjectsDistance()
 {
     bool reachedMinDistance = false;
 
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+    for (auto* collisionObject : CollisionObjects)
     {
-        if (CollisionObjects[i]->CheckActive() == true)
+        if (collisionObject->CheckActive() == true)
         {
-            if (CollisionObjects[i]->GetPos_X() <= static_cast<float>(CConfig::rightBorder) - CCollisionObjects::minDistanceBetweenCollisionObjects)
+            if (collisionObject->GetPos_X() <= static_cast<float>(CConfig::rightBorder) - CCollisionObjects::minDistanceBetweenCollisionObjects)
                 reachedMinDistance = true;
 
             break;
@@ -248,17 +233,17 @@ bool CEngine::CheckCollisionObjectsDistance()
 // ------------ Проверяем объекты на столкновения при перемещении
 void CEngine::CheckCollisions()
 {
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+    for (auto* collisionObject : CollisionObjects)
     {
-        if (CollisionObjects[i]->CheckActive() == false)
+        if (collisionObject->CheckActive() == false)
             continue;
 
-        if (CollisionObjects[i]->CheckHit(Dinosaur.dinoCollisionRects, Dinosaur.collisionRectsAmount) == true)
+        if (collisionObject->CheckHit(Dinosaur.dinoCollisionRects, Dinosaur.collisionRectsAmount) == true)
         {
             GameState = EGameState::LoseRunLevel;
             CBackgroundObjects::speed = 0.0f;
             Dinosaur.collision = true;
-            return;//Откорректировать координаты при столкновении
+            return;
         }
     }
 }
@@ -269,7 +254,6 @@ void CEngine::CheckCollisions()
 void CEngine::MoveCollisionObjects()
 {
     //Двигаем объектов столкновения на небольшие шажки (вытащили из метода Move)
-    currentMaxObjectsSpeed = GetMaxSpeed(); //Получаем текущую максимальную скорость среди всех объектов
     objectRestDistance += currentMaxObjectsSpeed; //Максимальное расстояние, на которое необходимо сдвинуть объекты в течение текущего кадра
 
     while (objectRestDistance > 0.0f)
@@ -286,10 +270,8 @@ void CEngine::MoveCollisionObjects()
 
         if (GameState == EGameState::RunLevel)
         {
-            for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
-            {
-                CollisionObjects[i]->Move(currentMaxObjectsSpeed);
-            }
+            for (auto* collisionObject : CollisionObjects)
+                collisionObject->Move(currentMaxObjectsSpeed);
         }
 
         CheckCollisions(); //Проверяем столкновения после сдвига птиц и кактусов
@@ -308,32 +290,7 @@ void CEngine::MoveCollisionObjects()
         Dinosaur.CorrectHorizontalEdgePosition();
 
     if (GameState == EGameState::StartLevel)
-        Dinosaur.CorrectPositionWithStartPlatform(StartPlatform);
-}
-//---------------------------------------------------------------------------------------------------
-
-
-//--------------------------------------------------- Передвижение объектов заднего плана их перерисовка ------------------------------------------------
-void CEngine::MoveBackgroundObjects()
-{
-    if (GameState == EGameState::RunLevel)
-    {
-        //Двигаем неровности на дороге
-        for (int i = 0; i < CConfig::MaxRoadBumps; i++)
-        {
-            RoadBumps[i].Move(CBackgroundObjects::speed);
-        }
-
-        //Двигаем камни (штрихи) на дороге
-        RoadStones[0].Move(CBackgroundObjects::speed);
-        RoadStones[1].Move(CBackgroundObjects::speed);
-
-        //Двигаем облака
-        for (int i = 0; i < CConfig::MaxClouds; i++)
-        {
-            Clouds[i].Move(Clouds[i].cloudsSpeed);
-        }
-    }
+        Dinosaur.CorrectPositionWithStartPlatform(StartPlatform); 
 }
 //---------------------------------------------------------------------------------------------------
 
@@ -348,9 +305,8 @@ void CEngine::ActivateCollisionObjects()
         lastCollisionObjectTimerDisappear = CConfig::currentFrameValue + newCollisionObjectTimerDelay;
     
         int collisionObjectIndex = CConfig::GetRandom(0, CConfig::MaxCollisionObjects - 1);
-        //collisionObjectIndex = 2;
-    
-        for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
+        
+        for (int i = collisionObjectIndex; i < CConfig::MaxCollisionObjects; ++i)
         {
             if (CCollisionObjects::CollisionObjectsActiveCount == 0) //Если на экране 0 активных объектов, активируем любой
             {
@@ -364,25 +320,24 @@ void CEngine::ActivateCollisionObjects()
                 break;
             }
     
-            ++collisionObjectIndex;
-            if (collisionObjectIndex >= CConfig::MaxCollisionObjects)
+            ++collisionObjectIndex; //Если попали на объект, который уже активирован, то увеличиваем индекс на один и пробуем ещё раз
+            if (collisionObjectIndex >= CConfig::MaxCollisionObjects) //Если индекс вышел за пределы, обнуляем
                 collisionObjectIndex = 0;
         }
     }
 }
 //---------------------------------------------------------------------------------------------------
 
-
 // ------------ Проверяем расстояние между неровностями на дороге, чтобы они не шли подряд
 bool CEngine::CheckRoadBumpsDistance()
 {
     bool reachedMinDistance = false;
 
-    for (int i = 0; i < CConfig::MaxRoadBumps; ++i)
+    for (auto &roadBump : RoadBumps)
     {
-        if (RoadBumps[i].active == true)
+        if (roadBump.active == true)
         {
-            if (RoadBumps[i].pos_X <= static_cast<float>(CConfig::rightBorder) - CCollisionObjects::minDistanceBetweenCollisionObjects)
+            if (roadBump.pos_X <= static_cast<float>(CConfig::rightBorder) - CCollisionObjects::minDistanceBetweenCollisionObjects)
                 reachedMinDistance = true;
 
             break;
@@ -396,7 +351,7 @@ bool CEngine::CheckRoadBumpsDistance()
 
 
 //--------------------------------------------------- Активация неровностей на дороге ------------------------------------------------
-void CEngine::ActivateRoadBumps() //TO DO: !!!Исправить появление двух подряд
+void CEngine::ActivateRoadBumps()
 {
     //Активируем по таймеру неровности на дороге
     if (lastRoadBumpTimerDisappear + newRoadBumpTimerDelay <= CConfig::currentFrameValue) //Отрисовываем новое облако только через некоторую временную паузу
@@ -408,20 +363,14 @@ void CEngine::ActivateRoadBumps() //TO DO: !!!Исправить появлен�
 
         bool anyActive = false; //Накопительная переменная для проверки, активен ли хотя бы один объект
 
-        for (int i = 0; i < CConfig::MaxRoadBumps; ++i)
-        {
-            anyActive = anyActive || RoadBumps[i].active; //Если ни один объект не активен, то переменная останется false
-        }
+        for (auto &roadBump : RoadBumps)
+            anyActive = anyActive || roadBump.active; //Если ни один объект не активен, то переменная останется false
             
         if (anyActive == false) //Активируем объект без каких либо условий, если ни один не активен
-        {
             RoadBumps[bumpObjectIndex].Activate(); 
-        }
 
         if (RoadBumps[bumpObjectIndex].active == false && CheckRoadBumpsDistance() == true) //Активируем второй объект, если первый уже активен, только в случае, если между ними достаточное расстояние
-        {
             RoadBumps[bumpObjectIndex].Activate();
-        }
     }
 }
 //---------------------------------------------------------------------------------------------------
@@ -435,11 +384,11 @@ void CEngine::ActivateClouds()
         newCloudTimerDelay = CConfig::FPS / 2 * CConfig::GetRandom(1, 3); //Случайное время до появления нового облака
         lastCloudTimerDisappear = CConfig::currentFrameValue + newCloudTimerDelay; //Обновляем время последнего исчезновения облака
 
-        for (int i = 0; i < CConfig::MaxClouds; ++i) //Перебираем все облака, находим ушедшее за экран и отрисовываем его
+        for (auto &cloud : Clouds) //Перебираем все облака, находим ушедшее за экран и отрисовываем его
         {
-            if (Clouds[i].active == false)
+            if (cloud.active == false)
             {
-                Clouds[i].Activate();
+                cloud.Activate();
                 break;
             }
         }
@@ -464,59 +413,104 @@ int CEngine::OnTimer()
     if (GameState == EGameState::LoseRunLevel)
         return 0;
 
-    ++CConfig::currentFrameValue; //значение таймера
+    ++CConfig::currentFrameValue;
 
     CConfig::slowCurrentFrameValue += 0.5f;
 
+    currentMaxObjectsSpeed = GetMaxSpeed(); //Получаем текущую максимальную скорость среди всех объектов
+
     MoveCollisionObjects();
 
-    //--------------------------------------------------- Активация движущихся объектов ------------------------------------------------
     ActivateRoadBumps();
     ActivateClouds();
     ActivateRoadStones();
 
-    if (GameState == EGameState::RunLevel)
-        ActivateCollisionObjects();
-    
     Dinosaur.Redraw();
 
-    //Перерисовка (Redraw) объектов столкновения (вытащили из метода Move)
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
-    {
-        if (CollisionObjects[i] != 0)
-            CollisionObjects[i]->Redraw();
-    }
+    for (auto* collisionObject : CollisionObjects)
+        collisionObject->Redraw();
 
-    if (GameState == EGameState::StartLevel || GameState == EGameState::LoseRunLevel)
+    switch (GameState)
+    {
+    case EGameState::StartLevel:
+
         PopupTip.Redraw();
-
-    if (Dinosaur.collision == true)
-    {
-        Scoreboard.UpdateHighScore();
-        return 0;
-    }
-
-    MoveBackgroundObjects();
-
-    //Каждый кадр ускоряем скорость объектов заднего фона (кроме облаков)
-    if (GameState == EGameState::RunLevel)
-        CBackgroundObjects::speed += CConfig::backgroundAcceleration;
-
-    //Увеличиваем сдвиг при падении, то есть ускоряемся при движении вниз (значение подобрано вручную)
-    if (GameState == EGameState::RunLevel || GameState == EGameState::StartLevel || GameState == EGameState::TestLevel)
-    {
         Dinosaur.GravityFalling();
-    }
 
-    //Если Дино телепортируется, то ждём, пока он опустится до земли, а затем активируем старт уровня
-    if (GameState == EGameState::TeleportingDinosaur && static_cast<int>(Dinosaur.pos_Y) + Dinosaur.height == Dinosaur.OnGroundLegsPos_Y)
-        FirstStartLevel();
+        break;
 
-    if (GameState == EGameState::RunLevel || GameState == EGameState::RestartRunLevel)
+    case EGameState::RestartRunLevel:
+
         Scoreboard.Redraw();
 
-    if (GameState == EGameState::RunLevel)
+        break;
+
+    case EGameState::RunLevel:
+
+        ActivateCollisionObjects();
+        for (auto* backgroundObject : BackgroundObjects)
+            backgroundObject->Move(currentMaxObjectsSpeed);
+
+        CBackgroundObjects::speed += CConfig::backgroundAcceleration; //Ускорение передвижения заднего плана
         CConfig::score++;
+        Dinosaur.GravityFalling();
+        Scoreboard.Redraw();
+
+        break;
+
+    case EGameState::LoseRunLevel:
+
+        PopupTip.Redraw();
+
+        break;
+
+    case EGameState::TestLevel:
+
+        Dinosaur.GravityFalling();
+
+        break;
+
+    case EGameState::TeleportingDinosaur:
+
+        if (static_cast<int>(Dinosaur.pos_Y) + Dinosaur.height == Dinosaur.OnGroundLegsPos_Y)
+            FirstStartLevel();
+
+        break;
+
+    default:
+
+        break;
+    }
+
+    //TO DO: !!! Заменил if на switch/case 
+    //if (GameState == EGameState::StartLevel || GameState == EGameState::LoseRunLevel)
+    //    PopupTip.Redraw();
+
+    //if (Dinosaur.collision == true)
+    //{
+    //    Scoreboard.UpdateHighScore();
+    //    return 0; //Если зафиксировано столкновение, выходим из ф-ции
+    //}   
+
+    ////Каждый кадр ускоряем скорость объектов заднего фона (кроме облаков)
+    //if (GameState == EGameState::RunLevel)
+    //{
+    //    ActivateCollisionObjects();
+    //    MoveBackgroundObjects();
+    //    CBackgroundObjects::speed += CConfig::backgroundAcceleration;
+    //    CConfig::score++;
+    //}
+
+    ////Увеличиваем сдвиг при падении, то есть ускоряемся при движении вниз (значение подобрано вручную)
+    //if (GameState == EGameState::RunLevel || GameState == EGameState::StartLevel || GameState == EGameState::TestLevel)
+    //    Dinosaur.GravityFalling();
+
+    ////Если Дино телепортируется, то ждём, пока он опустится до земли, а затем активируем старт уровня
+    //if (GameState == EGameState::TeleportingDinosaur && static_cast<int>(Dinosaur.pos_Y) + Dinosaur.height == Dinosaur.OnGroundLegsPos_Y)
+    //    FirstStartLevel();
+
+    //if (GameState == EGameState::RunLevel || GameState == EGameState::RestartRunLevel)
+    //    Scoreboard.Redraw();        
 
     return 0;
 }
@@ -553,8 +547,8 @@ void CEngine::RestartLevel()
     
     CConfig::score = 0;
 
-    for (int i = 0; i < CConfig::MaxCollisionObjects; ++i)
-        CollisionObjects[i]->Deactivate();
+    for (auto* collisionObject : CollisionObjects)
+        collisionObject->Deactivate();
 
     Dinosaur.RestartLevel();
 

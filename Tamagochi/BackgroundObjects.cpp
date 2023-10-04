@@ -2,7 +2,7 @@
 
 // ----------------------------- Класс задний фон ------------------------------------
 
-float CBackgroundObjects::speed = startSpeed;
+float CBackgroundObjects::speed = CBackgroundObjects::startSpeed;
 // -----------------------------------------------------------------------------------
 
 
@@ -32,7 +32,7 @@ void CBird::DrawUpWingBird(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 11 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 12 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 7, currentRgnPos_Y + 11, currentRgnPos_X + 9, currentRgnPos_Y + 12);
 }
 
 //Отрисовка нижнего крыла
@@ -46,7 +46,7 @@ void CBird::DrawDownWingBird(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + 7 * CConfig::SizeScale, currentRgnPos_Y + 4 * CConfig::SizeScale, currentRgnPos_X + 9 * CConfig::SizeScale, currentRgnPos_Y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 7, currentRgnPos_Y + 4, currentRgnPos_X + 9, currentRgnPos_Y + 5);
 }
 
 //Анимация крыльев
@@ -548,7 +548,7 @@ void CCactus::Move(float maxSpeed)
 
     pos_X -= nextStep;
 
-    if (static_cast<int>(pos_X) + static_cast<int>(CBackgroundObjects::speed) + width * CConfig::SizeScale <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + static_cast<int>(CBackgroundObjects::speed) + width <= CConfig::leftBorder)
     {
         active = false;
         CCollisionObjects::CollisionObjectsActiveCount--;
@@ -582,7 +582,7 @@ void CRoadLine::Draw(HDC hdc, RECT& paintArea)
     int pos_y = static_cast<int>(pos_Y);
 
     //Контур дороги
-    Rectangle(hdc, pos_x, pos_y, pos_x + lineWidth, pos_y + lineHeight * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y, pos_x + lineWidth, pos_y + lineHeight);
 }
 
 void CRoadLine::Clear(HDC hdc, RECT& paintArea)
@@ -601,7 +601,7 @@ void CRoadLine::Redraw()
     roadLineRect.left = static_cast<int>(pos_X);
     roadLineRect.top = static_cast<int>(pos_Y);
     roadLineRect.right = roadLineRect.left + lineWidth; //Не домножаем на SizeScale, так как рисуем на весь экран
-    roadLineRect.bottom = roadLineRect.top + lineHeight  * CConfig::SizeScale;
+    roadLineRect.bottom = roadLineRect.top + lineHeight ;
 
     InvalidateRect(CConfig::Hwnd, &prevRoadLineRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &roadLineRect, FALSE);
@@ -762,7 +762,7 @@ void CRoadStones::Redraw()
     roadStonesRect.left = static_cast<int>(pos_X);
     roadStonesRect.top = static_cast<int>(pos_Y);
     roadStonesRect.right = roadStonesRect.left + CConfig::rightBorder;
-    roadStonesRect.bottom = roadStonesRect.top + maxStonesHeight * CConfig::SizeScale;
+    roadStonesRect.bottom = roadStonesRect.top + maxStonesHeight;
 
     InvalidateRect(CConfig::Hwnd, &prevRoadStonesRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &roadStonesRect, FALSE);
@@ -864,7 +864,7 @@ void CRoadBump::Redraw()
     bumpRect.left = static_cast<int>(pos_X);
     bumpRect.top = static_cast<int>(pos_Y);
     bumpRect.right = bumpRect.left + width;
-    bumpRect.bottom = bumpRect.top + height * CConfig::SizeScale;
+    bumpRect.bottom = bumpRect.top + height;
 
     InvalidateRect(CConfig::Hwnd, &prevBumpRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &bumpRect, FALSE);
@@ -901,7 +901,7 @@ void CRoadBump::Move(float maxSpeed)
 
     pos_X -= CBackgroundObjects::speed;
 
-    if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width * CConfig::SizeScale <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + CBackgroundObjects::speed + width <= CConfig::leftBorder)
         active = false;
 
     Redraw();
@@ -917,15 +917,15 @@ void CRoadBump::DrawPit(HDC hdc, RECT& paintArea, float offset_x)
     //Рисуем пропуски фоновые
     CConfig::backgroundColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 1, pos_y + 3, pos_x + 13, pos_y + 4);
 
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_x, pos_y + 4 * CConfig::SizeScale, pos_x + 2 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale, pos_x + 12 * CConfig::SizeScale, pos_y + 7 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 11 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale, pos_x + 13 * CConfig::SizeScale, pos_y + 6 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x, pos_y + 4, pos_x + 2, pos_y + 5);
+    Rectangle(hdc, pos_x + 1, pos_y + 5, pos_x + 3, pos_y + 6);
+    Rectangle(hdc, pos_x + 2, pos_y + 6, pos_x + 12, pos_y + 7);
+    Rectangle(hdc, pos_x + 11, pos_y + 5, pos_x + 13, pos_y + 6);
+    Rectangle(hdc, pos_x + 12, pos_y + 4, pos_x + 14, pos_y + 5);
 }
 
 //Отрисовка кочки
@@ -937,22 +937,22 @@ void CRoadBump::DrawBump(HDC hdc, RECT& paintArea, float offset_x)
     //Рисуем пропуски фоновые
     CConfig::backgroundColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 4 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 2, pos_y + 3, pos_x + 14, pos_y + 4);
 
     //Кочка
     CConfig::mainBrightColor.SelectColor(hdc);
 
-    Rectangle(hdc, pos_x + 1 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 3 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 2 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale, pos_x + 4 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 3 * CConfig::SizeScale, pos_y, pos_x + 13 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 1 * CConfig::SizeScale, pos_x + 14 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 13 * CConfig::SizeScale, pos_y + 2 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 1, pos_y + 2, pos_x + 3, pos_y + 3);
+    Rectangle(hdc, pos_x + 2, pos_y + 1, pos_x + 4, pos_y + 2);
+    Rectangle(hdc, pos_x + 3, pos_y, pos_x + 13, pos_y + 1);
+    Rectangle(hdc, pos_x + 12, pos_y + 1, pos_x + 14, pos_y + 2);
+    Rectangle(hdc, pos_x + 13, pos_y + 2, pos_x + 15, pos_y + 3);
 }
 // -----------------------------------------------------------------------------------
 
 
 // ----------------------------- Класс Облако на заднем плане ------------------------
-const float CCloud::cloudsSpeed = CBackgroundObjects::speed;
+const float CCloud::cloudsSpeed = CBackgroundObjects::startSpeed;
 
 //Конструктор
 CCloud::CCloud()
@@ -1028,8 +1028,8 @@ void CCloud::Redraw()
 
     cloudRect.left = static_cast<int>(pos_X);
     cloudRect.top = static_cast<int>(pos_Y);
-    cloudRect.right = cloudRect.left + width * CConfig::SizeScale;
-    cloudRect.bottom = cloudRect.top + height * CConfig::SizeScale;
+    cloudRect.right = cloudRect.left + width;
+    cloudRect.bottom = cloudRect.top + height;
 
     UpdateDrawRgnPoints();
 
@@ -1071,7 +1071,7 @@ void CCloud::Move(float maxSpeed)
 
     pos_X -= cloudsSpeed;
 
-    if (static_cast<int>(pos_X) + cloudsSpeed + width * CConfig::SizeScale <= CConfig::leftBorder)
+    if (static_cast<int>(pos_X) + cloudsSpeed + width <= CConfig::leftBorder)
         active = false;
 
     Redraw();

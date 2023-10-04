@@ -13,8 +13,8 @@ public:
     virtual void Redraw() = 0;
     virtual void Clear(HDC hdc, RECT& paintArea) = 0;
 
-    static float speed; //Скорость прокрутки объектов заднего плана
     static constexpr float startSpeed = 10.0f;
+    static float speed; //Скорость прокрутки объектов заднего плана
 };
 // -----------------------------------------------------------------------------------
 
@@ -120,7 +120,7 @@ public:
     void TestActivate(float pos_x, float pos_y);
 
     static constexpr float startPos_X = 800.0f;
-    static constexpr float startPos_Y = 350.0f; //150
+    static constexpr float startPos_Y = 350.0f;
 
     float pos_X;
     float pos_Y;
@@ -162,7 +162,7 @@ public:
     void Clear(HDC hdc, RECT& paintArea) override;
 
     static constexpr float pos_X = 0.0f;
-    static constexpr float pos_Y = 386.0f; //186
+    static constexpr float pos_Y = 386.0f;
 
     static constexpr int lineHeight = 1; //высота линии дороги
     static constexpr int lineWidth = CConfig::rightBorder; //ширина линии дороги (не домножаем на SizeScale, так как рисуется на ширину всего экрана)
@@ -190,7 +190,7 @@ public:
     void FirstActivate();
 
     static constexpr float startPos_X = 10.0f;
-    static constexpr float startPos_Y = 388.0f; //188
+    static constexpr float startPos_Y = 388.0f;
     static constexpr float restartPos_X = 800.0f;
     
     static constexpr int stonesHeight = 1; //высота камня дороги
@@ -223,7 +223,7 @@ public:
 
     void TestActivate();
 
-    static constexpr float pos_Y = 383.0f; //183
+    static constexpr float pos_Y = 383.0f;
     static constexpr float restartPos_X = 800.0f;
 
     float pos_X;
@@ -262,7 +262,7 @@ public:
     void FirstActivate();
 
     static constexpr float restartPos_X = 800.0f;
-    static constexpr float startPos_Y = 200.0f; //0
+    static constexpr float startPos_Y = 200.0f;
 
     static constexpr int width = 58;
     static constexpr int height = 16;

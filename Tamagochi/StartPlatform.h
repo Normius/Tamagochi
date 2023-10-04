@@ -13,9 +13,9 @@ public:
     void Redraw();
 
     float pos_X;
-    static constexpr float pos_Y = 340.0; //140
+    static constexpr float pos_Y = 340.0;
 
-    static constexpr int downHeight = 40; //40
+    static constexpr int downHeight = 40;
     static constexpr int topHeight = 15;
     static constexpr int downWidth = 64;
     static constexpr int topWidth = 70;

@@ -8,7 +8,6 @@ CDinosaur::CDinosaur()
      leftKeyDown(false), rightKeyDown(false), height(StandingHeight), width(StandingWidth), pos_X(startPos_X), pos_Y(static_cast<float>(StandingPos_Y)), dinoCollisionRects{ 0 },
      horizontalSpeed(0.0f), verticalSpeed(0.0f), collision(false), currentDinosaurPoints{ 0 }, prevDinosaurPoints{ 0 }, currentRect{ 0 }, prevRect{ 0 }, onStartPlatform(false), OnGroundLegsPos_Y(StandingPos_Y + StandingHeight),
      falling(false)
-    //currentPolyRgn{ 0 }, prevPolyRgn { 0 }, prevRectRgn{ 0 }, currentRectRgn{ 0 }
 {
 }
 // -----------------------------------------------------------------------------------
@@ -304,8 +303,8 @@ void CDinosaur::Redraw()
 
     currentRect.left = currentRgnPos_X;
     currentRect.top = currentRgnPos_Y;
-    currentRect.right = currentRect.left + width * CConfig::SizeScale;
-    currentRect.bottom = currentRect.top + height * CConfig::SizeScale;
+    currentRect.right = currentRect.left + width;
+    currentRect.bottom = currentRect.top + height;
 
     InvalidateRect(CConfig::Hwnd, &prevRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &currentRect, FALSE);
@@ -322,13 +321,13 @@ void CDinosaur::ClearRightLegsBackground(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 22 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 12, pos_y + 36, pos_x + 22, pos_y + 44);
 
     //Правая нога
-    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 22, pos_y + 36, pos_x + 28, pos_y + 44);
 }
 // -----------------------------------------------------------------------------------
 
@@ -342,13 +341,13 @@ void CDinosaur::ClearLeftLegsBackground(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога
-    Rectangle(hdc, pos_x + (width - 12) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 18) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 12), pos_y + (36), pos_x + (width - 18), pos_y + (44));
 
     //Правая нога
-    Rectangle(hdc, pos_x + (width - 22) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 28) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 22), pos_y + (36), pos_x + (width - 28), pos_y + (44));
 }
 // -----------------------------------------------------------------------------------
 
@@ -362,15 +361,15 @@ void CDinosaur::DrawRightStandingLegs(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 18 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 12, pos_y + 36, pos_x + 15, pos_y + 44);
+    Rectangle(hdc, pos_x + 15, pos_y + 42, pos_x + 18, pos_y + 44);
 
     //Правая нога
-    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 22, pos_y + 36, pos_x + 25, pos_y + 44);
+    Rectangle(hdc, pos_x + 25, pos_y + 42, pos_x + 28, pos_y + 44);
 }
 // -----------------------------------------------------------------------------------
 
@@ -384,15 +383,15 @@ void CDinosaur::DrawLeftStandingLegs(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога
-    Rectangle(hdc, pos_x + (width - 12) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 15) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
-    Rectangle(hdc, pos_x + (width - 15) * CConfig::SizeScale, pos_y + (42 * CConfig::SizeScale), pos_x + (width - 18) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 12), pos_y + (36), pos_x + (width - 15), pos_y + (44));
+    Rectangle(hdc, pos_x + (width - 15), pos_y + (42), pos_x + (width - 18), pos_y + (44));
 
     //Правая нога
-    Rectangle(hdc, pos_x + (width - 22) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 25) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
-    Rectangle(hdc, pos_x + (width - 25) * CConfig::SizeScale, pos_y + (42 * CConfig::SizeScale), pos_x + (width - 28) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 22), pos_y + (36), pos_x + (width - 25), pos_y + (44));
+    Rectangle(hdc, pos_x + (width - 25), pos_y + (42), pos_x + (width - 28), pos_y + (44));
 }
 // -----------------------------------------------------------------------------------
 
@@ -408,15 +407,15 @@ void CDinosaur::DrawRightFirstStep(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога обычно
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 18 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 12, pos_y + 36, pos_x + 15, pos_y + 44);
+    Rectangle(hdc, pos_x + 15, pos_y + 42, pos_x + 18, pos_y + 44);
 
     //Правая нога поднятая
-    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 22, pos_y + (36 - 4), pos_x + 25, pos_y + (44 - 4));
+    Rectangle(hdc, pos_x + 25, pos_y + (42 - 4), pos_x + 28, pos_y + (44 - 4));
 }
 // -----------------------------------------------------------------------------------
 
@@ -432,15 +431,15 @@ void CDinosaur::DrawRightSecondStep(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога поднятая
-    Rectangle(hdc, pos_x + 12 * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + 15 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 15 * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + 18 * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 12, pos_y + (36 - 4), pos_x + 15, pos_y + (44 - 4));
+    Rectangle(hdc, pos_x + 15, pos_y + (42 - 4), pos_x + 18, pos_y + (44 - 4));
 
     //Правая нога обычно
-    Rectangle(hdc, pos_x + 22 * CConfig::SizeScale, pos_y + 36 * CConfig::SizeScale, pos_x + 25 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + 25 * CConfig::SizeScale, pos_y + 42 * CConfig::SizeScale, pos_x + 28 * CConfig::SizeScale, pos_y + 44 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 22, pos_y + 36, pos_x + 25, pos_y + 44);
+    Rectangle(hdc, pos_x + 25, pos_y + 42, pos_x + 28, pos_y + 44);
 }
 // -----------------------------------------------------------------------------------
 
@@ -456,15 +455,15 @@ void CDinosaur::DrawLeftFirstStep(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога обычно
-    Rectangle(hdc, pos_x + (width - 12) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 15) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
-    Rectangle(hdc, pos_x + (width - 15) * CConfig::SizeScale, pos_y + (42 * CConfig::SizeScale), pos_x + (width - 18) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 12), pos_y + (36), pos_x + (width - 15), pos_y + (44));
+    Rectangle(hdc, pos_x + (width - 15), pos_y + (42), pos_x + (width - 18), pos_y + (44));
 
     //Правая нога поднятая
-    Rectangle(hdc, pos_x + (width - 22) * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + (width - 25) * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + (width - 25) * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + (width - 28) * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (width - 22), pos_y + (36 - 4), pos_x + (width - 25), pos_y + (44 - 4));
+    Rectangle(hdc, pos_x + (width - 25), pos_y + (42 - 4), pos_x + (width - 28), pos_y + (44 - 4));
 }
 // -----------------------------------------------------------------------------------
 
@@ -480,15 +479,15 @@ void CDinosaur::DrawLeftSecondStep(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_y -= (StandingHeight - CrawlingHeight) * CConfig::SizeScale;
+        pos_y -= (StandingHeight - CrawlingHeight);
 
     //Левая нога поднятая
-    Rectangle(hdc, pos_x + (width - 12) * CConfig::SizeScale, pos_y + (36 - 4) * CConfig::SizeScale, pos_x + (width - 15) * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
-    Rectangle(hdc, pos_x + (width - 15) * CConfig::SizeScale, pos_y + (42 - 4) * CConfig::SizeScale, pos_x + (width - 18) * CConfig::SizeScale, pos_y + (44 - 4) * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (width - 12), pos_y + (36 - 4), pos_x + (width - 15), pos_y + (44 - 4));
+    Rectangle(hdc, pos_x + (width - 15), pos_y + (42 - 4), pos_x + (width - 18), pos_y + (44 - 4));
 
     //Правая нога обычно
-    Rectangle(hdc, pos_x + (width - 22) * CConfig::SizeScale, pos_y + (36 * CConfig::SizeScale), pos_x + (width - 25) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
-    Rectangle(hdc, pos_x + (width - 25) * CConfig::SizeScale, pos_y + (42 * CConfig::SizeScale), pos_x + (width - 28) * CConfig::SizeScale, pos_y + (44 * CConfig::SizeScale));
+    Rectangle(hdc, pos_x + (width - 22), pos_y + (36), pos_x + (width - 25), pos_y + (44));
+    Rectangle(hdc, pos_x + (width - 25), pos_y + (42), pos_x + (width - 28), pos_y + (44));
 }
 // -----------------------------------------------------------------------------------
 
@@ -501,10 +500,10 @@ void CDinosaur::DrawRightEye(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_x += (CrawlingWidth - StandingWidth) * CConfig::SizeScale;
+        pos_x += (CrawlingWidth - StandingWidth);
 
     //Зрачок при столкновении
-    Rectangle(hdc, pos_x + 28 * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + 30 * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + 28, pos_y + 3, pos_x + 30, pos_y + 5);
 }
 // -----------------------------------------------------------------------------------
 
@@ -517,10 +516,10 @@ void CDinosaur::DrawLeftEye(HDC hdc)
     int pos_y = static_cast<int>(pos_Y);
 
     if (DinosaurBodyState == EDinosaurBodyState::Crawling)
-        pos_x -= (CrawlingWidth - StandingWidth) * CConfig::SizeScale;
+        pos_x -= (CrawlingWidth - StandingWidth);
 
     //Зрачок при столкновении
-    Rectangle(hdc, pos_x + (width - 28) * CConfig::SizeScale, pos_y + 3 * CConfig::SizeScale, pos_x + (width - 30) * CConfig::SizeScale, pos_y + 5 * CConfig::SizeScale);
+    Rectangle(hdc, pos_x + (width - 28), pos_y + 3, pos_x + (width - 30), pos_y + 5);
 }
 // -----------------------------------------------------------------------------------
 
@@ -535,7 +534,7 @@ void CDinosaur::DrawRightStanding(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + 27 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + 31 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 27, currentRgnPos_Y + 2, currentRgnPos_X + 31, currentRgnPos_Y + 6);
 }
 // -----------------------------------------------------------------------------------
 
@@ -549,7 +548,7 @@ void CDinosaur::DrawLeftStanding(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + (width - 27) * CConfig::SizeScale, currentRgnPos_Y + (2 * CConfig::SizeScale), currentRgnPos_X + (width - 31) * CConfig::SizeScale, currentRgnPos_Y + (6 * CConfig::SizeScale));
+    Rectangle(hdc, currentRgnPos_X + (width - 27), currentRgnPos_Y + (2), currentRgnPos_X + (width - 31), currentRgnPos_Y + (6));
 }
 // -----------------------------------------------------------------------------------
 
@@ -564,7 +563,7 @@ void CDinosaur::DrawRightCrawling(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + 43 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + 47 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + 43, currentRgnPos_Y + 2, currentRgnPos_X + 47, currentRgnPos_Y + 6);
 }
 // -----------------------------------------------------------------------------------
 
@@ -579,7 +578,7 @@ void CDinosaur::DrawLeftCrawling(HDC hdc)
     CConfig::backgroundColor.SelectColor(hdc);
 
     //Глаз
-    Rectangle(hdc, currentRgnPos_X + width - 43 * CConfig::SizeScale, currentRgnPos_Y + 2 * CConfig::SizeScale, currentRgnPos_X + width - 47 * CConfig::SizeScale, currentRgnPos_Y + 6 * CConfig::SizeScale);
+    Rectangle(hdc, currentRgnPos_X + width - 43, currentRgnPos_Y + 2, currentRgnPos_X + width - 47, currentRgnPos_Y + 6);
 }
 // -----------------------------------------------------------------------------------
 
@@ -664,7 +663,7 @@ void CDinosaur::CorrectVerticalEdgePosition()
         falling = false;
     }
 
-    if (static_cast<int>(pos_Y) <= OnGroundLegsPos_Y - height - MaxJumpHeight * CConfig::SizeScale && falling == false) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
+    if (static_cast<int>(pos_Y) <= OnGroundLegsPos_Y - height - MaxJumpHeight && falling == false) //Когда Дино достигает максимальной высоты прыжка (или чуть больше), меняем знак шага перемещения на положительный для движения вниз (падения)
     {
         falling = true;
         verticalSpeed = 0.0f; //При достижении максимальной высоты перемещение приравниваем к 0 
@@ -686,8 +685,8 @@ void CDinosaur::MoveVertical(float maxSpeed)
 // ------------  Горизонтальное движение по таймеру 
 void CDinosaur::CorrectHorizontalEdgePosition()
 {
-    if (static_cast<int>(pos_X) + width * CConfig::SizeScale >= CConfig::rightBorder) //Правая граница
-        pos_X = static_cast<float>(CConfig::rightBorder - width * CConfig::SizeScale);
+    if (static_cast<int>(pos_X) + width >= CConfig::rightBorder) //Правая граница
+        pos_X = static_cast<float>(CConfig::rightBorder - width);
 
     if (static_cast<int>(pos_X) < CConfig::leftBorder) //Левая граница
         pos_X = static_cast<float>(CConfig::leftBorder);
@@ -732,7 +731,7 @@ void CDinosaur::CheckHorizontalDirection(bool leftDirection, bool keyPressed) //
         if (pos_Y + height == OnGroundLegsPos_Y)
         {
             DinosaurMovingState = EDinosaurMovingState::MovingLeft;
-            horizontalSpeed = -MaxSpeed_X * CConfig::FSizeScale;
+            horizontalSpeed = -MaxSpeed_X;
         }
     }
 
@@ -742,7 +741,7 @@ void CDinosaur::CheckHorizontalDirection(bool leftDirection, bool keyPressed) //
         if (pos_Y + height == OnGroundLegsPos_Y)
         {
             DinosaurMovingState = EDinosaurMovingState::MovingRight;
-            horizontalSpeed = MaxSpeed_X * CConfig::FSizeScale;
+            horizontalSpeed = MaxSpeed_X;
         }
     }
 }
@@ -764,7 +763,6 @@ void CDinosaur::Jump()
 // ------------ Модель Динозавра поделена на 3 прямоугольника, с которыми проверяем столкновения других объектов
 void CDinosaur::SetDinoCollisionRects()
 {
-    //Если координаты не поменялись, ничего не делаем
     int pos_x = static_cast<int>(pos_X);
     int pos_y = static_cast<int>(pos_Y);
 
@@ -772,30 +770,30 @@ void CDinosaur::SetDinoCollisionRects()
     {
         if (DinosaurDirectionState == EDinosaurDirectionState::Right)
         {
-            SetRect(&dinoCollisionRects[0], pos_x + 23 * CConfig::SizeScale, pos_y, pos_x + 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[1], pos_x + 9 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + 27 * CConfig::SizeScale, pos_y + 43 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[2], pos_x, pos_y + 13 * CConfig::SizeScale, pos_x + 6 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
+            SetRect(&dinoCollisionRects[0], pos_x + 23, pos_y, pos_x + 43, pos_y + 14);
+            SetRect(&dinoCollisionRects[1], pos_x + 9, pos_y + 19, pos_x + 27, pos_y + 43);
+            SetRect(&dinoCollisionRects[2], pos_x, pos_y + 13, pos_x + 6, pos_y + 31);
         }
         else
         {
-            SetRect(&dinoCollisionRects[0], pos_x + width - 23 * CConfig::SizeScale, pos_y, pos_x + width - 43 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[1], pos_x + width - 9 * CConfig::SizeScale, pos_y + 19 * CConfig::SizeScale, pos_x + width - 27 * CConfig::SizeScale, pos_y + 43 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[2], pos_x + width - 0, pos_y + 13 * CConfig::SizeScale, pos_x + width - 6 * CConfig::SizeScale, pos_y + 31 * CConfig::SizeScale);
+            SetRect(&dinoCollisionRects[0], pos_x + width - 23, pos_y, pos_x + width - 43, pos_y + 14);
+            SetRect(&dinoCollisionRects[1], pos_x + width - 9, pos_y + 19, pos_x + width - 27, pos_y + 43);
+            SetRect(&dinoCollisionRects[2], pos_x + width - 0, pos_y + 13, pos_x + width - 6, pos_y + 31);
         }
     }
     else
     {
         if (DinosaurDirectionState == EDinosaurDirectionState::Right)
         {
-            SetRect(&dinoCollisionRects[0], pos_x + 6 * CConfig::SizeScale, pos_y, pos_x + 59 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[1], pos_x + 11 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + 35 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[2], pos_x, pos_y, pos_x + 5 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+            SetRect(&dinoCollisionRects[0], pos_x + 6, pos_y, pos_x + 59, pos_y + 14);
+            SetRect(&dinoCollisionRects[1], pos_x + 11, pos_y + 15, pos_x + 35, pos_y + 25);
+            SetRect(&dinoCollisionRects[2], pos_x, pos_y, pos_x + 5, pos_y + 9);
         }
         else 
         {
-            SetRect(&dinoCollisionRects[0], pos_x + width - 6 * CConfig::SizeScale, pos_y, pos_x + width - 59 * CConfig::SizeScale, pos_y + 14 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[1], pos_x + width - 11 * CConfig::SizeScale, pos_y + 15 * CConfig::SizeScale, pos_x + width - 35 * CConfig::SizeScale, pos_y + 25 * CConfig::SizeScale);
-            SetRect(&dinoCollisionRects[2], pos_x + width - 0, pos_y, pos_x + width - 5 * CConfig::SizeScale, pos_y + 9 * CConfig::SizeScale);
+            SetRect(&dinoCollisionRects[0], pos_x + width - 6, pos_y, pos_x + width - 59, pos_y + 14);
+            SetRect(&dinoCollisionRects[1], pos_x + width - 11, pos_y + 15, pos_x + width - 35, pos_y + 25);
+            SetRect(&dinoCollisionRects[2], pos_x + width - 0, pos_y, pos_x + width - 5, pos_y + 9);
         }
     }
 }
@@ -831,15 +829,6 @@ void CDinosaur::CorrectPositionWithStartPlatform(const CStartPlatform& startPlat
         onStartPlatform = false;
 }
 // -----------------------------------------------------------------------------------
-
-void CDinosaur::TeleportingFromStartPlatfrom() //TO DO:!!!
-{
-    
-
-    //if (DinosaurLevelState == EDinosaurLevelState::Teleporting)
-
-
-}
 
 // ------------ Рестарт уровня при проигрыше или со стартовой платформы
 void CDinosaur::RestartLevel()

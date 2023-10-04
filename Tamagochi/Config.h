@@ -30,10 +30,8 @@ public:
 	static constexpr int downBorder = 600;
 	static constexpr int FPS = 20;
 
-	static constexpr int SizeScale = 1; //Целочисленный масштаб (При изменении масштаба, изменить также дробный FSizeScale)
-	static constexpr float FSizeScale = 1.0f; //Дробный масштаб (При изменении масштаба, изменить также целочисленный )
 	static constexpr float minShift = 1.0f;
-	static constexpr float backgroundAcceleration = 0.03f;
+	static constexpr float backgroundAcceleration = 0.035f;
 
 	static float slowCurrentFrameValue; //Текущее значение кадра от начала игры с замедлением в 2 раза (+1 каждые 2 кадра). Используется для замедления анимации крыльев птицы и шагов Дино
 	static unsigned int currentFrameValue; //Текущее значение кадра от начала игры
@@ -48,7 +46,6 @@ public:
 	static constexpr int MaxRoadStones = 2; //Количество маленьких камней на дороге
 	static constexpr int MaxRoadBumps = 2;
 	static constexpr int MaxRoadObjects = 1;
-	static constexpr int MaxBackgroundObjects = MaxClouds + MaxRoadObjects + MaxRoadStones + MaxRoadBumps;
 
 	static constexpr int MaxCactuses = 2;
 	static constexpr int MaxBirds = 1;

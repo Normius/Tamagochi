@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <cmath>
+#include <vector>
 
 #include "BackgroundObjects.h"
 #include "Dinosaur.h"
@@ -49,7 +50,6 @@ public:
     void RestartLevel();
 
     void MoveCollisionObjects();
-    void MoveBackgroundObjects();
     void ActivateCollisionObjects();
     void ActivateRoadBumps();
     void ActivateClouds();
@@ -77,18 +77,26 @@ private:
     CDinosaur Dinosaur;
 
     CBird Bird;
-    CCactus Cactuses[CConfig::MaxCactuses]; //Массив кактусов
-    CCollisionObjects* CollisionObjects[CConfig::MaxCollisionObjects]; //Массив указателей на объекты заднего плана с столкновениями(кактусы и птица)
 
+    //CCactus Cactuses[CConfig::MaxCactuses]; //Массив кактусов
+    std::vector<CCactus> Cactuses; //Массив кактусов
+
+    //CCollisionObjects* CollisionObjects[CConfig::MaxCollisionObjects]; //Массив указателей на объекты заднего плана с столкновениями(кактусы и птица)
+    std::vector<CCollisionObjects*> CollisionObjects;
+    std::vector<CBackgroundObjects*> BackgroundObjects;
+
+    //CRoadStones RoadStones[CConfig::MaxRoadStones];
+    //CRoadBump RoadBumps[CConfig::MaxRoadBumps];
+    //CCloud Clouds[CConfig::MaxClouds]; //Массив облаков
+    std::vector<CRoadStones> RoadStones;
+    std::vector<CRoadBump> RoadBumps;
+    std::vector<CCloud> Clouds; //Массив облаков
+    
     CRoadLine RoadLine;
-    CRoadStones RoadStones[CConfig::MaxRoadStones];
-    CRoadBump RoadBumps[CConfig::MaxRoadBumps];
-    CCloud Clouds[CConfig::MaxClouds]; //Массив облаков
 
     CStartPlatform StartPlatform; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
     CScoreboard Scoreboard;
     СControlTip ControlTip; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
     CPopupTip PopupTip; //TO DO:!!! Динамически создавать в куче, чтобы удалить раньше, так как нужна только в начале
-    
 };
 // -----------------------------------------------------------------------------------
