@@ -216,9 +216,9 @@ int CEngine::OnTimer()
 
     MoveDinosaurWithCollisionObjects();
 
-    //ActivateRoadBumps();
-    //ActivateClouds();
-    //ActivateRoadStones();
+    ActivateRoadBumps();
+    ActivateClouds();
+    ActivateRoadStones();
 
     Dinosaur.Redraw();
 
