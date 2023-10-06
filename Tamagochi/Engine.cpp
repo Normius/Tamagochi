@@ -452,6 +452,7 @@ void CEngine::RestartLevel()
     GameState = EGameState::RestartRunLevel;
 
     PopupTip.Redraw();
+    Scoreboard.UpdateHighScore();
 
     CConfig::score = 0;
 
