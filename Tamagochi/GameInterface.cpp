@@ -6,7 +6,7 @@ const std::string CScoreboard::filePath = "HighScore.txt";
 
 //Конструктор
 CScoreboard::CScoreboard()
-    :ScoreFont(0), currentScoreStr(), highScoreStr(L"00000"), buff{}, showHighScore(true)
+    :ScoreFont(0), showHighScore(true), currentScoreStr(), highScoreStr(L"00000"), buff{}
 {
     //MakeFont(); //Выбор стандартного шрифта через меню Windows
 
@@ -25,13 +25,12 @@ CScoreboard::CScoreboard()
 
     ReadHighScoreFromFile();
 }
-// -----------------------------------------------------------------------------------
- 
+
+//Выбор и получение параметров стандартных шрифтов Windows для создания своего шрифта
 void CScoreboard::MakeFont()
 {
     CHOOSEFONT cf{};
     LOGFONT lf{};
-    
 
     cf.lStructSize = sizeof(CHOOSEFONT);
     cf.lpLogFont = &lf;
@@ -43,8 +42,7 @@ void CScoreboard::MakeFont()
     HFONT newfont = CreateFontIndirect(cf.lpLogFont);
 }
 
-
-// Метод отрисовки
+//Отрисовки
 void CScoreboard::Draw(HDC hdc, RECT& paintArea)
 {
     const wchar_t* highStr = L"High";
@@ -68,20 +66,16 @@ void CScoreboard::Draw(HDC hdc, RECT& paintArea)
         TextOut(hdc, highScorePos_X, currentAndHighScorePos_Y, highScoreStr.c_str(), static_cast<int>( wcslen( highScoreStr.c_str() )));
     }
 }
-// -----------------------------------------------------------------------------------
 
-
-// Метод очистки
+//Очистка
 void CScoreboard::Clear(HDC hdc, RECT& paintArea)
 {
     CConfig::backgroundColor.SelectColor(hdc);
 
     Rectangle(hdc, highScorePos_X, currentAndHighScorePos_Y, currentScorePos_X + currentScoreWidth, currentAndHighScorePos_Y + currentScoreHeight);
 }
-// -----------------------------------------------------------------------------------
 
-
-// Метод перерисовки
+//Перерисовка
 void CScoreboard::Redraw()
 {
     RECT rect{};
@@ -93,7 +87,6 @@ void CScoreboard::Redraw()
 
     InvalidateRect(CConfig::Hwnd, &rect, FALSE);
 }
-// -----------------------------------------------------------------------------------
 
 // Обновляем рекорд очков
 void CScoreboard::UpdateHighScore()
@@ -114,8 +107,6 @@ void CScoreboard::UpdateHighScore()
 
     InvalidateRect(CConfig::Hwnd, &rect, FALSE);
 }
-// -----------------------------------------------------------------------------------
-
 
 // Записываем рекорд очков в файл
 void CScoreboard::WriteHighScoreToFile()
@@ -129,8 +120,6 @@ void CScoreboard::WriteHighScoreToFile()
 
     fs.close();
 }
-// -----------------------------------------------------------------------------------
-
 
 // Считываем рекорд очков с файла (если файла с рекордом нет, он создаётся)
 void CScoreboard::ReadHighScoreFromFile()
@@ -175,17 +164,17 @@ void CScoreboard::ReadHighScoreFromFile()
 
     сontrolTipFont = CreateFontIndirect(&logFont);
 }
-// -----------------------------------------------------------------------------------
 
-// Метод отрисовки
+//Отрисовки
 void СControlTip::Draw(HDC hdc, RECT& paintArea)
 {
-    const wchar_t* StandStr = L"W, стрелка вверх - выпрямиться";
+    const wchar_t* standStr = L"W, стрелка вверх - выпрямиться";
     const wchar_t* moveLeftStr = L"A, стрелка влево - движение влево";
-    const wchar_t* CrawlStr = L"S, стрелка вниз - пригнуться";
+    const wchar_t* crawlStr = L"S, стрелка вниз - пригнуться";
     const wchar_t* moveRightStr = L"D, стрелка вправо - движение вправо";
-    const wchar_t* JumpStr = L"Пробел - прыжок/запустить уровень";
-    const wchar_t* ActionStr = L"Е - рестарт после проигрыша";
+    const wchar_t* jumpStr = L"Пробел - прыжок/запустить уровень";
+    const wchar_t* actionStr = L"Е - рестарт после проигрыша";
+    const wchar_t* startStr = L"Запрыгните на платформу, чтобы начать игру";
 
     SelectObject(hdc, сontrolTipFont);
 
@@ -193,40 +182,41 @@ void СControlTip::Draw(HDC hdc, RECT& paintArea)
 
     SetTextColor(hdc, CConfig::mainBrightColor.GetRGBColor());
 
-    TextOut( hdc, controlTextPos_X, controlTextPos_Y, StandStr, static_cast<int>(wcslen(StandStr)) );
+    TextOut( hdc, controlTextPos_X, controlTextPos_Y, standStr, static_cast<int>(wcslen(standStr)) );
     TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr, moveLeftStr, static_cast<int>(wcslen(moveLeftStr)) );
-    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 2, CrawlStr, static_cast<int>(wcslen(CrawlStr)) );
+    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 2, crawlStr, static_cast<int>(wcslen(crawlStr)) );
     TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 3, moveRightStr, static_cast<int>(wcslen(moveRightStr)) );
-    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 4, JumpStr, static_cast<int>(wcslen(JumpStr)) );
-    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 5, ActionStr, static_cast<int>(wcslen(ActionStr)) );
+    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 4, jumpStr, static_cast<int>(wcslen(jumpStr)) );
+    TextOut( hdc, controlTextPos_X, controlTextPos_Y + verticalSpaceBetweenStr * 5, actionStr, static_cast<int>(wcslen(actionStr)) );
+    TextOut( hdc, startTextPos_X, startTextPos_Y, startStr, static_cast<int>(wcslen(startStr)) );
 
     CConfig::paleCloudColor.SelectColor(hdc);
 
-    const POINT controlTipFramePoints[5]{ {controlFramePos_X, controlFramePos_Y}, {controlFramePos_X + width, controlFramePos_Y}, {controlFramePos_X + width, controlFramePos_Y + height}, {controlFramePos_X, controlFramePos_Y + height}, {controlFramePos_X, controlFramePos_Y - 1} };
+    const POINT controlTipFramePoints[5]{ {controlFramePos_X, controlFramePos_Y}, {controlFramePos_X + frameWidth, controlFramePos_Y}, {controlFramePos_X + frameWidth, controlFramePos_Y + frameHeight},
+                                          {controlFramePos_X, controlFramePos_Y + frameHeight}, {controlFramePos_X, controlFramePos_Y - 1} };
 
     Polyline(hdc, controlTipFramePoints, 5);
 }
-// -----------------------------------------------------------------------------------
 
-
-// Метод очистки
+//Очистка
 void СControlTip::Clear(HDC hdc, RECT& paintArea)
 {
     CConfig::backgroundColor.SelectColor(hdc);
 
-    Rectangle(hdc, controlFramePos_X - 1, controlFramePos_Y - 1, controlFramePos_X + width + 2, controlFramePos_Y + height + 2);
-}
-// -----------------------------------------------------------------------------------
+    Rectangle(hdc, controlFramePos_X - 1, controlFramePos_Y - 1, controlFramePos_X + frameWidth + 2, controlFramePos_Y + frameHeight + 2);
 
-// Метод перерисовки
+    Rectangle(hdc, startTextPos_X, startTextPos_Y, startTextPos_X + startTextWidth, startTextPos_Y + startTextHeight);
+}
+
+//Перерисовка
 void СControlTip::Redraw()
 {
     RECT rect{};
 
     rect.left = controlFramePos_X - 1;
     rect.top = controlFramePos_Y - 1;
-    rect.right = rect.left + width + 2;
-    rect.bottom = rect.top + height + 2;
+    rect.right = startTextPos_X + startTextWidth;
+    rect.bottom = startTextPos_Y + startTextHeight;
 
     InvalidateRect(CConfig::Hwnd, &rect, FALSE);
 }
@@ -252,7 +242,6 @@ CPopupTip::CPopupTip()
 
     popupTipFont = CreateFontIndirect(&logFont);
 }
-// -----------------------------------------------------------------------------------
 
 // Метод отрисовки
 void CPopupTip::Draw(HDC hdc, RECT& paintArea)
@@ -269,23 +258,21 @@ void CPopupTip::Draw(HDC hdc, RECT& paintArea)
 
     CConfig::paleCloudColor.SelectColor(hdc);
 
-    const POINT popupTipFramePoints[5]{ {popupFramePos_X, popupFramePos_Y}, {popupFramePos_X + width, popupFramePos_Y}, {popupFramePos_X + width, popupFramePos_Y + height}, {popupFramePos_X, popupFramePos_Y + height}, {popupFramePos_X, popupFramePos_Y - 1} };
+    const POINT popupTipFramePoints[5]{ {popupFramePos_X, popupFramePos_Y}, {popupFramePos_X + width, popupFramePos_Y}, {popupFramePos_X + width, popupFramePos_Y + height}, {popupFramePos_X, popupFramePos_Y + height}, 
+                                        {popupFramePos_X, popupFramePos_Y - 1} };
 
     Polyline(hdc, popupTipFramePoints, 5);
 }
-// -----------------------------------------------------------------------------------
 
-
-// Метод очистки
+//Очистка
 void CPopupTip::Clear(HDC hdc, RECT& paintArea)
 {
     CConfig::backgroundColor.SelectColor(hdc);
 
     Rectangle(hdc, popupFramePos_X - 1, popupFramePos_Y - 1, popupFramePos_X + width + 2, popupFramePos_Y + height + 2);
 }
-// -----------------------------------------------------------------------------------
 
-// Метод перерисовки
+//Перерисовка
 void CPopupTip::Redraw()
 {
     RECT rect{};

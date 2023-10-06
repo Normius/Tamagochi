@@ -4,12 +4,11 @@
 
 //Конструктор
 CStartPlatform::CStartPlatform()
-    :pos_X(0), prevRect{ 0 }, currentRect{ 0 }
+    :pos_X(0), currentRect{ 0 }, prevRect{ 0 }
 {
 }
-// -----------------------------------------------------------------------------------
 
-// Метод отрисовки
+//Отрисовка
 void CStartPlatform::Draw(HDC hdc, RECT& paintArea)
 {
     int pos_x = static_cast<int>(pos_X);
@@ -28,9 +27,8 @@ void CStartPlatform::Draw(HDC hdc, RECT& paintArea)
     //Разделение между частями
     Rectangle(hdc, pos_x + topWidth / 2 - downWidth / 2, pos_y + topHeight, pos_x + topWidth / 2 - downWidth / 2 + downWidth, pos_y + topHeight + 1);
 }
-// -----------------------------------------------------------------------------------
 
-// Метод очистки
+//Очистка
 void CStartPlatform::Clear(HDC hdc, RECT& paintArea)
 {
     int pos_x = static_cast<int>(pos_X);
@@ -44,9 +42,8 @@ void CStartPlatform::Clear(HDC hdc, RECT& paintArea)
     //Нижняя часть
     Rectangle(hdc, pos_x + topWidth / 2 - downWidth / 2, pos_y + topHeight, pos_x + topWidth / 2 - downWidth / 2 + downWidth, pos_y + topHeight + downHeight);
 }
-// -----------------------------------------------------------------------------------
 
-// Метод очистки
+//Заказ перерисовки
 void CStartPlatform::Redraw()
 {
     prevRect = currentRect;
@@ -59,4 +56,27 @@ void CStartPlatform::Redraw()
     InvalidateRect(CConfig::Hwnd, &prevRect, FALSE);
     InvalidateRect(CConfig::Hwnd, &currentRect, FALSE);
 }
-// -----------------------------------------------------------------------------------
+
+//Установка стартовой позиции по Х случайным образом
+void CStartPlatform::SetRandomPos_X()
+{
+    pos_X = static_cast<float>(CConfig::GetRandom(200, 700));
+}
+
+//Возврат позиции по Х
+float CStartPlatform::GetPos_X() const
+{
+    return pos_X;
+}
+
+//Возврат верхней ширины платформы
+int CStartPlatform::GetTopWidth() const
+{
+    return topWidth;
+}
+
+//Возврат нижней ширины платформы
+int CStartPlatform::GetDownWidth() const
+{
+    return downWidth;
+}

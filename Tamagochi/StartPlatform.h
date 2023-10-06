@@ -11,16 +11,20 @@ public:
     void Draw(HDC hdc, RECT& paintArea);
     void Clear(HDC hdc, RECT& paintArea);
     void Redraw();
+    void SetRandomPos_X();
+    float GetPos_X() const;
+    int GetTopWidth() const;
+    int GetDownWidth() const;
 
-    float pos_X;
     static constexpr float pos_Y = 340.0;
-
+    
+private:
     static constexpr int downHeight = 40;
     static constexpr int topHeight = 15;
     static constexpr int downWidth = 64;
     static constexpr int topWidth = 70;
 
-    RECT prevRect;
-    RECT currentRect;
+    float pos_X;
+    RECT currentRect, prevRect;
 };
 // -----------------------------------------------------------------------------------

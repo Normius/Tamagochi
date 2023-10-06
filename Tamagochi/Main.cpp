@@ -248,26 +248,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch (wParam)
 		{
-		case 0x41:
+		case 0x41: //Клавиша A(англ)
 		case VK_LEFT:
 			return Engine.OnKey(EKeyType::LeftKey, false);
 
-		case 0x44:
+		case 0x44:  //Клавиша D(англ)
 		case VK_RIGHT:
 			return Engine.OnKey(EKeyType::RightKey, false);
 
-		case 0x53:
+		case 0x53:  //Клавиша S(англ)
 		case VK_DOWN:
 			return Engine.OnKey(EKeyType::DownKey, false);
 
-		case 0x57:
+		case 0x57:  //Клавиша W(англ)
 		case VK_UP:
 			return Engine.OnKey(EKeyType::UpKey, false);
 
 		case VK_SPACE:
 			return Engine.OnKey(EKeyType::SpaceKey, false);
 
-		case 0x45:
+		case 0x45:  //Клавиша E(англ)
 			return Engine.OnKey(EKeyType::ActionKey_E, false);
 		}
 		break;
